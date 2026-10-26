@@ -1,10 +1,77 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>教师信息 - SMASS</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-5.3.2/css/bootstrap.min.css' %}">
 </head>
-<body>
-    <h1>教师界面</h1>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand bg-white border-bottom mb-4">
+    <div class="container">
+        <span class="navbar-brand">SMASS 教师端</span>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-muted">{{ request.session.info.name }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">注销</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">本人基本信息</h5>
+
+                    {% if teacher %}
+                        <table class="table table-striped align-middle">
+                            <tbody>
+                            <tr>
+                                <th style="width: 160px;">教职员工编号</th>
+                                <td>{{ teacher.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>姓名</th>
+                                <td>{{ teacher.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>性别</th>
+                                <td>{{ teacher.get_sex_display|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>民族</th>
+                                <td>{{ teacher.nation|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>院系</th>
+                                <td>{{ teacher.college|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>政治面貌</th>
+                                <td>{{ teacher.get_political_display|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>入职时间</th>
+                                <td>{{ teacher.entry_time|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>联系地址</th>
+                                <td>{{ teacher.address|default:"-" }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-warning mb-0">
+                            未找到与当前登录账号对应的教师档案，请联系管理员核对。
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

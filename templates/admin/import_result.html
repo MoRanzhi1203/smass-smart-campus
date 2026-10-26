@@ -1,0 +1,46 @@
+{% extends 'layout/admin.html' %}
+
+{% block table %}
+    <div class="panel {% if result.ok %}panel-success{% else %}panel-danger{% endif %}">
+        <div class="panel-heading">
+            <span class="glyphicon {% if result.ok %}glyphicon-ok-sign{% else %}glyphicon-exclamation-sign{% endif %}"
+                  aria-hidden="true"></span>
+            批量导入{{ str_dict.name_ch }}信息 —— {% if result.ok %}成功{% else %}失败{% endif %}
+        </div>
+
+        <div class="panel-body">
+            {% if result.ok %}
+                <p>
+                    成功导入 <strong>{{ result.created }}</strong> 条，
+                    跳过已存在 <strong>{{ result.skipped }}</strong> 条。
+                </p>
+
+                {% if result.shared_password %}
+                    <div class="alert alert-warning">
+                        <p><strong>本次导入账号的统一初始密码：</strong>
+                            <code>{{ result.shared_password }}</code>
+                        </p>
+                        <p class="text-muted">
+                            该口令只在此页面显示一次，不会写入日志。
+                            请立即转达给相关人员，并要求登录后自行修改。
+                        </p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <p>本次导入<strong>没有写入任何数据</strong>（整批回滚）。请修正下列问题后重新上传：</p>
+                <ul class="list-unstyled">
+                    {% for error in result.errors %}
+                        <li><span class="text-danger">{{ error }}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="panel-footer">
+            <a href="{{ list_url }}" class="btn btn-primary">返回列表</a>
+            {% if template_url %}
+                <a href="{{ template_url }}" class="btn btn-default">下载模版</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

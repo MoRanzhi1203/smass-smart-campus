@@ -1,8 +1,9 @@
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from app01.utils.encrypt import md5
+# 注意：密码编码统一由 app01.services.accounts 负责（Django 官方哈希）。
+# 本模块历史上曾在 save() 中无条件 md5，导致编辑/重置后密码被二次哈希而失效，
+# 该逻辑已移除；此处不得再引入任何密码哈希。
 
 
 class Nation(models.Model):
@@ -70,13 +71,29 @@ class Classes(models.Model):
 
     # 关联 辅导员与班级
     @classmethod
-    def connect_instructors(cls):
-        instructor_positions = TeacherPosition.objects.filter(position_id=1)
+    def connect_instructors(cls, position_name='辅导员'):
+        """把具备指定职务（默认"辅导员"）的教师，依次补位到尚无辅导员的班级。
+
+        ⚠️ 语义说明（如实记录，勿误用）：这不是"按班级分配指定辅导员"，而是
+        历史上的一次性补数据逻辑——每个空班主任最多被第一个符合条件的教师填充。
+        真正的辅导员分配应走 R2 提出的显式分配接口。
+
+        历史缺陷：
+        1. 外键字段实际名为 ``counsellor``，旧代码误写 ``instructor``，直接调用会
+           ``AttributeError``；
+        2. 旧代码硬编码 ``position_id=1``，一旦职务表主键变化就静默失效，
+           改为按职务名称匹配。
+        """
+        instructor_positions = (
+            TeacherPosition.objects
+            .filter(position__name=position_name)
+            .select_related('teacher')
+        )
         for instructor_position in instructor_positions:
-            classes = cls.objects.filter(instructor=None)  # 获取辅导员字段为空的班级
+            classes = cls.objects.filter(counsellor__isnull=True)
             for cls_obj in classes:
-                cls_obj.instructor = instructor_position.teacher
-                cls_obj.save()
+                cls_obj.counsellor = instructor_position.teacher
+                cls_obj.save(update_fields=['counsellor'])
 
     def __str__(self):
         return self.name
@@ -134,12 +151,10 @@ class Admin(models.Model):
     # 管理员账号设置为三位整数字符串
     id = models.CharField(verbose_name='账号', max_length=3, primary_key=True)
     name = models.CharField(verbose_name='姓名', max_length=16)
-    password = models.CharField(verbose_name='密码', max_length=64)
+    password = models.CharField(verbose_name='密码', max_length=128)
 
-    def save(self, *args, **kwargs):
-        # 对密码进行md5加密
-        self.password = md5(self.password)
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return self.name
 
 
 class Student(models.Model):
@@ -147,7 +162,7 @@ class Student(models.Model):
 
     id = models.CharField(verbose_name='学号', max_length=10, primary_key=True)
     name = models.CharField(verbose_name='姓名', max_length=16)
-    password = models.CharField(verbose_name='密码', max_length=64)
+    password = models.CharField(verbose_name='密码', max_length=128)
     pinyin = models.CharField(verbose_name='拼音', max_length=32, null=True)
 
     sex_choices = (
@@ -181,11 +196,6 @@ class Student(models.Model):
     )
     political = models.SmallIntegerField(verbose_name='政治面貌', choices=political_choices, default=0)
 
-    def save(self, *args, **kwargs):
-        # 对密码进行md5加密
-        self.password = md5(self.password)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.id
 
@@ -195,7 +205,7 @@ class Teacher(models.Model):
 
     id = models.CharField(verbose_name='教职员工编号', max_length=7, primary_key=True)
     name = models.CharField(verbose_name='姓名', max_length=16)
-    password = models.CharField(verbose_name='密码', max_length=64)
+    password = models.CharField(verbose_name='密码', max_length=128)
     pinyin = models.CharField(verbose_name='拼音', max_length=32, null=True)
 
     sex_choices = (
@@ -237,11 +247,6 @@ class Teacher(models.Model):
         (2, '党员'),
     )
     political = models.SmallIntegerField(verbose_name='政治面貌', choices=political_choices)
-
-    def save(self, *args, **kwargs):
-        # 对密码进行md5加密
-        self.password = md5(self.password)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.id

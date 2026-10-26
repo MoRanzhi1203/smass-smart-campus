@@ -1,169 +1,144 @@
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-from openpyxl.reader.excel import load_workbook
+"""班级信息后台。"""
+import urllib.parse
+
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.views.decorators.http import require_POST
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from app01 import models
 from app01.form.admin_inter import ClassesModelForm
-from app01.utils.formatchange import Delete_ForeignKey_id, row_delete, download_template
+from app01.services import accounts, crud, imports
+from app01.utils.authz import admin_required
 from app01.utils.pagination import Pagination
 
+SEARCH_FIELDS = (
+    'name',
+    'major__name',
+    'major__college__name',
+    'grade__name',
+    'counsellor__name',
+)
 
+STR_DICT = {'name_ch': '班级', 'name_en': 'classes'}
+
+
+@admin_required
 def classes_list(request):
     """ 班级列表 """
+    keyword = request.GET.get('search', '')
+    queryset = crud.apply_search(
+        models.Classes.objects.select_related(
+            'major', 'major__college', 'grade', 'counsellor'
+        ).order_by('id'),
+        SEARCH_FIELDS,
+        keyword,
+    )
 
-    # 构造搜索
-    data_dict = {}  # 声明变量
-    search_data = request.GET.get('search', '')  # 获取输入值
-    if search_data:
-        data_dict['name__contains'] = search_data  # 封装字典：包含输入值
-    # 根据搜索条件去数据库获取
-    queryset = models.Classes.objects.filter(**data_dict)
-
-    # 获取各字段的ModelForm方法bs样式
-    form = ClassesModelForm()
-
-    # 页面传参
-    str_dict = {
-        'name_ch': '班级',
-        'name_en': 'classes',
-    }
-
-    # 分页
     page_object = Pagination(request, queryset)
 
     context = {
-        'form': form,
-        'str_dict': str_dict,
-        'queryset': page_object.page_queryset,  # 分页数据
-        'page_string': page_object.html(),  # 生成页码
+        'form': ClassesModelForm(),
+        'str_dict': STR_DICT,
+        'endpoints': crud.build_endpoints('classes'),
+        'queryset': page_object.page_queryset,
+        'page_string': page_object.html(),
+        **crud.build_search_meta(SEARCH_FIELDS, keyword),
     }
-
     return render(request, 'admin/classes.html', context)
 
 
-@csrf_exempt
+@admin_required
+@require_POST
 def classes_add(request):
-    """ 添加班级（ajax请求） """
-
+    """ 添加班级（ajax 请求） """
     form = ClassesModelForm(data=request.POST)
-    if form.is_valid():
-        # 保存到数据库
-        form.save()
-        return JsonResponse({'status': True})
-
-    return JsonResponse({'status': False, 'error': form.errors})
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'error': form.errors})
+    form.save()
+    return JsonResponse({'status': True})
 
 
+@admin_required
 def classes_detail(request):
-    """ 根据ID获取教师信息 """
-
+    """ 根据主键获取班级信息 """
     uid = request.GET.get('uid')
-    # 获取匹配过滤条件的行数据
-    row_dict = models.Classes.objects.filter(id=uid).values().first()
-    print(row_dict)
-    if not row_dict:
-        return JsonResponse({'status': False, 'error': '数据不存在'})
-
-    # 对外键字段名最后附加的'_id'进行删除
-    Delete_ForeignKey_id(row_dict, models.Classes)
-    print(row_dict)
-
-    # 构建响应数据
-    result = {
-        'status': True,
-        'data': row_dict
-    }
-    return JsonResponse(result)
+    row = crud.row_detail_dict(models.Classes, uid)
+    if row is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
+    return JsonResponse({'status': True, 'data': row})
 
 
-@csrf_exempt
+@admin_required
+@require_POST
 def classes_edit(request):
-    """ 编辑班级（ajax请求） """
-
+    """ 编辑班级（ajax 请求） """
     uid = request.GET.get('uid')
-    row_object = models.Classes.objects.filter(id=uid).first()
+    instance = models.Classes.objects.filter(pk=uid).first()
+    if instance is None:
+        return JsonResponse({'status': False, 'tips': '数据不存在'}, status=404)
 
-    if not row_object:
-        return JsonResponse({'status': False, 'tips': '数据不存在'})
-
-    form = ClassesModelForm(data=request.POST, instance=row_object)
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'status': True})
-
-    return JsonResponse({'status': False, 'error': form.errors})
+    form = ClassesModelForm(data=request.POST, instance=instance)
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'error': form.errors})
+    form.save()
+    return JsonResponse({'status': True})
 
 
+@admin_required
+@require_POST
 def classes_delete(request):
-    """ 删除班级（ajax请求） """
-
-    uid = request.GET.get('uid')
-
-    return row_delete(uid, models.Classes)
+    """ 删除班级（ajax 请求） """
+    uid = request.GET.get('uid') or request.POST.get('uid')
+    return crud.delete_by_pk(models.Classes, uid, request)
 
 
+@admin_required
 def classes_download_template(request):
     """ 下载【批量添加班级】模版 """
+    workbook = Workbook()
+    sheet = workbook.active
+    for col_num, header in enumerate(imports.CLASSES_HEADERS, 1):
+        sheet['{}1'.format(get_column_letter(col_num))] = header
 
-    # 表头内容列表
-    headers = ['学院', '专业', '年级', '班级', '辅导员', '教师编号']
-
-    # 创建并下载表格
-    response = download_template(headers=headers, head_txt='班级')
-
+    filename = '班级信息批量导入模版.xlsx'
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
+        urllib.parse.quote(filename)
+    )
+    workbook.save(response)
     return response
 
 
+@admin_required
+@require_POST
 def classes_multi(request):
-    """ 批量添加班级信息（Excel文件上传） """
-
-    # 1.获取用户上传的文件
+    """ 批量添加班级信息（Excel 文件上传，整批原子） """
     file_object = request.FILES.get('excel_template')
+    try:
+        result = imports.import_classes(file_object)
+    except imports.SheetError as exc:
+        result = imports.ImportResult(errors=[str(exc)])
 
-    if file_object:
-        # 2.对象传递给 openpyxl，由 openpyxl 读取文件的内容
-        workbook = load_workbook(file_object)
-        sheet = workbook.active  # 获取活动（当前显示）的工作表
-
-        tmp_list = []
-        # 3.循环获取每一行数据，values_only=True 只返回单元格的值
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            # 获取每个值
-
-            major_name = row[1]
-            major = models.Major.objects.get(name=major_name)
-
-            grade_name = row[2]
-            grade = models.Grade.objects.get(name=grade_name)
-
-            name = row[3]
-
-            counsellor_id = row[5]
-            counsellor = models.Teacher.objects.get(id=counsellor_id)
-
-            data = {
-                'major': major,
-                'grade': grade,
-                'name': name,
-                'counsellor': counsellor,
-            }
-
-            # 判断该值是否存在
-            exists = models.Classes.objects.filter(major=major, name=name).exists()
-            if not exists:
-                # 追加数据行
-                tmp_list.append(models.Classes(**data))
-
-            # 添加到数据库
-        models.Classes.objects.bulk_create(tmp_list)
-
-    return redirect('/admin/classes/list/')
+    return render(request, 'admin/import_result.html', {
+        'str_dict': STR_DICT,
+        'result': result,
+        'list_url': '/admin/classes/list/',
+        'template_url': '/admin/classes/download/template/',
+    })
 
 
+@admin_required
+@require_POST
 def all_delete(request):
-    """ 清空班级表 """
-
-    models.Classes.objects.all().delete()
-
-    return redirect('/admin/classes/list/')
+    """ 清空班级表（高危操作，需显式 confirm=YES） """
+    if request.POST.get('confirm') != 'YES':
+        return JsonResponse(
+            {'status': False, 'error': '高危操作：需要显式提交 confirm=YES'}, status=400
+        )
+    deleted, _ = models.Classes.objects.all().delete()
+    accounts.log_action(request, 'bulk_delete', None, detail='model=Classes rows={}'.format(deleted))
+    return JsonResponse({'status': True, 'deleted': deleted})

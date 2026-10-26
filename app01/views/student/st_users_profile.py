@@ -1,92 +1,87 @@
+"""学生个人主页与改密。"""
 import re
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 
 from app01 import models
 from app01.form.admin_inter import StuChangePassModelForm
-from app01.utils.encrypt import md5
+from app01.services import accounts
+from app01.utils.authz import student_required
+
+#: 业务规定的密码格式（保持与历史前端提示一致）
+_PASSWORD_PATTERN = re.compile(r'^[a-zA-Z0-9]+$')
+_PASSWORD_MIN_LEN = 6
+_PASSWORD_MAX_LEN = 10
 
 
+@student_required
 def student_users_profile(request):
-    """ 显示学生个人主页 """
+    """ 显示学生个人主页（身份只取自服务端会话） """
+    uid = (request.session.get('info') or {}).get('id')
 
-    uid = request.session['info'].get('id')
-
-    # 将对象转换为字典
-    row_dict = models.Student.objects.filter(id=uid)
-
-    # 获取各字段的ModelForm方法bs样式
-    form = StuChangePassModelForm()
-
-    committee_dict = models.ClassCommittee.objects.filter(id=uid)
-    duties_dict = models.LeagueCadres.objects.filter(id=uid)
+    student = (
+        models.Student.objects
+        .select_related('classes', 'classes__major', 'classes__major__college')
+        .filter(pk=uid)
+        .first()
+    )
 
     context = {
-        'data': row_dict,
-        'form': form,
-        'committee_dict': committee_dict,
-        'duties_dict': duties_dict,
+        'data': [student] if student else [],
+        'form': StuChangePassModelForm(),
+        'committee_dict': models.ClassCommittee.objects.filter(id=uid),
+        'duties_dict': models.LeagueCadres.objects.select_related('department').filter(id=uid),
     }
-
-    print(context)
-
     return render(request, 'student/users-profile.html', context)
 
 
+@student_required
+@require_POST
 def student_change_password(request):
-    """ 学生账号修改密码 """
+    """ 学生账号修改密码
 
-    # 获取该用户在Student表中的'id'
-    uid = request.session.get('info')['id']
-    # print(uid)
+    - 原密码校验走 ``accounts.verify_password``（兼容历史 MD5 并自动升级）；
+    - 新密码统一由 ``accounts.set_password`` 编码，绝不明文入库。
+    """
+    uid = (request.session.get('info') or {}).get('id')
+    student = models.Student.objects.filter(pk=uid).first()
+    if student is None:
+        return JsonResponse({'status': False, 'error': '账号不存在'}, status=404)
 
-    # 接收表单传值：password, new_password, confirm_password
     form = StuChangePassModelForm(data=request.POST)
-    print(form)
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'error': form.errors})
 
-    # 0.检验表单是否有效
-    if form.is_valid():
-        # 获取在Student表中的原密码
-        row_password = models.Student.objects.filter(id=uid).values('password').first()
+    past_password = form.cleaned_data['past_password']
+    new_password = form.cleaned_data['new_password']
+    confirm_password = form.cleaned_data['confirm_password']
 
-        past_password = form.data['past_password']
-        # 对表单传值的原密码进行加密
-        past_password_md5 = md5(past_password)
+    # 1. 原密码是否正确
+    if not accounts.verify_password(student, past_password):
+        return JsonResponse({'status': False, 'error': '原密码错误', 'tips': 1})
 
-        # 1.检验表单传值的原密码是否正确
-        if not row_password['password'] == past_password_md5:
-            return JsonResponse({'status': False, 'error': '原密码错误', 'tips': 1})
-        else:
-            new_password = form.data['new_password']
+    # 2. 新旧密码是否重复
+    if past_password == new_password:
+        return JsonResponse({'status': False, 'error': '新旧密码重复', 'tips': 2})
 
-            # 2.检验表单传值的新旧密码是否重复
-            if past_password == new_password:
-                return JsonResponse({'status': False, 'error': '新旧密码重复', 'tips': 2})
-            else:
-                confirm_password = form.data['confirm_password']
+    # 3. 两次输入是否一致
+    if new_password != confirm_password:
+        return JsonResponse({'status': False, 'error': '两次输入不一致', 'tips': 3})
 
-                # 3.检验表单传值的new_password与confirm_password是否一致
-                if not new_password == confirm_password:
-                    return JsonResponse({'status': False, 'error': '两次输入不一致', 'tips': 3})
+    # 4. 长度与字符集
+    if not (_PASSWORD_MIN_LEN <= len(new_password) <= _PASSWORD_MAX_LEN):
+        return JsonResponse(
+            {'status': False, 'error': '密码应为{}-{}位'.format(_PASSWORD_MIN_LEN, _PASSWORD_MAX_LEN),
+             'tips': 4}
+        )
+    if not _PASSWORD_PATTERN.match(new_password):
+        return JsonResponse(
+            {'status': False, 'error': '密码仅包含数字与大小写字母', 'tips': 4}
+        )
 
-                # 4.检验新密码是否为6到10位
-                elif len(new_password) < 6 or len(new_password) > 10:
-                    return JsonResponse({'status': False, 'error': '密码应为6-10位', 'tips': 4})
-
-                else:
-                    pattern = r'^[a-zA-Z0-9]+$'
-                    match = re.match(pattern, new_password)
-
-                    # 5.检验新密码是否仅包含数字与大小写字母
-                    if not match:
-                        return JsonResponse({'status': False, 'error': '密码仅包含数字与大小写字母', 'tips': 4})
-
-                    else:
-                        # 修改密码至 Student数据表
-                        student = models.Student.objects.get(id=uid)
-                        student.password = new_password
-                        student.save()
-                        return JsonResponse({'status': True})
-
-    return JsonResponse({'status': False, 'error': form.errors})
+    # 5. 落库（官方哈希）
+    accounts.set_password(student, new_password)
+    accounts.log_action(request, 'password_change', student)
+    return JsonResponse({'status': True})

@@ -3,9 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8"/>
-    <title>
-
-    </title>
+    <title>{% block title %}{{ str_dict.name_ch }}{% endblock %} - SMASS</title>
 
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/css/bootstrap.css' %}"/>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff' %}"/>
@@ -22,32 +20,31 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/login/">SMASS</a>
+            <a class="navbar-brand" href="{% url 'login' %}">SMASS</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="/admin/admin/list/">管理员信息</a></li>
-                <li><a href="/admin/student/list/">学生信息</a></li>
-                <li><a href="/admin/teacher/list/">教师信息</a></li>
-                <li><a href="/admin/classes/list/">班级信息</a></li>
-                <li><a href="/admin/college/list/">学院信息</a></li>
-                <li><a href="/admin/major/list/">专业信息</a></li>
-                <li><a href="/admin/department/list/">部门信息</a></li>
-                <li><a href="/admin/leagueCadres/list/">团学干部</a></li>
-                <li><a href="/admin/classCommittee/list/">班委干部</a></li>
-                <li><a href="#">楼栋信息</a></li>
-                <li><a href="#">商家信息</a></li>
+                <li><a href="{% url 'admin_admin_list' %}">管理员信息</a></li>
+                <li><a href="{% url 'admin_student_list' %}">学生信息</a></li>
+                <li><a href="{% url 'admin_teacher_list' %}">教师信息</a></li>
+                <li><a href="{% url 'admin_classes_list' %}">班级信息</a></li>
+                <li><a href="{% url 'admin_college_list' %}">学院信息</a></li>
+                <li><a href="{% url 'admin_major_list' %}">专业信息</a></li>
+                <li><a href="{% url 'admin_department_list' %}">部门信息</a></li>
+                <li><a href="{% url 'admin_leagueCadres_list' %}">团学干部</a></li>
+                <li><a href="{% url 'admin_classCommittee_list' %}">班委干部</a></li>
+                {# 以下模块尚未实现，明确标注为未启用，避免出现 404 死链 #}
+                <li class="disabled"><a href="#" title="该模块尚未实现">楼栋信息（未启用）</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">{{ request.session.info.name }}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">个人资料</a></li>
-                        <li><a href="#">我的信息</a></li>
+                        <li class="disabled"><a href="#">个人资料（未启用）</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="/logout/">注销</a></li>
+                        <li><a href="{% url 'logout' %}">注销</a></li>
                     </ul>
                 </li>
             </ul>
@@ -60,7 +57,7 @@
     <!-- 表格内容 -->
     {% block table %}{% endblock %}
 
-    <!-- 新建/编辑 订单（对话框） -->
+    <!-- 新建/编辑 对话框 -->
     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -123,12 +120,12 @@
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">批量导入-{{ str_dict.name_ch }}信息</h4>
                 </div>
-                <form id="fromMulti" method="post" enctype="multipart/form-data"
-                      action="/admin/{{ str_dict.name_en }}/multi/">
+                <form id="formMulti" method="post" enctype="multipart/form-data" action="{{ endpoints.multi }}">
                     <div class="modal-body">
                         {% csrf_token %}
                         <div class="form-group">
-                            <input type="file" name="excel_template"/>
+                            <input type="file" name="excel_template" required
+                                   accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -142,10 +139,39 @@
 
 </div>
 
+{# 接口地址由服务端命名路由生成，模板不再用字符串拼 URL（历史串台根因） #}
+{% if endpoints %}{{ endpoints|json_script:"dsh-endpoints" }}{% endif %}
+
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'plugins/bootstrap-3.4.1-dist/js/bootstrap.js' %}"></script>
 
 <script>
+    // ---- 服务端命名路由生成的接口地址 ----
+    const ENDPOINTS = (function () {
+        const el = document.getElementById('dsh-endpoints');
+        if (!el) return {};
+        try {
+            return JSON.parse(el.textContent) || {};
+        } catch (e) {
+            return {};
+        }
+    })();
+
+    /**
+     * 取 CSRF 令牌：优先用表单里的 hidden input，其次读 cookie。
+     * 所有写操作（POST）都必须带上，后端已不再使用 csrf_exempt。
+     */
+    function getCsrfToken() {
+        const input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (input && input.value) return input.value;
+        const match = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
+        return match ? decodeURIComponent(match[2]) : '';
+    }
+
+    $.ajaxSetup({
+        headers: {'X-CSRFToken': getCsrfToken()}
+    });
+
     // 声明变量 预删除ID
     let DELETE_ID;
     // 声明变量 预修改ID
@@ -153,19 +179,12 @@
 
     $(function () {
         bindBtnAddEvent();
-
         bindBtnEditEvent();
-
         bindBtnSaveEvent();
-
         bindBtnDeleteEvent();
-
         bindBtnConfirmDeleteEvent();
-
         binBtnResetPassEvent();
-
         bindBtnConfirmResetPassEvent();
-
         bindBtnMultiEvent();
     })
 
@@ -198,20 +217,22 @@
             $('.error-msg').text('');
 
             EDIT_ID = $(this).attr('uid');
-            // 发送Ajax去后端获取当前的相关数据   /admin/XXX/detail/?uid=123
+            // 发送Ajax去后端获取当前的相关数据
             $.ajax({
-                url: '/admin/{{ str_dict.name_en }}/detail/',
-                type: 'get',
+                url: ENDPOINTS.detail,
+                type: 'GET',
                 data: {
                     uid: EDIT_ID,
                 },
                 dataType: 'JSON',
                 success: function (res) {
                     if (res.status) {
-                        console.log(res);
                         // 将数据赋值到对话框中的标签中
                         $.each(res.data, function (name, value) {
-                            $('#id_' + name).val(value);
+                            const $field = $('#id_' + name);
+                            if ($field.length) {
+                                $field.val(value);
+                            }
                         });
                         // 设置对话框的标题
                         $('#updateModalLabel').text('编辑{{ str_dict.name_ch }}');
@@ -219,7 +240,7 @@
                         // 点击编辑，显示对话框
                         $('#updateModal').modal('show');
                     } else {
-                        alert(res.error);
+                        alert(res.error || res.tips);
                     }
                 },
             });
@@ -234,10 +255,8 @@
             // 清除错误信息
             $('.error-msg').empty();
             if (EDIT_ID) {
-                // 编辑
                 doEdit();
             } else {
-                // 添加
                 doAdd();
             }
         });
@@ -247,30 +266,26 @@
      * 添加-ajax
      */
     function doAdd() {
-        // 向后台发送请求（添加的Ajax请求）
         $.ajax({
-            url: '/admin/{{ str_dict.name_en }}/add/',
-            type: 'post',
+            url: ENDPOINTS.add,
+            type: 'POST',
             data: $('#formAdd').serialize(),
             dataType: 'JSON',
             success: function (res) {
                 if (res.status) {
-                    // 清空表单 $('#formAdd')是jQuery对象 -> $('#formAdd')[0]是DOM对象
                     $('#formAdd')[0].reset();
-
-                    // 关闭对话框
                     $('#updateModal').modal('hide');
 
-                    // 刷新页面
+                    // 新建账号若后端生成了随机初始密码，只在此处展示一次
+                    if (res.initial_password) {
+                        alert('初始密码：' + res.initial_password + '\n请立即转告本人，并提醒登录后修改。');
+                    }
                     location.reload();
                 } else {
                     if (res.tips) {
                         alert(res.tips);
                     } else {
-                        // 将错误信息显示在对话框中
-                        $.each(res.error, function (name, errorList) {
-                            $('#id_' + name).next().text(errorList[0]);
-                        });
+                        showFormErrors(res.error);
                     }
                 }
             },
@@ -278,32 +293,45 @@
     }
 
     /**
-     * 编辑-ajax
+     * 编辑-ajax（密码留空表示不修改）
      */
     function doEdit() {
-        // 向后台发送请求（编辑的Ajax请求）
         $.ajax({
-            url: '/admin/{{ str_dict.name_en }}/edit/' + '?uid=' + EDIT_ID,
-            type: 'post',
+            url: ENDPOINTS.edit + '?uid=' + encodeURIComponent(EDIT_ID),
+            type: 'POST',
             data: $('#formAdd').serialize(),
             dataType: 'JSON',
             success: function (res) {
                 if (res.status) {
-                    // 清空表单 $('#formAdd')是jQuery对象 -> $('#formAdd')[0]是DOM对象
                     $('#formAdd')[0].reset();
-
-                    // 关闭对话框
                     $('#updateModal').modal('hide');
-
-                    // 刷新页面
                     location.reload();
                 } else {
-                    // 将错误信息显示在对话框中
-                    $.each(res.error, function (name, errorList) {
-                        $('#id_' + name).next().text(errorList[0]);
-                    });
+                    if (res.tips) {
+                        alert(res.tips);
+                    } else {
+                        showFormErrors(res.error);
+                    }
                 }
             },
+        });
+    }
+
+    /**
+     * 把后端字段错误显示到对应输入框下方
+     */
+    function showFormErrors(errors) {
+        if (typeof errors === 'string') {
+            alert(errors);
+            return;
+        }
+        $.each(errors || {}, function (name, errorList) {
+            const $field = $('#id_' + name);
+            if ($field.length) {
+                $field.next().text(errorList[0]);
+            } else {
+                alert(name + ': ' + errorList[0]);
+            }
         });
     }
 
@@ -312,35 +340,28 @@
      */
     function bindBtnDeleteEvent() {
         $('.btn-delete').click(function () {
-            // 显示删除对话框
             $('#deleteModal').modal('show');
-
-            // 获取当前行的ID，并赋值给全局变量。
             DELETE_ID = $(this).attr('uid');
         });
     }
 
     /**
-     * 确定删除事件
+     * 确定删除事件（POST + CSRF，避免 GET 被预取/伪造触发）
      */
     function bindBtnConfirmDeleteEvent() {
         $('#btnConfirmDelete').click(function () {
-            // 点击确认删除按钮，将全局变量中设置的那个预删除ID发送到后台
             $.ajax({
-                // url => /admin/XXX/delete/?123
-                url: '/admin/{{ str_dict.name_en }}/delete/',
-                type: 'GET',
+                url: ENDPOINTS.delete,
+                type: 'POST',
                 data: {
                     uid: DELETE_ID,
                 },
                 dataType: 'JSON',
                 success: function (res) {
                     if (res.status) {
-                        // 删除后页面刷新
                         location.reload();
                     } else {
-                        // 删除失败
-                        alert(res.error);
+                        alert(res.error || res.tips);
                     }
                 },
             });
@@ -352,16 +373,12 @@
      */
     function binBtnResetPassEvent() {
         $('.btn-reset').click(function () {
-            // 显示重置密码对话框
             $('#resetPassModal').modal('show');
 
-            // 获取当前行的ID，并赋值给全局变量。
             EDIT_ID = $(this).attr('uid');
 
-            // 获取该数据行的账号类型与用户名，并赋值于对话框标题
             $.ajax({
-                // url => /admin/XXX/obtain/?123
-                url: '/admin/{{ str_dict.name_en }}/obtain/',
+                url: ENDPOINTS.obtain,
                 type: 'GET',
                 data: {
                     uid: EDIT_ID,
@@ -369,11 +386,12 @@
                 dataType: 'JSON',
                 success: function (res) {
                     if (res.status) {
-                        // 设置对话框的标题
-                        $('#pText').text('是否确认 重置{{ str_dict.name_ch }}账号-' + res.data.name + ' 的密码为 身份证后六位');
+                        $('#pText').text(
+                            '是否确认重置{{ str_dict.name_ch }}账号-' + res.data.name + ' 的密码？'
+                            + '系统将生成随机一次性密码并显示一次。'
+                        );
                     } else {
-                        // 获取失败
-                        alert(res.error);
+                        alert(res.error || res.tips);
                     }
                 },
             });
@@ -385,22 +403,20 @@
      */
     function bindBtnConfirmResetPassEvent() {
         $('#btnConfirmResetPass').click(function () {
-            // 获取该数据行的账号类型与用户名，并赋值于对话框标题
             $.ajax({
-                // url => /admin/XXX/resetPass/?123
-                url: '/admin/{{ str_dict.name_en }}/resetPass/',
-                type: 'GET',
+                url: ENDPOINTS.resetPass,
+                type: 'POST',
                 data: {
                     uid: EDIT_ID,
                 },
                 dataType: 'JSON',
                 success: function (res) {
                     if (res.status) {
-                        // 重置密码后页面刷新
+                        $('#resetPassModal').modal('hide');
+                        alert('新密码：' + res.password + '\n请立即转告本人，并提醒登录后修改。');
                         location.reload();
                     } else {
-                        // 获取失败
-                        alert(res.error);
+                        alert(res.error || res.tips);
                     }
                 },
             });
@@ -412,7 +428,6 @@
      */
     function bindBtnMultiEvent() {
         $('#btnMulti').click(function () {
-            // 点击新建按钮，显示对话框
             $('#multiModal').modal('show');
         });
     }

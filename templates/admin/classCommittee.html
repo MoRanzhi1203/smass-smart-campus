@@ -4,10 +4,13 @@
     <div style="margin-bottom: 10px">
         <!-- 新建按钮 -->
         <input id="btnAdd" type="button" value="新建{{ str_dict.name_ch }}" class="btn btn-primary">
-        <!-- 批量导入 -->
-        <input id="btnMulti" type="button" value="批量导入" class="btn btn-primary">
-        <!-- 批量导入模版下载 -->
-        <a href="/admin/{{ str_dict.name_en }}/download/template/" style="margin-left: 5px;">下载模版</a>
+        {# 该模块尚未实现批量导入，隐藏入口避免死链 #}
+        {% if endpoints.multi %}
+            <input id="btnMulti" type="button" value="批量导入" class="btn btn-primary">
+            {% if endpoints.template %}
+                <a href="{{ endpoints.template }}" style="margin-left: 5px;">下载模版</a>
+            {% endif %}
+        {% endif %}
 
         <!-- 搜索框 -->
         <div style="float: right; width: 300px">

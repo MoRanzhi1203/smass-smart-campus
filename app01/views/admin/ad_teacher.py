@@ -1,274 +1,168 @@
-import re
+"""教师信息后台。"""
+import urllib.parse
 
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-from openpyxl.reader.excel import load_workbook
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.views.decorators.http import require_POST
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from app01 import models
 from app01.form.admin_inter import TeacherModelForm
-from app01.utils.encrypt import md5
-from app01.utils.formatchange import Delete_ForeignKey_id, row_delete, row_obtain, download_template
+from app01.services import accounts, crud, imports
+from app01.utils.authz import admin_required
 from app01.utils.pagination import Pagination
 
+SEARCH_FIELDS = ('name', 'id', 'college__name')
 
+STR_DICT = {'name_ch': '教师', 'name_en': 'teacher'}
+
+
+@admin_required
 def teacher_list(request):
     """ 教师列表 """
+    keyword = request.GET.get('search', '')
+    queryset = crud.apply_search(
+        models.Teacher.objects.select_related('college').order_by('id'),
+        SEARCH_FIELDS,
+        keyword,
+    )
 
-    # 构造搜索
-    data_dict = {}  # 声明变量
-    search_data = request.GET.get('search', '')  # 获取输入值
-    if search_data:
-        data_dict['name__contains'] = search_data  # 封装字典：包含输入值
-    # 根据搜索条件去数据库获取
-    queryset = models.Teacher.objects.filter(**data_dict)
-
-    # 获取各字段的ModelForm方法bs样式
-    form = TeacherModelForm()
-
-    # 页面传参
-    str_dict = {
-        'name_ch': '教师',
-        'name_en': 'teacher',
-    }
-
-    # 分页
     page_object = Pagination(request, queryset)
 
     context = {
-        'form': form,
-        'str_dict': str_dict,
-        'queryset': page_object.page_queryset,  # 分页数据
-        'page_string': page_object.html(),  # 生成页码
+        'form': TeacherModelForm(),
+        'str_dict': STR_DICT,
+        'endpoints': crud.build_endpoints('teacher'),
+        'queryset': page_object.page_queryset,
+        'page_string': page_object.html(),
+        **crud.build_search_meta(SEARCH_FIELDS, keyword),
     }
-
     return render(request, 'admin/teacher.html', context)
 
 
-@csrf_exempt
+@admin_required
+@require_POST
 def teacher_add(request):
-    """ 添加教师（ajax请求） """
-
+    """ 添加教师（ajax 请求） """
     form = TeacherModelForm(data=request.POST)
-    if form.is_valid():
-        # 保存到数据库
-        form.save()
-        return JsonResponse({'status': True})
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'error': form.errors})
 
-    return JsonResponse({'status': False, 'error': form.errors})
+    account, raw_password, generated = accounts.save_account_form(
+        form, models.Teacher, request=request
+    )
 
-
-def teacher_detail(request):
-    """ 根据ID获取教师信息 """
-
-    uid = request.GET.get('uid')
-    # 获取匹配过滤条件的行数据
-    row_dict = models.Teacher.objects.filter(id=uid).values().first()
-    # print(row_dict)
-    if not row_dict:
-        return JsonResponse({'status': False, 'error': '数据不存在'})
-
-    # 对外键字段名最后附加的'_id'进行删除
-    Delete_ForeignKey_id(row_dict, models.Teacher)
-    # print(row_dict)
-
-    # 构建响应数据
-    result = {
-        'status': True,
-        'data': row_dict
-    }
+    result = {'status': True}
+    if generated:
+        result['initial_password'] = raw_password
     return JsonResponse(result)
 
 
-@csrf_exempt
+@admin_required
+def teacher_detail(request):
+    """ 根据主键获取教师信息（不返回密码哈希） """
+    uid = request.GET.get('uid')
+    row = crud.row_detail_dict(models.Teacher, uid, exclude=('password',))
+    if row is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
+    return JsonResponse({'status': True, 'data': row})
+
+
+@admin_required
+@require_POST
 def teacher_edit(request):
-    """ 编辑教师（ajax请求） """
-
+    """ 编辑教师（ajax 请求；密码留空表示不修改） """
     uid = request.GET.get('uid')
-    row_object = models.Teacher.objects.filter(id=uid).first()
+    instance = models.Teacher.objects.filter(pk=uid).first()
+    if instance is None:
+        return JsonResponse({'status': False, 'tips': '数据不存在'}, status=404)
 
-    if not row_object:
-        return JsonResponse({'status': False, 'tips': '数据不存在'})
+    form = TeacherModelForm(data=request.POST, instance=instance)
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'error': form.errors})
 
-    form = TeacherModelForm(data=request.POST, instance=row_object)
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'status': True})
-
-    return JsonResponse({'status': False, 'error': form.errors})
-
-
-def teacher_delete(request):
-    """ 删除教师（ajax请求） """
-
-    uid = request.GET.get('uid')
-
-    return row_delete(uid, models.Teacher)
-
-
-def teacher_obtain(request):
-    """ 获取重置教师信息 """
-
-    uid = request.GET.get('uid')
-
-    return row_obtain(uid, models.Teacher)
-
-
-def teacher_resetPass(request):
-    """ 重置教师账号密码 """
-
-    uid = request.GET.get('uid')
-    reset = models.Teacher.objects.get(id=uid)
-    # 重置密码为身份证后六位，并 md5加密
-    reset.password = md5(reset.cardID[-6:])
-    # 保存至数据库
-    reset.save()
-
-    # 密码重置成功
+    accounts.save_account_form(form, models.Teacher, instance=instance, request=request)
     return JsonResponse({'status': True})
 
 
+@admin_required
+@require_POST
+def teacher_delete(request):
+    """ 删除教师（ajax 请求） """
+    uid = request.GET.get('uid') or request.POST.get('uid')
+    return crud.delete_by_pk(models.Teacher, uid, request)
+
+
+@admin_required
+def teacher_obtain(request):
+    """ 获取重置密码前的确认信息（仅工号与姓名） """
+    uid = request.GET.get('uid')
+    row = models.Teacher.objects.filter(pk=uid).values('id', 'name').first()
+    if row is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
+    return JsonResponse({'status': True, 'data': row})
+
+
+@admin_required
+@require_POST
+def teacher_resetPass(request):
+    """ 重置教师密码（随机一次性密码，返回一次） """
+    uid = request.GET.get('uid') or request.POST.get('uid')
+    instance = models.Teacher.objects.filter(pk=uid).first()
+    if instance is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
+
+    raw_password = accounts.reset_password(instance, request=request)
+    return JsonResponse({'status': True, 'password': raw_password})
+
+
+@admin_required
 def teacher_download_template(request):
     """ 下载【批量添加教师信息】模版 """
+    workbook = Workbook()
+    sheet = workbook.active
+    for col_num, header in enumerate(imports.TEACHER_HEADERS, 1):
+        sheet['{}1'.format(get_column_letter(col_num))] = header
 
-    # 表头内容列表
-    headers = '教师编号、姓名、拼音、性别、民族、身份证号码、手机号、QQ号、详细地址、入职时间、教师职务、院系、政治面貌'.split('、')
-
-    # 创建并下载表格
-    response = download_template(headers=headers, head_txt='教师')
-
+    filename = '教师信息批量导入模版.xlsx'
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
+        urllib.parse.quote(filename)
+    )
+    workbook.save(response)
     return response
 
 
+@admin_required
+@require_POST
 def teacher_multi(request):
-    """ 批量添加教师信息（Excel文件上传） """
-
-    # 1.获取用户上传的文件
+    """ 批量添加教师信息（Excel 文件上传，整批原子） """
     file_object = request.FILES.get('excel_template')
+    try:
+        result = imports.import_teachers(file_object)
+    except imports.SheetError as exc:
+        result = imports.ImportResult(errors=[str(exc)])
 
-    if file_object:
-
-        # 2.对象传递给 openpyxl，由 openpyxl 读取文件的内容
-        workbook = load_workbook(file_object)
-        sheet = workbook.active  # 获取活动（当前显示）的工作表
-
-        tmp_teacher_list = []
-        tmp_teacherPosition_list = []
-        # 3.循环获取每一行数据，values_only=True 只返回单元格的值
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            # print(row)
-            id = row[0]
-            name = row[1]
-            pinyin = row[2]
-
-            sex_determine = row[3]
-            if sex_determine == '男':
-                sex = 0
-            elif sex_determine == '女':
-                sex = 1
-            else:
-                # 处理未知性别值的情况
-                sex = None
-
-            nation = row[4]
-
-            cardID = str(row[5])
-            phone = str(row[6])
-            qq = str(row[7])
-
-            password = md5('123456')
-
-            address = row[8]
-            entry_time = row[9]
-
-            # 清除字符串中的空格
-            position_string = row[10].replace(" ", "")
-            # 根据中文逗号和英文逗号分割字符串为列表
-            position_list = re.split(r"[,，]", position_string)
-            # 创建一个空列表来保存外键值
-            position_ids = []
-            # 遍历 position_list 列表
-            for position_name in position_list:
-                # 根据 name 属性获取 Position 实例
-                position = models.Position.objects.get(name=position_name)
-                # 获取 Position 实例的外键值并添加到 position_ids 列表中
-                position_ids.append(position.id)
-
-            college_name = row[11]
-            college = models.College.objects.get(name=college_name)
-
-            political_determine = row[12]
-            if political_determine == '群众':
-                political = 0
-            elif political_determine == '团员':
-                political = 1
-            elif political_determine == '党员':
-                political = 2
-            else:
-                # 处理未知性别值的情况
-                political = None
-
-            # print(position_ids)
-
-            data = {
-                'id': id,
-                'name': name,
-                'password': password,
-                'pinyin': pinyin,
-                'sex': sex,
-                'nation': nation,
-                'cardID': cardID,
-                'phone': phone,
-                'qq': qq,
-                'address': address,
-                'entry_time': entry_time,
-                # 'position': position_ids,
-                'college': college,
-                'political': political,
-            }
-
-            exists = models.Teacher.objects.filter(id=id).exists()
-            if not exists:
-                # 追加数据行
-                tmp_teacher_list.append(models.Teacher(**data))
-
-            print(position_ids)
-            for ele in position_ids:
-                data_teaPos = {
-                    'teacher_id': id,
-                    'position_id': ele,
-                }
-
-                exists_tp = models.TeacherPosition.objects.filter(teacher_id=id, position_id=ele).exists()
-
-                if not exists_tp:
-                    # 追加数据行
-                    tmp_teacherPosition_list.append(models.TeacherPosition(**data_teaPos))
-
-        # 添加到数据库
-        models.Teacher.objects.bulk_create(tmp_teacher_list)
-        models.TeacherPosition.objects.bulk_create(tmp_teacherPosition_list)
-
-        # # 获取 ModelA 的实例
-        # position_id = models.Position.objects.get(id=model_a_id)
-        # # 创建多对多关系对象的列表
-        # modela_modelb_instances = []
-        # # 遍历 ModelB 实例列表
-        # for teacher_id in models.Teacher.objects:
-        #     # 创建中间表对象，设置关联字段
-        #     modela_modelb_instance = models.TeacherPosition(teacher=teacher_id, position = position_id)
-        #     # 将对象添加到列表中
-        #     modela_modelb_instances.append(modela_modelb_instance)
-        #
-        # # 使用 bulk_create() 方法将多对多关系的对象列表一次性批量添加到中间表
-        # models.TeacherPosition.objects.bulk_create(modela_modelb_instances)
-
-        return redirect('/admin/teacher/list/')
+    return render(request, 'admin/import_result.html', {
+        'str_dict': STR_DICT,
+        'result': result,
+        'list_url': '/admin/teacher/list/',
+        'template_url': '/admin/teacher/download/template/',
+    })
 
 
+@admin_required
+@require_POST
 def all_delete(request):
-    """ 清空教师表 """
+    """ 清空教师表（高危操作，需显式 confirm=YES 二次确认） """
+    if request.POST.get('confirm') != 'YES':
+        return JsonResponse(
+            {'status': False, 'error': '高危操作：需要显式提交 confirm=YES'}, status=400
+        )
 
-    models.Teacher.objects.all().delete()
-
-    return redirect('/admin/teacher/list/')
+    deleted, _ = models.Teacher.objects.all().delete()
+    accounts.log_action(request, 'bulk_delete', None, detail='model=Teacher rows={}'.format(deleted))
+    return JsonResponse({'status': True, 'deleted': deleted})

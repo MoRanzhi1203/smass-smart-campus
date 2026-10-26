@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8"/>
-    <title>Title</title>
+    <title>SMASS - 校园服务与管理系统</title>
 
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff' %}">
@@ -47,6 +47,24 @@
             letter-spacing: 4px; /* 汉字间距 */
         }
 
+        /* 未实现模块：不可点击，明确标注 */
+        .role-disabled {
+            cursor: not-allowed;
+            opacity: .45;
+            filter: grayscale(100%);
+        }
+
+        .role-disabled:hover {
+            background-color: transparent;
+        }
+
+        .role-badge {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -55,7 +73,7 @@
     <div class="container-fluid container">
         <div class="page-header">
             <h1>SMASS <small>校园服务与管理系统</small>
-                <span>管理员<a href="/admin/admin/list" class="text-muted">登录</a>入口</span>
+                <span>管理员<a href="{% url 'login_admin' %}" class="text-muted">登录</a>入口</span>
             </h1>
         </div>
     </div>
@@ -63,44 +81,49 @@
 
 <section class="container">
     <div class="row">
+        <!-- 学生 -->
         <div class="col-sm-6 col-md-3">
             <div class="thumbnail">
-                <a href="/student/users/profile/">
-                    <img alt="" src="{% static 'img/login/student.png' %}">
+                <a href="{% url 'login_student' %}">
+                    <img alt="学生登录" src="{% static 'img/login/student.png' %}">
                     <div class="caption">
                         <h3>学生</h3>
                     </div>
                 </a>
             </div>
         </div>
+
+        <!-- 教师 -->
         <div class="col-sm-6 col-md-3">
             <div class="thumbnail">
-                <a href="/teacher/basic/">
-                    <img alt="" src="{% static 'img/login/teacher.png' %}">
+                <a href="{% url 'login_teacher' %}">
+                    <img alt="教师登录" src="{% static 'img/login/teacher.png' %}">
                     <div class="caption">
                         <h3>教师</h3>
                     </div>
                 </a>
             </div>
         </div>
+
+        <!-- 宿管：业务尚未实现，隐藏可点击入口并标注 -->
         <div class="col-sm-6 col-md-3">
-            <div class="thumbnail">
-                <a href="/housemaster/basic/">
-                    <img alt="" src="{% static 'img/login/housemaster.png' %}">
-                    <div class="caption">
-                        <h3>宿管</h3>
-                    </div>
-                </a>
+            <div class="thumbnail role-disabled" title="该模块尚未开放">
+                <img alt="宿管（未启用）" src="{% static 'img/login/housemaster.png' %}">
+                <div class="caption">
+                    <h3>宿管</h3>
+                    <span class="role-badge">未启用</span>
+                </div>
             </div>
         </div>
+
+        <!-- 商家：业务尚未实现，隐藏可点击入口并标注 -->
         <div class="col-sm-6 col-md-3">
-            <div class="thumbnail">
-                <a href="/business/basic/">
-                    <img alt="" src="{% static 'img/login/business.png' %}">
-                    <div class="caption">
-                        <h3>商家</h3>
-                    </div>
-                </a>
+            <div class="thumbnail role-disabled" title="该模块尚未开放">
+                <img alt="商家（未启用）" src="{% static 'img/login/business.png' %}">
+                <div class="caption">
+                    <h3>商家</h3>
+                    <span class="role-badge">未启用</span>
+                </div>
             </div>
         </div>
     </div>
