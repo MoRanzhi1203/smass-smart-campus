@@ -1,0 +1,78 @@
+{% extends 'layout/admin.html' %}
+
+{% block table %}
+    <div style="margin-bottom: 10px">
+        <!-- 新建按钮 -->
+        <input id="btnAdd" type="button" value="新建{{ str_dict.name_ch }}" class="btn btn-primary">
+        <!-- 批量导入 -->
+        <input type="button" value="批量导入" class="btn btn-primary">
+
+        <!-- 搜索框 -->
+        <div style="float: right; width: 300px">
+            <form method="get">
+                <div class="input-group">
+                     <input type="text" name="search" class="form-control" placeholder="搜索" value="{{ search_data }}">
+                     <span class="input-group-btn">
+                         <button class="btn btn-default" type="submit">
+                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                         </button>
+                     </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <!-- 表格面板 -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            {{ str_dict.name_ch }}列表
+        </div>
+        <!-- 表格内容 -->
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>账号</th>
+                <th>用户名</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+                <tr>
+                    <td>{{ obj.id }}</td>
+                    <td>{{ obj.name }}</td>
+                    <td>
+                        <input uid="{{ obj.id }}" type="button" class="btn btn-primary btn-xs btn-edit" value="编辑">
+                        <input uid="{{ obj.id }}" type="button" class="btn btn-danger btn-xs btn-delete" value="删除">
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 页码 -->
+    {{ page_string }}
+
+{% endblock %}
+
+{% block admin-popup %}
+    <div class="modal-body">
+        <form id="formAdd">
+        {% csrf_token %}
+            <div class="clearfix">
+                {% for field in form %}
+{#                    <div class="col-xs-6">#}
+                        <div class="form-group" >
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg" style="color: red;"></span>
+                        </div>
+{#                    </div>#}
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

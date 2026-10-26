@@ -1,0 +1,108 @@
+{% extends 'layout/student.html' %}
+{% load static %}
+
+{% block css_static %}
+    <link href="{% static 'plugins/simple-datatables/style.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>{{ row_dict.0.classes }}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">重庆科创职业学院</a></li>
+                    <li class="breadcrumb-item"><a href="#">{{ row_dict.0.classes.major.college }}</a></li>
+                    <li class="breadcrumb-item"><a href="#">{{ row_dict.0.classes.major }}</a></li>
+                    <li class="breadcrumb-item active">{{ row_dict.0.classes }}</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="card">
+                        <div class="card-body">
+{#                            {% for obj in row_dict %}#}
+{#                                <h5 class="card-title">{{ obj.classes }}</h5>#}
+{#                                <p>辅导员：{{ obj.classes.counsellor.name }}</p>#}
+{#                            {% endfor %}#}
+                            <h5 class="card-title">学生信息</h5>
+
+                            <div class="datatable-top">
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">翻页</label>
+                                </div>
+
+{#                                <div class="datatable-dropdown">#}
+{#                                    {% csrf_token %}#}
+{#                                    <form id="myForm">#}
+{#                                        <label>#}
+{#                                            <select id="mySelect" class="datatable-selector" name="option">#}
+{#                                                <option value="5">5</option>#}
+{#                                                <option value="10" selected>10</option>#}
+{#                                                <option value="15">15</option>#}
+{#                                            </select> 条/页#}
+{#                                        </label>#}
+{#                                    </form>#}
+{#                                </div>#}
+
+
+                                <div class="datatable-search">
+                                    <input class="datatable-input" placeholder="搜索..." type="search"
+                                           title="Search within table">
+                                </div>
+
+                            </div>
+
+                            <!-- Table with stripped rows -->
+                            <table class="table datatable">
+                                <thead>
+                                <tr>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>手机号</th>
+                                    {#<th data-type="date" data-format="YYYY/DD/MM">Start Date</th>#}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for obj in queryset %}
+                                    <tr>
+                                        <td>{{ obj.id }}</td>
+                                        <td>{{ obj.name }}</td>
+                                        <td>{{ obj.phone }}</td>
+                                        {#<td>2005/02/11</td>#}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <!-- End Table with stripped rows -->
+                            {{ page_string }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main><!-- End #main -->
+
+{% endblock %}
+
+{% block js_static %}
+    {#    <script src="{% static 'plugins/simple-datatables/simple-datatables.js' %}"></script>#}
+    {#    <script src="{% static 'plugins/tinymce/tinymce.min.js' %}"></script>#}
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+        })
+    </script>
+{% endblock %}

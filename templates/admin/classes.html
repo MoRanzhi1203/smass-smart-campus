@@ -1,0 +1,147 @@
+{% extends 'layout/admin.html' %}
+
+{% block table %}
+    <div style="margin-bottom: 10px">
+        <!-- 新建按钮 -->
+        <input id="btnAdd" type="button" value="新建{{ str_dict.name_ch }}" class="btn btn-primary">
+        <!-- 批量导入 -->
+        <input id="btnMulti" type="button" value="批量导入" class="btn btn-primary">
+        <!-- 批量导入模版下载 -->
+        <a href="/admin/{{ str_dict.name_en }}/download/template/" style="margin-left: 5px;">下载模版</a>
+
+        <!-- 搜索框 -->
+        <div style="float: right; width: 300px">
+            <form method="get">
+                <div class="input-group">
+                     <input type="text" name="search" class="form-control" placeholder="搜索" value="{{ search_data }}">
+                     <span class="input-group-btn">
+                         <button class="btn btn-default" type="submit">
+                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                         </button>
+                     </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <!-- 表格面板 -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            {{ str_dict.name_ch }}列表
+        </div>
+        <!-- 表格内容 -->
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>学院</th>
+                <th>专业</th>
+                <th>年级</th>
+                <th>班级</th>
+                <th>辅导员</th>
+                <th>教师编号</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+                <tr>
+                    <td>{{ obj.major.college }}</td>
+                    <td>{{ obj.major }}</td>
+                    <td>{{ obj.grade }}</td>
+                    <td>
+                        <span uid="{{ obj.id }}" class="btn-view">{{ obj.name }}</span>
+                    </td>
+                    <td>{{ obj.counsellor.name }}</td>
+                    <td>{{ obj.counsellor }}</td>
+                    <td>
+                        <input uid="{{ obj.id }}" type="button" class="btn btn-primary btn-xs btn-edit" value="编辑">
+                        <input uid="{{ obj.id }}" type="button" class="btn btn-danger btn-xs btn-delete" value="删除">
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 页码 -->
+    {{ page_string }}
+
+{#    ########################################################}
+
+    <!-- 查看班级详细信息 -->
+    <div class="modal fade" id="multiView" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="">信息安全ZK2101</h4>
+                </div>
+
+                <div class="media-body">
+                    <p>辅导员：李俊峰</p>
+{#                    <div class="panel panel-default">#}
+{#                        <!-- Default panel contents -->#}
+{#                        <div class="panel-heading">Panel heading</div>#}
+{#                        <div class="panel-body">#}
+{#                            <p>...</p>#}
+{#                        </div>#}
+{##}
+{#                        <!-- List group -->#}
+{#                        <ul class="list-group">#}
+{#                            <li class="list-group-item">Cras justo odio</li>#}
+{#                            <li class="list-group-item">Dapibus ac facilisis in</li>#}
+{#                            <li class="list-group-item">Morbi leo risus</li>#}
+{#                            <li class="list-group-item">Porta ac consectetur ac</li>#}
+{#                            <li class="list-group-item">Vestibulum at eros</li>#}
+{#                        </ul>#}
+{#                    </div>#}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block admin-popup %}
+    <div class="modal-body">
+        <form id="formAdd">
+        {% csrf_token %}
+            <div class="clearfix">
+                {% for field in form %}
+                    <div class="col-xs-6">
+                        <div class="form-group" >
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg" style="color: red;"></span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+{#    <script>#}
+{##}
+{#        /**#}
+{#         * 显示上传框#}
+{#         */#}
+{#        function bindBtnMultiEvent() {#}
+{#            $('.btn-view').click(function () {#}
+{#                // 点击新建按钮，显示对话框#}
+{#                $('#multiView').modal('show');#}
+{#            });#}
+{#        }#}
+{##}
+{#    </script>#}
+{% endblock %}

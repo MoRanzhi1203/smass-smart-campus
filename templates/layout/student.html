@@ -1,0 +1,298 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>模版</title>
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'plugins/bootstrap-5.3.2/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/icons-1.11.2/font/bootstrap-icons.css' %}" rel="stylesheet">
+
+    {% block css_static %}{% endblock %}
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/NiceAdmin-style.css' %}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+
+</head>
+
+<body>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+        <a href="#" class="logo d-flex align-items-center">
+            <!-- <img src="assets/img/logo.png" alt=""> -->
+            <span class="d-none d-lg-block">SMASS</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+        <form class="search-form d-flex align-items-center" method="POST" action="#">
+            <input type="text" name="query" placeholder="搜索" title="Enter search keyword">
+            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </form>
+    </div><!-- End 搜索框 -->
+
+    <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">4</span>
+                </a><!-- End 通知图标 -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+
+                    <li class="dropdown-header">
+                        您有4个新通知
+                        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">查看全部</span></a>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="notification-item">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <h4>Lorem Ipsum</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>30分钟前</p>
+                        </div>
+                    </li><!-- End 通知内容 -->
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-footer">
+                        <a href="#">显示所有通知</a>
+                    </li>
+
+                </ul><!-- End 通知下拉列表 -->
+            </li><!-- End 通知导航 -->
+
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span class="badge bg-success badge-number">3</span>
+                </a><!-- End 留言图标 -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+                    <li class="dropdown-header">
+                        您有3条新留言
+                        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">查看全部</span></a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="message-item">
+                        <a href="#">
+                            <img src="" alt="" class="rounded-circle">
+                            <div>
+                                <h4>玛丽亚·哈德森</h4>
+                                <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                                <p>4小时前</p>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li><!-- End 留言内容 -->
+
+                    <li class="dropdown-footer">
+                        <a href="#">显示所有消息</a>
+                    </li>
+
+                </ul><!-- End 留言下拉列表 -->
+
+            </li><!-- End 留言导航 -->
+
+            <li class="nav-item dropdown pe-3">
+
+                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <img src="/media/head_sculpture/profile-img.jpg" alt="Profile" class="rounded-circle">
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.session.info.name }}</span>
+                </a><!-- End 个人中心图标 -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                        <h6>{{ request.session.info.name }}</h6>
+                        <span>{{ request.session.info.id }}</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="/student/users/profile/">
+                            <i class="bi bi-person"></i>
+                            <span>我的个人资料</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <i class="bi bi-gear"></i>
+                            <span>账户设置</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <i class="bi bi-question-circle"></i>
+                            <span>需要帮助吗?</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="/logout/">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>登出</span>
+                        </a>
+                    </li>
+
+                </ul><!-- End 个人中心下拉列表 -->
+            </li><!-- End 个人中心导航 -->
+
+        </ul>
+    </nav><!-- End 图表导航 -->
+
+</header><!-- End Header -->
+
+<!-- ======= 侧边栏(sidebar) ======= -->
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-grid"></i>
+                <span>课程</span>
+            </a>
+        </li><!-- End 选项导航 -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="/student/classes/list/">
+                <i class="bi bi-grid"></i>
+                <span>班级</span>
+            </a>
+        </li><!-- End 选项导航 -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-grid"></i>
+                <span>寝室</span>
+            </a>
+        </li><!-- End 选项导航 -->
+
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>团总支、学生会</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </a>
+
+            <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="#">
+                        <i class="bi bi-circle"></i><span>校级</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="bi bi-circle"></i><span>院级</span>
+                    </a>
+                </li>
+            </ul>
+        </li><!-- End 下拉导航 -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav1" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>社团</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+
+            <ul id="components-nav1" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="#">
+                        <i class="bi bi-circle"></i><span>辩论社</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="bi bi-circle"></i><span>街舞社</span>
+                    </a>
+                </li>
+            </ul>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-grid"></i>
+                <span>志愿活动</span>
+            </a>
+        </li><!-- End 选项导航 -->
+
+        <li class="nav-heading">Pages</li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="/student/users/profile/">
+                <i class="bi bi-person"></i>
+                <span>个人主页</span>
+            </a>
+        </li><!-- End 个人主页导航 -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-question-circle"></i>
+                <span>常见问题</span>
+            </a>
+        </li><!-- End 常见问题导航 -->
+
+    </ul>
+</aside><!-- End 侧边栏-->
+
+{% block main %}{% endblock %}
+
+<!-- ======= Footer ======= -->
+<footer id="footer" class="footer">
+    <div class="copyright">
+        &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+</footer><!-- End Footer -->
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="{% static 'js/jquery-3.7.1.min.js'%}"></script>
+<script src="{% static 'plugins/bootstrap-5.3.2/js/bootstrap.bundle.js' %}"></script>
+
+{% block js_static  %}{% endblock %}
+
+<script src="{% static 'js/NiceAdmin-main.js' %}"></script>
+
+{% block js %}{% endblock %}
+
+</body>
+
+</html>

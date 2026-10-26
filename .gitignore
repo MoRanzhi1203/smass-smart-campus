@@ -1,0 +1,59 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- 虚拟环境 ----
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# ---- Django ----
+*.log
+logs/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+
+# ---- 环境变量与凭据（严禁提交） ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# ---- IDE / 编辑器（含数据源与本地凭据） ----
+.idea/
+.vscode/
+*.swp
+
+# ---- 数据库备份与导出产物 ----
+*.sql
+*.sql.gz
+*.dump
+backups/
+dump/
+
+# ---- 测试与工具产物 ----
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.zip
+
+# ---- OS ----
+Thumbs.db
+Desktop.ini
+.DS_Store

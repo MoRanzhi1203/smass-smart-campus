@@ -1,0 +1,425 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <title>
+
+    </title>
+
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff' %}"/>
+    {% block css %}{% endblock %}
+
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/login/">SMASS</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/admin/admin/list/">管理员信息</a></li>
+                <li><a href="/admin/student/list/">学生信息</a></li>
+                <li><a href="/admin/teacher/list/">教师信息</a></li>
+                <li><a href="/admin/classes/list/">班级信息</a></li>
+                <li><a href="/admin/college/list/">学院信息</a></li>
+                <li><a href="/admin/major/list/">专业信息</a></li>
+                <li><a href="/admin/department/list/">部门信息</a></li>
+                <li><a href="/admin/leagueCadres/list/">团学干部</a></li>
+                <li><a href="/admin/classCommittee/list/">班委干部</a></li>
+                <li><a href="#">楼栋信息</a></li>
+                <li><a href="#">商家信息</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{ request.session.info.name }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">个人资料</a></li>
+                        <li><a href="#">我的信息</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/logout/">注销</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+
+    <!-- 表格内容 -->
+    {% block table %}{% endblock %}
+
+    <!-- 新建/编辑 订单（对话框） -->
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="updateModalLabel"></h4>
+                </div>
+
+                {% block admin-popup %}{% endblock %}
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除（对话框） -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <h4>是否确定删除</h4>
+                <p style="margin: 10px 0;">删除后，所有关联的相关数据都会被删除。</p>
+                <p style="text-align: right;">
+                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">确 定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重置密码框 -->
+    <div class="modal fade" id="resetPassModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">重置密码</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="pText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button id="btnConfirmResetPass" type="button" class="btn btn-primary">确 定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 批量添加框 -->
+    <div class="modal fade" id="multiModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">批量导入-{{ str_dict.name_ch }}信息</h4>
+                </div>
+                <form id="fromMulti" method="post" enctype="multipart/form-data"
+                      action="/admin/{{ str_dict.name_en }}/multi/">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="file" name="excel_template"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                        <button id="btnConfirmMulti" type="submit" class="btn btn-primary">上 传</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1-dist/js/bootstrap.js' %}"></script>
+
+<script>
+    // 声明变量 预删除ID
+    let DELETE_ID;
+    // 声明变量 预修改ID
+    let EDIT_ID;
+
+    $(function () {
+        bindBtnAddEvent();
+
+        bindBtnEditEvent();
+
+        bindBtnSaveEvent();
+
+        bindBtnDeleteEvent();
+
+        bindBtnConfirmDeleteEvent();
+
+        binBtnResetPassEvent();
+
+        bindBtnConfirmResetPassEvent();
+
+        bindBtnMultiEvent();
+    })
+
+    /**
+     * 添加新数据
+     */
+    function bindBtnAddEvent() {
+        $('#btnAdd').click(function () {
+            // 预删除ID置空
+            EDIT_ID = undefined;
+            // 清空对话框中的值
+            $('#formAdd')[0].reset();
+            // 清理错误警告
+            $('.error-msg').text('');
+            // 设置对话框的标题
+            $('#updateModalLabel').text('新建{{ str_dict.name_ch }}');
+            // 点击新建按钮，显示对话框
+            $('#updateModal').modal('show');
+        });
+    }
+
+    /**
+     * 编辑现有数据
+     */
+    function bindBtnEditEvent() {
+        $('.btn-edit').click(function () {
+            // 清空对话框中的值
+            $('#formAdd')[0].reset();
+            // 清理错误警告
+            $('.error-msg').text('');
+
+            EDIT_ID = $(this).attr('uid');
+            // 发送Ajax去后端获取当前的相关数据   /admin/XXX/detail/?uid=123
+            $.ajax({
+                url: '/admin/{{ str_dict.name_en }}/detail/',
+                type: 'get',
+                data: {
+                    uid: EDIT_ID,
+                },
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        console.log(res);
+                        // 将数据赋值到对话框中的标签中
+                        $.each(res.data, function (name, value) {
+                            $('#id_' + name).val(value);
+                        });
+                        // 设置对话框的标题
+                        $('#updateModalLabel').text('编辑{{ str_dict.name_ch }}');
+
+                        // 点击编辑，显示对话框
+                        $('#updateModal').modal('show');
+                    } else {
+                        alert(res.error);
+                    }
+                },
+            });
+        });
+    }
+
+    /**
+     * 执行 添加/修改 的保存
+     */
+    function bindBtnSaveEvent() {
+        $('#btnSave').click(function () {
+            // 清除错误信息
+            $('.error-msg').empty();
+            if (EDIT_ID) {
+                // 编辑
+                doEdit();
+            } else {
+                // 添加
+                doAdd();
+            }
+        });
+    }
+
+    /**
+     * 添加-ajax
+     */
+    function doAdd() {
+        // 向后台发送请求（添加的Ajax请求）
+        $.ajax({
+            url: '/admin/{{ str_dict.name_en }}/add/',
+            type: 'post',
+            data: $('#formAdd').serialize(),
+            dataType: 'JSON',
+            success: function (res) {
+                if (res.status) {
+                    // 清空表单 $('#formAdd')是jQuery对象 -> $('#formAdd')[0]是DOM对象
+                    $('#formAdd')[0].reset();
+
+                    // 关闭对话框
+                    $('#updateModal').modal('hide');
+
+                    // 刷新页面
+                    location.reload();
+                } else {
+                    if (res.tips) {
+                        alert(res.tips);
+                    } else {
+                        // 将错误信息显示在对话框中
+                        $.each(res.error, function (name, errorList) {
+                            $('#id_' + name).next().text(errorList[0]);
+                        });
+                    }
+                }
+            },
+        });
+    }
+
+    /**
+     * 编辑-ajax
+     */
+    function doEdit() {
+        // 向后台发送请求（编辑的Ajax请求）
+        $.ajax({
+            url: '/admin/{{ str_dict.name_en }}/edit/' + '?uid=' + EDIT_ID,
+            type: 'post',
+            data: $('#formAdd').serialize(),
+            dataType: 'JSON',
+            success: function (res) {
+                if (res.status) {
+                    // 清空表单 $('#formAdd')是jQuery对象 -> $('#formAdd')[0]是DOM对象
+                    $('#formAdd')[0].reset();
+
+                    // 关闭对话框
+                    $('#updateModal').modal('hide');
+
+                    // 刷新页面
+                    location.reload();
+                } else {
+                    // 将错误信息显示在对话框中
+                    $.each(res.error, function (name, errorList) {
+                        $('#id_' + name).next().text(errorList[0]);
+                    });
+                }
+            },
+        });
+    }
+
+    /**
+     * 显示删除框
+     */
+    function bindBtnDeleteEvent() {
+        $('.btn-delete').click(function () {
+            // 显示删除对话框
+            $('#deleteModal').modal('show');
+
+            // 获取当前行的ID，并赋值给全局变量。
+            DELETE_ID = $(this).attr('uid');
+        });
+    }
+
+    /**
+     * 确定删除事件
+     */
+    function bindBtnConfirmDeleteEvent() {
+        $('#btnConfirmDelete').click(function () {
+            // 点击确认删除按钮，将全局变量中设置的那个预删除ID发送到后台
+            $.ajax({
+                // url => /admin/XXX/delete/?123
+                url: '/admin/{{ str_dict.name_en }}/delete/',
+                type: 'GET',
+                data: {
+                    uid: DELETE_ID,
+                },
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // 删除后页面刷新
+                        location.reload();
+                    } else {
+                        // 删除失败
+                        alert(res.error);
+                    }
+                },
+            });
+        });
+    }
+
+    /**
+     * 显示重置密码框
+     */
+    function binBtnResetPassEvent() {
+        $('.btn-reset').click(function () {
+            // 显示重置密码对话框
+            $('#resetPassModal').modal('show');
+
+            // 获取当前行的ID，并赋值给全局变量。
+            EDIT_ID = $(this).attr('uid');
+
+            // 获取该数据行的账号类型与用户名，并赋值于对话框标题
+            $.ajax({
+                // url => /admin/XXX/obtain/?123
+                url: '/admin/{{ str_dict.name_en }}/obtain/',
+                type: 'GET',
+                data: {
+                    uid: EDIT_ID,
+                },
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // 设置对话框的标题
+                        $('#pText').text('是否确认 重置{{ str_dict.name_ch }}账号-' + res.data.name + ' 的密码为 身份证后六位');
+                    } else {
+                        // 获取失败
+                        alert(res.error);
+                    }
+                },
+            });
+        });
+    }
+
+    /**
+     * 确定重置密码事件
+     */
+    function bindBtnConfirmResetPassEvent() {
+        $('#btnConfirmResetPass').click(function () {
+            // 获取该数据行的账号类型与用户名，并赋值于对话框标题
+            $.ajax({
+                // url => /admin/XXX/resetPass/?123
+                url: '/admin/{{ str_dict.name_en }}/resetPass/',
+                type: 'GET',
+                data: {
+                    uid: EDIT_ID,
+                },
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // 重置密码后页面刷新
+                        location.reload();
+                    } else {
+                        // 获取失败
+                        alert(res.error);
+                    }
+                },
+            });
+        });
+    }
+
+    /**
+     * 显示上传框
+     */
+    function bindBtnMultiEvent() {
+        $('#btnMulti').click(function () {
+            // 点击新建按钮，显示对话框
+            $('#multiModal').modal('show');
+        });
+    }
+
+</script>
+
+{% block js %}{% endblock %}
+
+</body>
+</html>
