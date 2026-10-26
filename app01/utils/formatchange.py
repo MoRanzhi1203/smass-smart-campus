@@ -1,22 +1,37 @@
+"""历史工具函数的兼容层（**已弃用，仅为避免遗留 import 断裂而保留**）。
+
+R1 重构后，本模块的职责已分别迁到服务层：
+
+| 旧函数 | 新实现 |
+|---|---|
+| `row_delete` | `app01.services.crud.delete_by_pk` |
+| `row_obtain` | `app01.services.crud.row_detail_dict`（且**不再返回密码哈希**） |
+| `row_resetPass` | `app01.services.accounts.reset_password`（官方哈希 + 随机一次性口令） |
+| `download_template` | 各视图直接用 `openpyxl` + `services.imports.*_HEADERS` |
+
+⚠️ 重要：旧版 `row_resetPass` 会执行 `md5(cardID[-6:])` 并直接写入数据库。
+在模型 `save()` 已不再哈希的前提下，那会产生"MD5 与 PBKDF2 混存"的坏数据。
+该实现已彻底移除，本模块现在**只做委托**，不包含任何密码哈希代码。
+
+新代码请直接使用 services 层；本文件计划在 R2 清理调用方后整体删除。
+"""
 import urllib.parse
 
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 
-from app01.utils.encrypt import md5
+from app01.services import accounts, crud
 
 
 def Delete_ForeignKey_id(row_dict, data_sheet):
-    """
-    # 对外键字段名最后附加的'_id'进行删除
-    :param row_dict: 传参字典
-    :param data_sheet: 数据表名
-    :return: 删除 外键字段名附加'_id' 后的字典
+    """把 ``values()`` 结果中的外键键名 ``xxx_id`` 还原为 ``xxx``。
+
+    纯字典操作，无副作用。新代码请用 ``crud.row_detail_dict``。
     """
     row_renew = []
     for key in row_dict.keys():
-        # is_relation方法 判断该字段是否为外键类型
+        # is_relation 判断该字段是否为外键类型
         is_ForeignKey = data_sheet._meta.get_field(key).is_relation
         if is_ForeignKey:
             row_renew.append(key)
@@ -26,82 +41,52 @@ def Delete_ForeignKey_id(row_dict, data_sheet):
         new_key = key[:-3]
         row_dict[new_key] = value
 
+    return row_dict
 
-def row_delete(uid, models_delete):
-    """
-    # 删除数据行
-    :param uid: 所选数据行
-    :param models_delete: 所选数据表
-    :return:
-    """
-    exists = models_delete.objects.filter(id=uid).exists()
-    if not exists:
-        return JsonResponse({'status': False, 'error': '数据不存在'})
 
-    models_delete.objects.filter(id=uid).delete()
-    # 删除成功
-    return JsonResponse({'status': True})
+def row_delete(uid, models_delete, request=None):
+    """按主键删除一行（委托 ``crud.delete_by_pk``）。"""
+    return crud.delete_by_pk(models_delete, uid, request)
 
 
 def row_obtain(uid, models_obtain):
+    """获取一行详情（**敏感字段已屏蔽**，委托 ``crud.row_detail_dict``）。"""
+    row = crud.row_detail_dict(models_obtain, uid, exclude=('password',))
+    if row is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
+    return JsonResponse({'status': True, 'data': row})
+
+
+def row_resetPass(uid, models_reset, request=None):
+    """重置密码（委托 ``accounts.reset_password``）。
+
+    :return: ``{'status': True, 'password': <一次性明文>}``
+             —— 明文仅供调用方展示一次，不写入日志。
     """
-    # 获取重置数据行信息
-    :param uid: 所选数据行
-    :param models_obtain: 所选数据表
-    :return:
-    """
-    exists = models_obtain.objects.filter(id=uid).exists()
-    if not exists:
-        return JsonResponse({'status': False, 'error': '数据不存在'})
+    instance = models_reset.objects.filter(pk=uid).first()
+    if instance is None:
+        return JsonResponse({'status': False, 'error': '数据不存在'}, status=404)
 
-    # 获取匹配过滤条件的行数据
-    row_name = models_obtain.objects.filter(id=uid).values().first()
-
-    return JsonResponse({'status': True, 'data': row_name})
-
-
-def row_resetPass(uid, models_reset):
-    """
-    # 重置该用户密码
-    :param uid: 获取用户uid
-    :param models_reset: 所选数据表
-    :return:
-    """
-    reset = models_reset.objects.get(id=uid)
-    # 重置密码为身份证后六位，并 md5加密
-    reset.password = md5(reset.cardID[-6:])
-    # 保存至数据库
-    reset.save()
-
-    # 密码重置成功
-    return JsonResponse({'status': True})
+    raw_password = accounts.reset_password(instance, request=request)
+    return JsonResponse({'status': True, 'password': raw_password})
 
 
 def download_template(headers, head_txt):
-    """
-    # 创建【批量添加模版】
-    :param headers: 表头列表
-    :return: 下载模版Excel
-    """
-
-    # 创建工作簿
+    """生成并下载 xlsx 模版（无副作用，保留原签名）。"""
     workbook = Workbook()
     sheet = workbook.active
 
-    # # 表头内容列表
-    # headers = ['学院']
-
-    # 批量添加表头
     for col_num, header in enumerate(headers, 1):
         col_letter = get_column_letter(col_num)
-        sheet[f'{col_letter}1'] = header
+        sheet['{}1'.format(col_letter)] = header
 
-    # 设置响应头以指定文件名和内容类型
     filename = '{}信息批量导入模版.xlsx'.format(head_txt)
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(urllib.parse.quote(filename))
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
+        urllib.parse.quote(filename)
+    )
 
-    # 将工作簿保存到响应对象中
     workbook.save(response)
-
     return response

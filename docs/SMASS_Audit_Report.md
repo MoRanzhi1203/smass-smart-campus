@@ -101,6 +101,8 @@
 | E2 | `Student.pinyin/nation/phone/qq/address/building/dormitory` 为 `null=True` 但无 `blank=True` | 新增学生被迫填拼音/楼栋/寝室号 | 表单层 `required=False`（不改 schema） |
 | E3 | `Accounts.set_password` 若对未入库对象用 `save(update_fields=[...])` | `update_fields` + 0 行 → `DatabaseError` | 按 `_state.adding` 分支处理 |
 | E4 | `settings.TIME_ZONE='UTC'` 与中文本地化意图不符 | 日期显示偏移 8 小时 | 改 `Asia/Shanghai` 并记录 |
+| E5 | `app01/utils/formatchange.py` 无任何调用方，却保留写 MD5 的 `row_resetPass` | 未来若被 import，会产生 MD5 与 PBKDF2 混存的坏数据 | 改为纯委托，模块内不再含哈希代码（S1） |
+| E6 | 管理员列表页缺"重置密码"按钮，重置接口无 UI 入口 | 功能不可达 | 模板补 `.btn-reset`（S2） |
 
 ## 5. 结论
 

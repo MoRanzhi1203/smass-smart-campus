@@ -4,8 +4,7 @@
     <div style="margin-bottom: 10px">
         <!-- 新建按钮 -->
         <input id="btnAdd" type="button" value="新建{{ str_dict.name_ch }}" class="btn btn-primary">
-        <!-- 批量导入 -->
-        <input type="button" value="批量导入" class="btn btn-primary">
+        {# 管理员无批量导入功能（无 /admin/admin/multi/ 接口），不展示入口 #}
 
         <!-- 搜索框 -->
         <div style="float: right; width: 300px">
@@ -44,6 +43,7 @@
                     <td>{{ obj.name }}</td>
                     <td>
                         <input uid="{{ obj.id }}" type="button" class="btn btn-primary btn-xs btn-edit" value="编辑">
+                        <input uid="{{ obj.id }}" type="button" class="btn btn-warning btn-xs btn-reset" value="重置密码">
                         <input uid="{{ obj.id }}" type="button" class="btn btn-danger btn-xs btn-delete" value="删除">
                     </td>
                 </tr>

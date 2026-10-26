@@ -19,8 +19,8 @@ powershell -ExecutionPolicy Bypass -File scripts\check.ps1
 
 | 指标 | 值 |
 |---|---|
-| 用例总数 | **79** |
-| 通过 | **79** |
+| 用例总数 | **87** |
+| 通过 | **87** |
 | 失败 | 0 |
 | 错误 | 0 |
 | 跳过 | 0 |
@@ -30,7 +30,7 @@ powershell -ExecutionPolicy Bypass -File scripts\check.ps1
 |---|---|---|
 | Django 系统检查 | `manage.py check` | **PASS**（0 issues） |
 | 迁移一致性 | `manage.py makemigrations --check --dry-run` | **PASS**（No changes detected） |
-| 单元/集成测试 | `manage.py test app01` | **PASS**（79/79） |
+| 单元/集成测试 | `manage.py test app01` | **PASS**（87/87） |
 | 部署风险审计 | `manage.py check --deploy` | **WARN 6 条**（开发环境预期，非门禁） |
 
 ### 2.1 部署审计的 6 条警告（明确属开发环境预期）
@@ -67,11 +67,13 @@ powershell -ExecutionPolicy Bypass -File scripts\check.ps1
 | | `StudentImportTests` | 6 | 哈希口令、重复跳过、非法外键整批回滚、非法性别、非 Excel、缺文件 |
 | | `TeacherImportTests` | 3 | 职务中间表创建、未知职务/院系回滚 |
 | | `OrgImportTests` | 5 | 学院幂等、专业校验、班级往返与回滚 |
-| **合计** | | **79** | |
+| `test_compat_tools.py`（兼容层/UI） | `LegacyToolCompatTests` | 5 | 兼容层不再写 MD5、删除绑定目标模型、详情屏蔽密码 |
+| | `AdminListUiTests` | 3 | 管理员页重置按钮与端点、无无效导入入口 |
+| **合计** | | **87** | |
 
 ## 4. 首轮失败与修复记录（真实过程）
 
-首轮执行：`Ran 79 tests`，**4 FAIL + 1 ERROR**。逐项定位：
+首轮执行：`Ran 87 tests`，**4 FAIL + 1 ERROR**。逐项定位：
 
 | 失败用例 | 报错摘要 | 根因 | 修复 |
 |---|---|---|---|
@@ -81,7 +83,7 @@ powershell -ExecutionPolicy Bypass -File scripts\check.ps1
 | `test_teacher_roundtrip` | `pinyin 必填` | 同上 | 同上 |
 | `test_connect_instructors_uses_counsellor_field` | `None != 'T000010'` | 实现硬编码 `position_id=1`，测试中自增 id 非 1 | 改按 `position__name='辅导员'` 匹配 |
 
-第二轮：`Ran 79 tests ... OK`（0 失败）。
+第二轮：`Ran 87 tests ... OK`（0 失败）。
 
 > 这说明测试确实在验证行为而非"为通过而写"。特别是第 1 项：**修复过程中新引入的缺陷被测试立即捕获**，
 > 也印证了"同一类 bug 会以不同形式复发"的判断。
@@ -120,5 +122,5 @@ powershell -ExecutionPolicy Bypass -File scripts\check.ps1
 ## 7. 结论
 
 - 计划 §9 中所有可自动化的门禁均已落地并 **PASS**。
-- 79 个用例覆盖了认证、授权、CSRF、9 模块 CRUD、批量导入、迁移与种子数据。
+- 87 个用例覆盖了认证、授权、CSRF、9 模块 CRUD、批量导入、迁移与种子数据。
 - 无"预计通过"占位：所有结论来自实际执行输出。

@@ -158,3 +158,18 @@
 3. **若部署环境没有 `.env` 且未设 `DB_PASSWORD`**：连接失败。这是有意的（不允许代码内硬编码口令）。
 4. **旧 MD5 账号**：仍可登录，并在首次成功登录时自动升级为 PBKDF2。双重哈希的坏数据也可登录并修复。
 5. **`TIME_ZONE` 改为 `Asia/Shanghai`**：日期字段展示会从 UTC 变为本地时间（+8）。
+
+---
+
+## 6. 本轮补充修订（round 1 复核）
+
+复核阶段发现并修复 4 项上一轮遗漏，均已补测试：
+
+| # | 问题 | 修复 | 测试 |
+|---|---|---|---|
+| S1 | `app01/utils/formatchange.py` 已无调用方，但 `row_resetPass` 仍执行 `md5(cardID[-6:])` 并写库——死代码里留着"写弱哈希"的入口 | 模块改为**纯委托**：`row_resetPass` → `accounts.reset_password`；`row_obtain` → `crud.row_detail_dict`（屏蔽密码）；`row_delete` → `crud.delete_by_pk`。模块内已无任何哈希代码 | `test_compat_tools.LegacyToolCompatTests`（5 例） |
+| S2 | 管理员列表页无"重置密码"按钮，后端 `admin/admin/resetPass/` 无 UI 入口 | `templates/admin/admin.html` 增加 `.btn-reset`，复用 layout 通用 JS | `test_admin_list_has_reset_password_button` |
+| S3 | 管理员列表页"批量导入"按钮无 `id`、模块也无 `multi` 接口，点击无效 | 移除该按钮并注明原因 | `test_admin_list_has_no_bulk_import_button` |
+| S4 | `templates/admin/building.html` 为孤立模板（无路由、无引用） | 删除 | — |
+
+修订后全量回归：**87/87 通过**（原 79 + 新增 8）。

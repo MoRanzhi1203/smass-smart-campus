@@ -148,3 +148,16 @@
 - 本轮修复消除了 **9 项 P0 安全缺陷**（密码双哈希、明文入库、教师端无鉴权、CSRF 豁免、误删他表、接口串台等）。
 - 认证已收敛为单一可审计路径，并有 21 条认证测试 + 17 条授权/CSRF 测试守护。
 - 4 项遗留（强制改密、细粒度权限、依赖扫描、数据库备份）与 2 项运维注意（字符集、`/media/` 开发专用）已明确记录，不谎报"全部安全"。
+
+---
+
+## 10. 复核补充（round 1）
+
+| 项 | 结论 |
+|---|---|
+| 死代码中的弱哈希入口 | `app01/utils/formatchange.py` 在 R1 重构后已无调用方，但旧 `row_resetPass` 仍会写入 `md5(cardID[-6:])`。已在复核中改为纯委托（`services/accounts.reset_password`），模块内不再包含任何哈希实现。测试：`LegacyToolCompatTests.test_row_reset_pass_uses_official_hash` 断言落库为 `pbkdf2_` 且非 legacy。 |
+| 兼容层详情接口 | `row_obtain` 同样改为委托 `crud.row_detail_dict(exclude=('password',))`，不再回传哈希。 |
+| 重置密码可达性 | 管理员列表页补齐 `.btn-reset`，使 `admin/admin/resetPass/` 具备 UI 入口（此前仅有后端路由）。 |
+| 复核后门禁 | `check` 0 issues / 迁移一致 / **87/87 测试通过** / Git 干净 |
+
+> 仍未解决的风险与 §7 一致，未新增，也未降低验收标准。
