@@ -176,3 +176,21 @@ conda run -n smass python manage.py shell -c "from app01 import models; from app
 3. 搜索字段必须在视图里显式声明 `SEARCH_FIELDS`，不得拼接用户输入为 ORM 字段名。
 4. 批量导入必须先校验再入库，禁止静默半成功。
 5. 日志（`logs/smass.log`）只记录操作者标识、事件、对象类型/主键，不记录密码、哈希、完整身份证号。
+
+---
+
+## 7. R2.1 统一账号原型（隔离，不切换正式路径）
+
+```powershell
+# 迁移与运行（仅 smass_r21_proto）
+conda run -n smass python manage.py migrate --settings=smass.settings_r21
+conda run -n smass python manage.py test r21_account --settings=smass.settings_r21
+conda run -n smass python manage.py verify_account_consistency --strict-count --settings=smass.settings_r21
+
+# 浏览器（三端强制改密）
+conda run -n smass python manage.py test r21_account.tests.test_browser_r21 --settings=smass.settings_r21
+```
+
+- 数据库白名单：写入仅 `smass_r21_*`；`smass` 只读；`smass_proto_*` 保留。
+- **正式认证路径未切换**，`AUTH_USER_MODEL` 未改，旧表未删。
+- 详见 `docs/SMASS_R21_*.md`。
