@@ -1,18 +1,23 @@
 # SMASS 依赖锁定（Python 3.12 / Django 5.2）
-# 已验证环境：conda env `smass`（Python 3.12.16）
+# 实测环境：conda env `smass`（Python 3.12.16，Django 5.2.13）
 # 安装：python -m pip install -r requirements.txt
 
 Django==5.2.13
 openpyxl==3.1.5
 Pillow==12.2.0
 
-# MySQL 驱动：二选一
-# 1) 纯 Python 驱动（推荐 Windows，无需编译）
-PyMySQL==1.1.2
-# 2) 或安装 mysqlclient（需要 MSVC 构建工具）
+# ---- MySQL 驱动（二选一）----
+# 1) 纯 Python 驱动（推荐 Windows，无需编译工具链）
+#    实测说明：本机 conda 环境实际解析到 PyMySQL 1.4.6（conda-forge 包），
+#    PyPI 上最新公开版本为 1.1.2；两者在本项目用到的接口上等价。
+#    Django 5.2 的 "mysqlclient >= 1.4.3" 断言按 mysqlclient 版本体系制定，
+#    与 PyMySQL 版本号不可直接比较，故由 smass/__init__.py 的适配 shim 兜底
+#    （仅当 version_info < (1,4,3) 时才声明兼容版本，不覆盖真实 __version__）。
+PyMySQL>=1.1.2,<2
+
+# 2) 或安装 mysqlclient（需要 MSVC 构建工具；装好后可完全去掉上述 shim）
 # mysqlclient==2.2.7
-#
-# 说明：conda-forge 提供的 `pymysql` 包上报版本可能为 1.4.6，
-# 与 PyPI 的 1.1.2 在本项目用到的接口上等价。
-# Django 5.2 要求 Database.version_info >= (1,4,3)，
-# 本项目在 `smass/__init__.py` 中对 PyMySQL 做了版本声明补丁。
+
+# ---- 可选：浏览器端到端测试 ----
+# 仅 tests_e2e 需要；不装时相关用例会 SKIP 而非失败。
+# playwright==1.64.1

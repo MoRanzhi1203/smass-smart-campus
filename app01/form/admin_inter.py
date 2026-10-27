@@ -21,6 +21,7 @@
 from django import forms
 
 from app01 import models
+from app01.services import accounts
 from app01.utils.bootstrap import BootStrapModelForm
 
 
@@ -53,6 +54,21 @@ class BaseAccountModelForm(BootStrapModelForm):
     def password_provided(self):
         """用户是否真的填写了密码（用于区分"留空不改"与"填了但要改"）。"""
         return bool((self.data.get(self.add_prefix('password')) or '').strip())
+
+    def clean_password(self):
+        """接入 Django 官方强度校验（R1.5-D.4）。
+
+        只校验用户**自填**的密码；留空表示不修改，直接放行。
+        随机生成的初始口令不走这里（强度由生成规则保证）。
+        """
+        raw = (self.cleaned_data.get('password') or '').strip()
+        if not raw:
+            return ''
+
+        messages = accounts.password_errors(raw)
+        if messages:
+            raise forms.ValidationError(messages)
+        return raw
 
 
 class AdminModelForm(BaseAccountModelForm):

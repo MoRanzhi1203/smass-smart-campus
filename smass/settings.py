@@ -152,12 +152,16 @@ DATABASES = {
 # ---------------------------------------------------------------------------
 # 密码校验
 # ---------------------------------------------------------------------------
+# 注意：本项目的业务规则允许 6-10 位字母数字（见 students 改密视图），
+# 因此把 Django 的最小长度也设为 6 以保持兼容；其余校验器仍启用，
+# 由 services/accounts.password_errors() 在真实写入路径上调用。
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 6},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

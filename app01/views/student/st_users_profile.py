@@ -82,6 +82,13 @@ def student_change_password(request):
         )
 
     # 5. 落库（官方哈希）
+    # 先叠加 Django 官方强度校验（常见口令 / 纯数字 / 与账号相似）
+    strength_errors = accounts.password_errors(new_password)
+    if strength_errors:
+        return JsonResponse(
+            {'status': False, 'error': '；'.join(strength_errors), 'tips': 5}
+        )
+
     accounts.set_password(student, new_password)
     accounts.log_action(request, 'password_change', student)
     return JsonResponse({'status': True})

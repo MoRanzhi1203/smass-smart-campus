@@ -77,6 +77,39 @@ class PasswordError(ValueError):
     """密码相关的业务校验失败。"""
 
 
+def password_errors(raw_password, account=None):
+    """用 Django 官方校验器检查密码强度，返回错误消息列表（空列表表示通过）。
+
+    接入点（R1.5-D.4）：
+    - 学生改密（叠加业务规则之后）；
+    - 后台新建/编辑账号时用户**自填**的密码；
+    随机生成的初始口令不经过此校验（其强度由生成长度保证）。
+    """
+    from django.contrib.auth.password_validation import validate_password
+    from django.core.exceptions import ValidationError
+
+    if not raw_password:
+        return ['密码不能为空']
+
+    try:
+        validate_password(raw_password, user=account)
+    except ValidationError as exc:
+        return list(exc.messages)
+    return []
+
+
+def set_password_with_policy(account, raw_password, enforce=False):
+    """设置密码，可选地先做强度校验。
+
+    :param enforce: ``True`` 时先调用 :func:`password_errors`，不通过则抛 :class:`PasswordError`
+    """
+    if enforce:
+        messages = password_errors(raw_password, account)
+        if messages:
+            raise PasswordError('；'.join(messages))
+    return set_password(account, raw_password)
+
+
 def generate_password(length=DEFAULT_PASSWORD_LENGTH):
     """生成随机初始密码（大小写字母 + 数字）。
 
