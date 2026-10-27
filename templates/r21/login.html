@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>R2.1 统一账号登录</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-5.3.2/css/bootstrap.min.css' %}">
+</head>
+<body class="bg-light">
+<div class="container" style="max-width: 420px; margin-top: 90px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">R2.1 统一账号登录</h5>
+
+            {% if error %}
+                <div class="alert alert-danger py-2">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="/r21/login/">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">登录名</label>
+                    <input type="text" name="login_name" id="id_login_name" class="form-control" autofocus>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">密码</label>
+                    <input type="password" name="password" id="id_password" class="form-control">
+                </div>
+                <button type="submit" id="btnLogin" class="btn btn-primary w-100">登 录</button>
+            </form>
+
+            <p class="text-muted mt-3 mb-0" style="font-size: 12px;">
+                原型环境（smass_r21_proto）。正式库认证路径未切换。
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
