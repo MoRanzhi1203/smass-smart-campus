@@ -135,3 +135,50 @@ E2E 实测：页面出现 `139****4321`，**完整号码不出现**。
 - 学生侧个人信息默认最小披露；
 - 密码写入路径仍保持唯一（`services/accounts`），并叠加了官方强度校验；
 - 未运行项已逐条标注，未做虚假"ALL PASS"。
+
+---
+
+## 12. 复核补充（round 1）：依赖漏洞扫描已实际执行
+
+上一轮将 `pip-audit` 标为 **NOT RUN**（当时未安装）。复核阶段在**隔离 conda env** 内安装并真实执行，结果如下。
+
+### 12.1 扫描（升级前）
+
+```powershell
+conda run -n smass python -m pip_audit -r requirements.txt --progress-spinner off
+# Found 87 known vulnerabilities in 2 packages
+```
+
+| 包 | 版本 | 漏洞数 | 修复版本 |
+|---|---|---|---|
+| Django | 5.2.13 | **25** | 5.2.14 / 5.2.15 / 5.2.16 / 5.2.17 / 6.x |
+| Pillow | 12.2.0 | **62** | 12.3.0 / 13.0.0 |
+
+### 12.2 处置：仅做**同线补丁升级**，并完整回归
+
+计划要求"漏洞修复不能不经过回归就大幅升级 Django"，因此：
+
+- Django 只升到 **同 minor 的 5.2.17**（不跨 6.x）；
+- Pillow 升到 **13.0.0**（12.3.0 仍有残留 CVE）。
+
+**升级后回归证据**：
+
+| 门禁 | 结果 |
+|---|---|
+| `manage.py test app01` | **114/114 PASS**（54.875s） |
+| `manage.py test tests_e2e` | **16/16 PASS**（33.329s） |
+| Pillow 冒烟（`check_code()`） | PASS（120×30，5 字符，RGB） |
+| openpyxl 冒烟 | PASS |
+| 重新扫描 | **No known vulnerabilities found**（exit 0） |
+
+`requirements.txt` / `environment.yml` 已同步为 `Django==5.2.17` / `Pillow==13.0.0`。
+
+### 12.3 新增回归保护
+
+`app01/tests/test_captcha.py`（2 例）固化 Pillow 用法，避免未来升级静默破坏验证码生成。
+
+### 12.4 结论修正
+
+| 项 | 原状态 | 复核后 |
+|---|---|---|
+| 依赖漏洞扫描 | NOT RUN | **PASS（0 已知漏洞）** |

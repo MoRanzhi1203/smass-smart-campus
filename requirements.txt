@@ -1,16 +1,21 @@
 # SMASS 依赖锁定（Python 3.12 / Django 5.2）
-# 实测环境：conda env `smass`（Python 3.12.16，Django 5.2.13）
+# 实测环境：conda env `smass`（Python 3.12.16）
 # 安装：python -m pip install -r requirements.txt
+#
+# 2026-10-27 安全升级（pip-audit 实测 87 个漏洞 -> 修复后 0）：
+#   Django 5.2.13 -> 5.2.17（同 minor 安全补丁，25 个 CVE）
+#   Pillow 12.2.0 -> 13.0.0（62 个 CVE；12.3.0 仍有残留，故升到 13.0.0）
+#   升级后回归：app01 112/112、tests_e2e 16/16、验证码/Excel 冒烟均通过。
 
-Django==5.2.13
+Django==5.2.17
 openpyxl==3.1.5
-Pillow==12.2.0
+Pillow==13.0.0
 
 # ---- MySQL 驱动（二选一）----
 # 1) 纯 Python 驱动（推荐 Windows，无需编译工具链）
 #    实测说明：本机 conda 环境实际解析到 PyMySQL 1.4.6（conda-forge 包），
 #    PyPI 上最新公开版本为 1.1.2；两者在本项目用到的接口上等价。
-#    Django 5.2 的 "mysqlclient >= 1.4.3" 断言按 mysqlclient 版本体系制定，
+#    Django 的 "mysqlclient >= 1.4.3" 断言按 mysqlclient 版本体系制定，
 #    与 PyMySQL 版本号不可直接比较，故由 smass/__init__.py 的适配 shim 兜底
 #    （仅当 version_info < (1,4,3) 时才声明兼容版本，不覆盖真实 __version__）。
 PyMySQL>=1.1.2,<2
@@ -21,3 +26,6 @@ PyMySQL>=1.1.2,<2
 # ---- 可选：浏览器端到端测试 ----
 # 仅 tests_e2e 需要；不装时相关用例会 SKIP 而非失败。
 # playwright==1.64.1
+
+# ---- 可选：依赖漏洞扫描 ----
+# pip-audit==2.10.1

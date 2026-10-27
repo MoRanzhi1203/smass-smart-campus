@@ -101,3 +101,22 @@ conda run -n smass python manage.py test tests_e2e -v 1        # 浏览器 E2E 1
 conda run -n smass python scripts\proto_verify.py              # 原型一致性
 conda run -n smass python scripts\proto_failure_injection.py   # 原型失败注入
 ```
+
+---
+
+## 9. 复核补充（round 1）
+
+| 项 | 变化 |
+|---|---|
+| app01 用例数 | 112 → **114**（新增 `test_captcha.py` 2 例） |
+| 依赖版本 | Django 5.2.13 → **5.2.17**；Pillow 12.2.0 → **13.0.0** |
+| 升级后回归 | app01 **114/114 PASS**；E2E **16/16 PASS** |
+| 依赖漏洞扫描 | 由 NOT RUN 改为 **PASS（0 已知漏洞，原 87 个）** |
+| 路径 B 实验 | 新增 11 项检查，**11/11 PASS**（`scripts/proto_user_model_experiment.py`） |
+
+新增可复跑入口：
+
+```powershell
+conda run -n smass python -m pip_audit -r requirements.txt --progress-spinner off
+conda run -n smass python scripts\proto_user_model_experiment.py
+```

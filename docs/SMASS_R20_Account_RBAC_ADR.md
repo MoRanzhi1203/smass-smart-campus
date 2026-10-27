@@ -136,3 +136,55 @@ class AccountBackend:
 | 正式切换 | **NOT DONE**（明确列为受控后续任务） |
 | 证据基础 | 隔离库 6 账号回填 + 9 项失败注入 + 一致性校验 |
 | 路径 B | 保留为长期终态选项，但当前缺乏运行证据，不采纳 |
+
+---
+
+## 9. 复核补充（round 1）：路径 B 已实测（全新库）
+
+上一轮 ADR 中"路径 B 未实测（只评估）"已被补齐。新增隔离实验：
+
+- 库：`smass_proto_user_model`（独立于 `smass` 与 `smass_proto_account`）
+- 配置：`smass/settings_proto_user.py`（`AUTH_USER_MODEL = 'proto_user_model.ProtoUser'`）
+- 模型：`proto_user_model/models.py`（`AbstractBaseUser` + `PermissionsMixin` + 自定义 Manager）
+- 脚本：`scripts/proto_user_model_experiment.py`
+
+### 9.1 实验结果：**11/11 PASS**
+
+| 检查 | 结果 |
+|---|---|
+| 从零 `migrate`（含 `auth`/`admin`/`sessions`） | PASS |
+| `create_user` / `create_superuser` | PASS |
+| `authenticate()` 默认后端 | PASS（错误密码被拒） |
+| `has_perm` 授权前 False / 授权后 True | PASS |
+| superuser `has_perm` 恒 True（Django 语义） | PASS |
+| Django admin 登录 + `/admin/` 返回 200 | PASS |
+
+### 9.2 实验中暴露的真实耦合（重要）
+
+准备实验时出现：
+
+```
+RuntimeError: Model class app01.models.Nation doesn't declare an explicit app_label
+          and isn't in an application in INSTALLED_APPS.
+```
+
+原因：`ROOT_URLCONF='smass.urls'` 会 import `app01.views` → `app01.models`；
+`MIDDLEWARE` 里还有 `app01.middleware.auth.AuthMiddleware`。
+**剥离 `app01` 必须同时改 urls 与中间件**。
+
+这条是"切换成本"的实证：即便在全新库里 `AUTH_USER_MODEL` 工作良好，
+**给在用项目中途切换仍需改动 urlconf、中间件、以及 4 个既有 `app01` 迁移的依赖关系**。
+
+### 9.3 另外两个实验脚本缺陷（已修正，非架构问题）
+
+1. superuser 的 `has_perm` 恒为 True → 必须用普通用户验证授权逻辑；
+2. `Permission` 必须绑定正确的 `ContentType`，否则 `has_perm('app_label.codename')` 查不到
+   （全新库没有 `app01` 的 ContentType）。
+
+### 9.4 结论更新
+
+| 项 | 结论 |
+|---|---|
+| 路径 A | 已实测（`smass_proto_account`：回填 6 账号、失败注入 9/9） |
+| 路径 B | **已实测**（`smass_proto_user_model`：11/11），但仅限**全新项目**场景 |
+| 推荐 | 仍为**路径 A**——因为 B 的"中途切换"风险未被本轮消除，且 A 对现有 URL/Session/迁移零改动 |

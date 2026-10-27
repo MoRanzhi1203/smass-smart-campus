@@ -111,3 +111,23 @@
 | 安装 `pip-audit` 并扫描 | 未获授权安装第三方扫描器 |
 | 大规模 UI 改版（BS3/BS5 统一） | 计划明确留待后续 |
 | 远程 push | 计划禁止 |
+
+---
+
+## 6. 复核补充（round 1）：依赖安全升级与 B 路径实验
+
+| 文件 | 变更 |
+|---|---|
+| `requirements.txt` | `Django==5.2.13` → `5.2.17`；`Pillow==12.2.0` → `13.0.0`；新增 pip-audit/playwright 可选说明 |
+| `environment.yml` | 同步版本 |
+| `app01/tests/test_captcha.py` | 新增（2 例，固化 Pillow 用法） |
+| `proto_user_model/*`（新） | 路径 B 实验 app：`AbstractBaseUser` + `PermissionsMixin` |
+| `smass/settings_proto_user.py`（新） | B 实验配置：库 `smass_proto_user_model`、`AUTH_USER_MODEL`、剥离 app01 的 urls/中间件 |
+| `smass/urls_proto.py`（新） | 空 urlconf（B 实验用） |
+| `scripts/proto_user_model_experiment.py`（新） | B 实验 11 项检查 |
+
+**驱动原因**：`pip-audit` 实测发现 87 个已知漏洞（Django 25 / Pillow 62），
+按"必须经回归才升级"的原则做同线补丁升级，升级后 **0 漏洞**、114 + 16 全部回归通过。
+
+**新增隔离库**：`smass_proto_user_model`（B 实验专用，与 `smass_proto_account` 并列）。
+两库均为 `smass_proto_*` 前缀，命中白名单；清理时 `DROP DATABASE` 即可。
