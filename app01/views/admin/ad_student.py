@@ -23,7 +23,11 @@ def student_list(request):
     """ 学生列表 """
     keyword = request.GET.get('search', '')
     queryset = crud.apply_search(
-        models.Student.objects.select_related('classes', 'classes__major').order_by('id'),
+        # 模板会访问 obj.classes.major.college，必须一次 join 到位，
+        # 否则每行多一次查询（查询数基准实际捕获过这个 N+1）。
+        models.Student.objects.select_related(
+            'classes', 'classes__major', 'classes__major__college'
+        ).order_by('id'),
         SEARCH_FIELDS,
         keyword,
     )
