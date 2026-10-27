@@ -1,5 +1,6 @@
 {% extends 'layout/student.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block css_static %}
     <link href="{% static 'plugins/simple-datatables/style.css' %}" rel="stylesheet">
@@ -76,7 +77,7 @@
                                     <tr>
                                         <td>{{ obj.id }}</td>
                                         <td>{{ obj.name }}</td>
-                                        <td>{{ obj.phone }}</td>
+                                        <td>{{ obj.phone|mask_phone }}</td>
                                         {#<td>2005/02/11</td>#}
                                     </tr>
                                 {% endfor %}

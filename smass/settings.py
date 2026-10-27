@@ -100,6 +100,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app01.middleware.auth.AuthMiddleware',
+    # 含一次性口令等敏感内容的响应禁止缓存（R1.5-B.7）
+    'app01.middleware.privacy.SensitiveResponseMiddleware',
 ]
 
 ROOT_URLCONF = 'smass.urls'

@@ -157,12 +157,19 @@ def teacher_multi(request):
 @admin_required
 @require_POST
 def all_delete(request):
-    """ 清空教师表（高危操作，需显式 confirm=YES 二次确认） """
-    if request.POST.get('confirm') != 'YES':
-        return JsonResponse(
-            {'status': False, 'error': '高危操作：需要显式提交 confirm=YES'}, status=400
-        )
+    """ 清空教师表 —— HTTP 入口已停用（R1.5-B.2）。
 
-    deleted, _ = models.Teacher.objects.all().delete()
-    accounts.log_action(request, 'bulk_delete', None, detail='model=Teacher rows={}'.format(deleted))
-    return JsonResponse({'status': True, 'deleted': deleted})
+    高危批量销毁不再允许通过浏览器触发；改用受控维护命令：
+        python manage.py purge_table --model Teacher --confirm
+    """
+    accounts.log_action(
+        request, 'dangerous_blocked', None, detail='endpoint=teacher.all_delete'
+    )
+    return JsonResponse(
+        {
+            'status': False,
+            'error': '该操作已停用（HTTP 不提供批量清表）。'
+                     '请使用维护命令：python manage.py purge_table --model Teacher --confirm',
+        },
+        status=403,
+    )

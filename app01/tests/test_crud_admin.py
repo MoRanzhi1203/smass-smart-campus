@@ -424,9 +424,11 @@ class CrudRoundTripTests(AdminCrudBase):
 class HighRiskEndpointTests(AdminCrudBase):
     """高危接口的保护。"""
 
-    def test_all_delete_requires_explicit_confirmation(self):
-        resp = self.client.post('/admin/student/list/all_delete/', {})
-        self.assertEqual(resp.status_code, 400)
+    def test_all_delete_endpoint_is_disabled(self):
+        """R1.5-B.2：HTTP 清表入口已停用，即使带 confirm=YES 也只返回 403。"""
+        resp = self.client.post('/admin/student/list/all_delete/', {'confirm': 'YES'})
+        self.assertEqual(resp.status_code, 403)
+        self.assertFalse(resp.json()['status'])
         self.assertTrue(models.Student.objects.filter(pk=self.student.pk).exists())
 
     def test_all_delete_requires_post(self):
