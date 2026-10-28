@@ -24,7 +24,7 @@ from r21_account.models import (
     TeacherProfile,
 )
 
-SAFE_DB_PREFIXES = ('smass_r21_', 'smass_r22_g5_', 'smass_r22_g8_', 'test_smass_')
+SAFE_DB_PREFIXES = ('smass_r21_', 'smass_r22_g5_', 'smass_r22_g8_', 'smass_r22_g221_', 'test_smass_')
 
 EXPECTED_ROLE = {
     PersonType.ADMIN: RoleCode.SYSTEM_ADMIN,
