@@ -54,6 +54,15 @@ class AccountAuditEvent(models.Model):
     ip = models.CharField('来源 IP', max_length=45, blank=True, default='')
     request_id = models.CharField('请求关联 ID', max_length=36, blank=True, default='')
 
+    # ---- H1：批次追溯（append-only，回滚不删除历史）----
+    batch_id = models.CharField('批次 ID', max_length=36, blank=True, default='', db_index=True)
+    operation = models.CharField('批次操作', max_length=16, blank=True, default='')
+    source_batch_id = models.CharField(
+        '来源批次 ID', max_length=36, blank=True, default='',
+        help_text='回滚事件指向被回滚的回填批次，保证因果可追溯',
+    )
+    counts = models.JSONField('脱敏计数', default=dict, blank=True)
+
     created_at = models.DateTimeField('时间', auto_now_add=True, db_index=True)
 
     class Meta:
@@ -61,6 +70,7 @@ class AccountAuditEvent(models.Model):
         indexes = [
             models.Index(fields=['action', 'outcome', 'created_at']),
             models.Index(fields=['actor_login', 'created_at']),
+            models.Index(fields=['batch_id', 'created_at']),
         ]
 
     def __str__(self):

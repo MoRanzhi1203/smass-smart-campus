@@ -15,6 +15,10 @@ from r22_account import conf
 from r22_account.identity import resolve_identity
 
 
+#: 需要走 legacy 桥接的旧业务路由前缀
+LEGACY_PATH_PREFIXES = ('/admin/', '/student/', '/teacher/')
+
+
 def wants_json(request):
     return (
         request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -37,11 +41,19 @@ class IdentityMiddleware:
             return cache['identity']
 
         # 对外契约：request.r22_identity() 返回 Identity（带缓存）
+        # H3: expose cache so the legacy bridge can invalidate it after
+        # writing session['info'] (otherwise RoutePolicy sees a stale kind)
+        request._r22_identity_cache = cache
         request.r22_identity = _get_identity
         # Account 或 None：保证不会把 auth.User 当成 Account
         request.account = SimpleLazyObject(lambda: _get_identity().account)
         # 旧身份（规范化后的 session['info']）或 None，与 account 分开
         request.legacy_identity = SimpleLazyObject(lambda: _get_identity().legacy)
+
+        # H3: only bridge session['info'] on legacy business routes
+        if request.path.startswith(LEGACY_PATH_PREFIXES):
+            from r22_account.legacy_compat import ensure_legacy_session
+            ensure_legacy_session(request)
 
         return self.get_response(request)
 
@@ -97,6 +109,8 @@ class RoutePolicyMiddleware:
         identity = request.r22_identity()
 
         if identity.kind == 'conflict':
+            from r22_account import alerts
+            alerts.identity_conflict(identity, path=request.path)
             return self._deny(request, '身份冲突：新旧账号映射不一致，已拒绝并记录')
 
         if identity.kind == 'anonymous':

@@ -118,3 +118,28 @@
 **未修改**：`app01/*`、`smass/settings.py`、`AUTH_USER_MODEL`、既有迁移、R2.1 模型。
 
 **测试变化**：267（原 259 + G7 8）。r22_account 由 57 增至 65。
+---
+
+## 9. R2.2 Final Hardening（H0–H6）
+
+| 文件 | 变更 |
+|---|---|
+| `r22_account/models.py` + `migrations/0002_*` | 审计事件新增 `batch_id` / `operation` / `source_batch_id` / `counts` |
+| `r22_account/batch_audit.py`（新） | 批次回填/回滚服务 + 因果链 + 崩溃窗口对账 |
+| `r22_account/legacy_compat.py`（新） | 把 Account 经 `LegacyAccountLink` 映射为 `session['info']` |
+| `r22_account/alerts.py`（新） | 结构化安全告警（5 类事件、阈值抑制、字段白名单） |
+| `r22_account/middleware.py` | 旧路由桥接 + 桥接后缓存失效 + conflict 告警 |
+| `r22_account/audit.py` | `safe_record` 审计失败告警；批次字段透传 |
+| `smass/urls_r22.py` | 挂载 `app01` 旧业务路由（staging 专用） |
+| `smass/settings_r22_g8.py`（新） | G8 演练配置（库名强制 `smass_r22_g8_`） |
+| `scripts/r22_g8_drill.py`（新） | 切换+写入+故障注入+回滚演练 |
+| `r21_account/.../backfill_accounts_r21.py`、`verify_account_consistency.py` | 白名单扩展 `smass_r22_g8_` |
+| `r22_account/tests/test_h1_batch_audit.py`（11） | 批次审计 |
+| `r22_account/tests/test_h3_legacy_compat.py`（7） | 旧业务兼容 |
+| `r22_account/tests/test_h4_alerts.py`（6） | 告警 |
+
+**新增数据库**：`smass_r22_g8_drill`（100 合成账号，保留）。
+
+**未修改**：`app01/*`、`smass/settings.py`、`AUTH_USER_MODEL`、既有迁移。
+
+**测试变化**：291（r22 65→89，新增 24）。

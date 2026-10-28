@@ -1,6 +1,8 @@
 """R2.2 隔离 URL（只含认证、身份探针与审计探针）。"""
 from django.urls import path
 
+from smass.urls import urlpatterns as app01_urlpatterns
+
 from r21_account import views as r21_views
 from r22_account import views as r22_views
 
@@ -19,3 +21,6 @@ urlpatterns = [
     path('r22/audit/fail/', r22_views.audit_fail_probe_view, name='r22_audit_fail'),
     path('legacy-parity/', r22_views.legacy_parity_view, name='legacy_parity'),
 ]
+
+# H3：挂载 app01 旧业务路由（staging 专用；app01 代码零改动）
+urlpatterns += app01_urlpatterns

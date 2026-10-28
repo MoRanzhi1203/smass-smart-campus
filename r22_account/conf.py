@@ -20,6 +20,7 @@ def flags():
         'route_policy_enabled': bool(raw.get('route_policy_enabled', True)),
         'audit_enabled': bool(raw.get('audit_enabled', True)),
         'dry_run': bool(raw.get('dry_run', False)),
+        'legacy_bridge': bool(raw.get('legacy_bridge', False)),
     }
 
 

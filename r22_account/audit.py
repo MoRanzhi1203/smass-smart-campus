@@ -91,7 +91,8 @@ def _actor_fields(actor):
 
 
 def record(action, outcome=OUTCOME_SUCCESS, *, actor=None, target='', target_id='',
-           context=None, request=None, request_id='', actor_kind=None):
+           context=None, request=None, request_id='', actor_kind=None,
+           batch_id='', operation='', source_batch_id='', counts=None):
     """写一条审计事件。返回事件对象。"""
     from r22_account import conf
 
@@ -116,6 +117,10 @@ def record(action, outcome=OUTCOME_SUCCESS, *, actor=None, target='', target_id=
         context=sanitize(context),
         ip=ip,
         request_id=(request_id or new_request_id())[:36],
+        batch_id=(batch_id or '')[:36],
+        operation=(operation or '')[:16],
+        source_batch_id=(source_batch_id or '')[:36],
+        counts=counts or {},
     )
 
 
@@ -172,3 +177,13 @@ def assert_no_admin_log_written(action_callable, *args, **kwargs):
     result = action_callable(*args, **kwargs)
     after = LogEntry.objects.count()
     return result, before, after
+
+
+def safe_record(action, **kwargs):
+    """写审计并捕获失败（失败时发 security 告警，不静默）。"""
+    try:
+        return record(action, **kwargs)
+    except Exception:  # noqa: BLE001
+        from r22_account import alerts
+        alerts.audit_failure(operation=kwargs.get('operation', action))
+        raise

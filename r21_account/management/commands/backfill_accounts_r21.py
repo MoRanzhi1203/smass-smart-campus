@@ -75,7 +75,7 @@ class Command(BaseCommand):
         db_name = connection.settings_dict['NAME'] or ''
         # additive：R2.2 G5 加入隔离演练库前缀与 Django 测试库前缀；
         # 仍然严格排除 smass 与既有原型库。
-        safe_prefixes = ('smass_r21_', 'smass_r22_g5_', 'test_smass_')
+        safe_prefixes = ('smass_r21_', 'smass_r22_g5_', 'smass_r22_g8_', 'test_smass_')
         if not any(db_name.startswith(prefix) for prefix in safe_prefixes):
             raise CommandError(
                 '拒绝：回填只允许在 {} 前缀的原型/演练库执行，当前 {!r}'.format(

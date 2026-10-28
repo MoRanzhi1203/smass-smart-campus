@@ -49,6 +49,7 @@ R22_FLAGS = {
     'route_policy_enabled': True,
     'audit_enabled': True,
     'dry_run': False,
+    'legacy_bridge': True,
 }
 
 R21_PASSWORD_CHANGE_EXEMPT = (
