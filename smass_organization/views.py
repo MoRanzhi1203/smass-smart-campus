@@ -56,7 +56,8 @@ def health(request):
 def unit_tree(request):
     """返回组织树（JSON）。"""
     units = list(
-        OrganizationUnit.objects.all().values('id', 'code', 'name', 'unit_type', 'parent_id', 'status')
+        services.scoped_units(getattr(request, 'user', None))
+        .values('id', 'code', 'name', 'unit_type', 'parent_id', 'status')
     )
     return JsonResponse({'ok': True, 'units': units})
 
@@ -64,7 +65,7 @@ def unit_tree(request):
 @require_http_methods(['GET'])
 @roles_required(*TEACHER_ROLES)
 def unit_list(request):
-    units = OrganizationUnit.objects.all().order_by('sort_order', 'code')
+    units = services.scoped_units(getattr(request, 'user', None)).order_by('sort_order', 'code')
     return render(request, 'r4/unit_list.html', {'units': units})
 
 
@@ -112,7 +113,7 @@ def unit_move(request, pk):
 def student_list(request):
     """学生列表：字段级过滤（无权限字段不出现在上下文里）。"""
     account = getattr(request, 'user', None)
-    record = StudentRecord.objects.all().select_related('unit').order_by('student_no')
+    record = services.scoped_students(account).select_related('unit').order_by('student_no')
 
     unit_code = request.GET.get('unit')
     if unit_code:
@@ -149,6 +150,10 @@ def student_detail(request, student_no):
     record = StudentRecord.objects.filter(student_no=student_no).select_related('unit').first()
     if record is None:
         return JsonResponse({'ok': False, 'reason': 'not found'}, status=404)
+
+    # R4-01：对象级 scope 校验（防 IDOR）
+    if not services.can_access_student(account, record):
+        return JsonResponse({'ok': False, 'reason': 'forbidden'}, status=403)
 
     history = list(
         StudentRecordChange.objects.filter(record=record)

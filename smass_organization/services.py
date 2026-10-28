@@ -21,6 +21,7 @@ from smass_organization.models import (
     STATUS_ACTIVE,
     DataImportJob,
     DataImportRowError,
+    OrganizationMembership,
     OrganizationUnit,
     StudentFieldDefinition,
     StudentRecord,
@@ -118,6 +119,80 @@ def subtree(unit):
         queue.extend(list(node.children.all()))
         guard += 1
     return result
+
+
+# ---------------------------------------------------------------------------
+# 组织级数据范围（R4-01，P0）
+# ---------------------------------------------------------------------------
+#: 角色 -> 可见范围
+SCOPE_GLOBAL_ROLES = {'system_admin'}
+
+
+def scoped_units(account):
+    """返回账号可见的组织单元查询集。
+
+    规则（默认拒绝）：
+    - 无角色 / 停用 / 匿名 -> 空集；
+    - system_admin -> 全部；
+    - 其他角色 -> **仅自己有效成员关系所在节点及其后代子树**；
+    - 无有效成员关系 -> 空集（绝不回退为"全部"）。
+    """
+    from r21_account.models import RoleCode
+
+    roles = account_roles(account)
+    if not roles:
+        return OrganizationUnit.objects.none()
+
+    if RoleCode.SYSTEM_ADMIN in roles or SCOPE_GLOBAL_ROLES & roles:
+        return OrganizationUnit.objects.all()
+
+    memberships = list(
+        OrganizationMembership.objects.filter(
+            account=account, ended_at__isnull=True
+        ).values_list('unit_id', flat=True)
+    )
+    if not memberships:
+        return OrganizationUnit.objects.none()
+
+    allowed_ids = set()
+    for root in OrganizationUnit.objects.filter(pk__in=memberships):
+        allowed_ids.update(unit.pk for unit in subtree(root))
+
+    if not allowed_ids:
+        return OrganizationUnit.objects.none()
+
+    return OrganizationUnit.objects.filter(pk__in=allowed_ids)
+
+
+def scoped_students(account):
+    """返回账号可见的学生档案查询集（列表/详情/搜索/导出/API 统一入口）。"""
+    from r21_account.models import RoleCode
+
+    roles = account_roles(account)
+    if not roles:
+        return StudentRecord.objects.none()
+
+    # 学生：只能看自己
+    if RoleCode.STUDENT in roles and not (SCOPE_GLOBAL_ROLES & roles):
+        return StudentRecord.objects.filter(account=account)
+
+    if RoleCode.SYSTEM_ADMIN in roles or SCOPE_GLOBAL_ROLES & roles:
+        return StudentRecord.objects.all()
+
+    unit_ids = list(scoped_units(account).values_list('pk', flat=True))
+    if not unit_ids:
+        return StudentRecord.objects.none()
+
+    return StudentRecord.objects.filter(unit_id__in=unit_ids)
+
+
+def can_access_student(account, record):
+    """单对象访问判定（防 IDOR）。"""
+    return scoped_students(account).filter(pk=record.pk).exists()
+
+
+def can_access_unit(account, unit):
+    return scoped_units(account).filter(pk=unit.pk).exists()
 
 
 # ---------------------------------------------------------------------------
