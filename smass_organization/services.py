@@ -10,7 +10,7 @@ import csv
 import io
 from datetime import datetime
 
-from django.db import transaction
+from django.db import models, transaction
 from django.utils import timezone
 
 from smass_organization.models import (
@@ -243,6 +243,64 @@ def can_view_field(account, code):
 
 def can_edit_field(account, code):
     return any(field.code == code for field in editable_fields(account))
+
+
+# ---------------------------------------------------------------------------
+# 并发安全（R4-02）：乐观锁
+# ---------------------------------------------------------------------------
+class ConcurrencyError(Exception):
+    """版本冲突：记录已被他人修改。"""
+
+
+def update_student(record, *, name=None, status=None, unit=None,
+                   expected_version=None, actor=''):
+    """带乐观锁的档案更新。
+
+    - 提供 ``expected_version`` 时使用**条件更新**（WHERE version=expected），
+      影响行数为 0 即视为冲突，抛 ``ConcurrencyError``；
+    - 未提供时退化为普通更新（调用方需自行确认场景）；
+    - 成功写 ``StudentRecordChange`` 历史。
+    """
+    fields = {}
+    changes = []
+
+    if name is not None and name != record.name:
+        fields['name'] = name
+        changes.append(('name', record.name, name))
+    if status is not None and status != record.status:
+        fields['status'] = status
+        changes.append(('status', record.status, status))
+    if unit is not None and record.unit_id != getattr(unit, 'pk', None):
+        fields['unit'] = unit
+        changes.append(('unit', str(record.unit_id or ''), str(getattr(unit, 'pk', ''))))
+
+    if not fields:
+        return record, []
+
+    with transaction.atomic():
+        queryset = StudentRecord.objects.filter(pk=record.pk)
+        if expected_version is not None:
+            queryset = queryset.filter(version=expected_version)
+
+        affected = queryset.update(
+            version=models.F('version') + 1,
+            updated_at=timezone.now(),
+            **fields
+        )
+        if affected == 0:
+            raise ConcurrencyError(
+                '版本冲突：期望 version={}，记录已被他人修改'.format(expected_version)
+            )
+
+        for field_name, old, new in changes:
+            StudentRecordChange.objects.create(
+                record_id=record.pk, field_name=field_name,
+                old_value=str(old)[:255], new_value=str(new)[:255],
+                changed_by=actor[:32],
+            )
+
+    record.refresh_from_db()
+    return record, changes
 
 
 # ---------------------------------------------------------------------------
