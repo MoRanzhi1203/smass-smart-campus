@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R5 学年</title></head>
+<body>{% csrf_token %}
+<h3>学年（R5）</h3>
+<table border="1" cellpadding="4" id="year-table">
+<thead><tr><th>编码</th><th>开始</th><th>结束</th><th>当前</th></tr></thead>
+<tbody>
+{% for y in years %}
+<tr><td>{{ y.code }}</td><td>{{ y.start_date }}</td><td>{{ y.end_date }}</td><td>{{ y.is_active }}</td></tr>
+{% empty %}<tr><td colspan="4">暂无数据</td></tr>{% endfor %}
+</tbody></table>
+</body></html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R5 教师工作台</title></head>
+<body>{% csrf_token %}
+<h3>我的教学班（R5）</h3>
+<table border="1" cellpadding="4" id="workspace-table">
+<thead><tr><th>班号</th><th>课程</th><th>学期</th><th>已选</th></tr></thead>
+<tbody>
+{% for s in sections %}
+<tr><td>{{ s.code }}</td><td>{{ s.course }}</td><td>{{ s.term }}</td><td>{{ s.enrolled }}</td></tr>
+{% empty %}<tr><td colspan="4">暂无任课</td></tr>{% endfor %}
+</tbody></table>
+</body></html>
