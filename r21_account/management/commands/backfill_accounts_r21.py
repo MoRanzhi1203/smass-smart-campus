@@ -46,15 +46,21 @@ class Stats:
     conflicts: list = field(default_factory=list)
     errors: list = field(default_factory=list)
 
-    def report(self, label):
-        print('[{}] processed={} created={} skipped={} conflicts={} errors={}'.format(
+    def report(self, label, stream=None):
+        def out(text):
+            if stream is None:
+                print(text)
+            else:
+                stream(text + '\n')
+
+        out('[{}] processed={} created={} skipped={} conflicts={} errors={}'.format(
             label, self.processed, self.created, self.skipped,
             len(self.conflicts), len(self.errors),
         ))
         for item in self.conflicts[:20]:
-            print('  CONFLICT {}'.format(item))
+            out('  CONFLICT {}'.format(item))
         for item in self.errors[:20]:
-            print('  ERROR {}'.format(item))
+            out('  ERROR {}'.format(item))
 
 
 class Command(BaseCommand):
@@ -67,9 +73,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         db_name = connection.settings_dict['NAME'] or ''
-        if not db_name.startswith('smass_r21_'):
+        # additive：R2.2 G5 加入隔离演练库前缀与 Django 测试库前缀；
+        # 仍然严格排除 smass 与既有原型库。
+        safe_prefixes = ('smass_r21_', 'smass_r22_g5_', 'test_smass_')
+        if not any(db_name.startswith(prefix) for prefix in safe_prefixes):
             raise CommandError(
-                '拒绝：回填只允许在 smass_r21_* 原型库执行，当前 {!r}'.format(db_name)
+                '拒绝：回填只允许在 {} 前缀的原型/演练库执行，当前 {!r}'.format(
+                    safe_prefixes, db_name
+                )
             )
 
         self.stdout.write('target database : {}'.format(db_name))
@@ -184,7 +195,8 @@ class Command(BaseCommand):
                         '{} pk={} 失败: {}'.format(model.__name__, pk_text, exc)
                     )
 
-        stats.report('BACKFILL{}'.format(' (dry-run)' if dry_run else ''))
+        stats.report('BACKFILL{}'.format(' (dry-run)' if dry_run else ''),
+                     stream=self.stdout.write)
         self.stdout.write('accounts        : {}'.format(Account.objects.count()))
         self.stdout.write('roles           : {}'.format(AccountRole.objects.count()))
         self.stdout.write('links           : {}'.format(LegacyAccountLink.objects.count()))

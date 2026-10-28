@@ -79,3 +79,25 @@
 3. 正式认证路径切换、`AUTH_USER_MODEL` 变更；
 4. 审计查询界面与保留策略；
 5. 冲突事件运营告警。
+
+---
+
+## 7. R2.2 G5 变更（隔离回填演练）
+
+| 文件 | 变更 |
+|---|---|
+| `scripts/r22_g5_ro_user.py`（新） | 创建/验证**数据库级只读**账号（仅 SELECT；4 类写探测全部被拒） |
+| `scripts/r22_g5_stage.py`（新） | 只读快照（mysqldump --single-transaction）+ 隔离 stage 库，拒绝覆盖既有库 |
+| `scripts/r22_g5_drill.py`（新） | 差异注入检测、回滚范围验证、二次回填恢复 |
+| `smass/settings_r22_g5.py`（新） | 演练配置（库必须命中 `smass_r22_g5_`） |
+| `r22_account/tests/test_g5_backfill.py`（新） | 18 例：白名单/幂等/哈希/故障注入/回滚范围/差异检测 |
+| `r21_account/.../backfill_accounts_r21.py` | 白名单扩展（`smass_r22_g5_`、`test_smass_`）；输出改走 `self.stdout` |
+| `r21_account/.../verify_account_consistency.py` | 重写：`--json` / `--plan-only`、9 个差异码、修正误报、无 repair 选项 |
+
+**环境变更**：安装 `cryptography 50.0.2`（MySQL 8 `caching_sha2_password` 认证所需）。
+该依赖**尚未**写入 `requirements.txt`（见风险 R9）。
+
+**新增数据库**：`smass_r22_g5_stage`（隔离演练库，本轮**未删除**）。
+**新增数据库账号**：`smass_g5_ro`（仅 `SELECT ON smass.*`）。
+
+**未修改**：`app01/*`、`smass/settings.py`、`AUTH_USER_MODEL`、既有迁移、R2.1 模型。
