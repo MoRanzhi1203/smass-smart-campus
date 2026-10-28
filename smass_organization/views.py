@@ -206,3 +206,26 @@ def import_commit_view(request):
         'status': job.status,
         'stats': stats,
     })
+
+
+@require_http_methods(['GET'])
+@roles_required(*TEACHER_ROLES)
+def student_export(request):
+    """受限 CSV 导出（对象/字段 scope 与列表一致）。"""
+    from django.http import HttpResponse
+
+    from smass_organization import export
+
+    text, meta = export.export_students_csv(
+        getattr(request, 'user', None),
+        unit_code=request.GET.get('unit'),
+        keyword=request.GET.get('q'),
+        limit=int(request.GET.get('limit', export.MAX_ROWS)),
+        offset=int(request.GET.get('offset', 0)),
+    )
+
+    response = HttpResponse(text, content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="students.csv"'
+    response['X-Exported-Rows'] = str(meta['exported'])
+    response['X-Total-Rows'] = str(meta['total'])
+    return response

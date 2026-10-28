@@ -10,6 +10,7 @@ urlpatterns = [
     path('r4/units/<int:pk>/move/', views.unit_move, name='r4_unit_move'),
     path('r4/students/', views.student_list, name='r4_student_list'),
     path('r4/students/<str:student_no>/', views.student_detail, name='r4_student_detail'),
+    path('r4/students/export/', views.student_export, name='r4_student_export'),
     path('r4/import/preview/', views.import_preview_view, name='r4_import_preview'),
     path('r4/import/commit/', views.import_commit_view, name='r4_import_commit'),
     path('r4/health/', views.health, name='r4_health'),
