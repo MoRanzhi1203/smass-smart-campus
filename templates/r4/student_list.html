@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>R4 学生档案</title></head>
+<body>
+<h3>学生档案（R4）</h3>
+<p id="visible-fields">可见字段：{{ visible_fields|join:", " }}</p>
+<table border="1" cellpadding="4" id="student-table">
+  <thead><tr><th>学号</th><th>姓名</th><th>组织</th><th>状态</th><th>扩展</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td>{{ row.student_no }}</td>
+      <td>{{ row.name }}</td>
+      <td>{{ row.unit }}</td>
+      <td>{{ row.status }}</td>
+      <td>{{ row.extra }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">暂无数据</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>
