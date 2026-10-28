@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R6 流程实例</title></head>
+<body>{% csrf_token %}<h3>流程实例（R6）</h3>
+<table border="1" cellpadding="4" id="instance-table">
+<thead><tr><th>业务</th><th>状态</th><th>当前节点</th></tr></thead><tbody>
+{% for i in instances %}<tr><td>{{ i.subject_type }}:{{ i.subject_id }}</td><td>{{ i.status }}</td><td>{% if i.current_node %}{{ i.current_node.code }}{% endif %}</td></tr>
+{% empty %}<tr><td colspan="3">暂无数据</td></tr>{% endfor %}
+</tbody></table></body></html>

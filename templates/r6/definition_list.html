@@ -1,0 +1,7 @@
+﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R6 流程定义</title></head>
+<body>{% csrf_token %}<h3>流程定义（R6）</h3>
+<table border="1" cellpadding="4" id="definition-table">
+<thead><tr><th>编码</th><th>名称</th><th>启用</th><th>版本数</th></tr></thead><tbody>
+{% for d in definitions %}<tr><td>{{ d.code }}</td><td>{{ d.name }}</td><td>{{ d.is_active }}</td><td>{{ d.versions.count }}</td></tr>
+{% empty %}<tr><td colspan="4">暂无数据</td></tr>{% endfor %}
+</tbody></table></body></html>
