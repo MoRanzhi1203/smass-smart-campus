@@ -19,6 +19,8 @@ LEDGER = Path(__file__).resolve().parent.parent / 'docs' / 'dsh_run' / 'R4_R10_M
 VALID_STATUS = {
     'NOT_STARTED', 'IN_PROGRESS', 'IMPLEMENTED', 'TESTED',
     'BUSINESS_CONFIG_PENDING', 'BLOCKED', 'NOT_RUN',
+    # PARTIAL：已实现且有部分测试证据，但未达到该任务的完整验收（计划 §9 报告用语）
+    'PARTIAL',
 }
 
 #: 允许"未 TESTED 但可接受"的终态
