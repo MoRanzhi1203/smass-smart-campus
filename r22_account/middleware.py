@@ -111,4 +111,6 @@ class RoutePolicyMiddleware:
     def _deny(request, message):
         if wants_json(request):
             return JsonResponse({'status': False, 'tips': message}, status=403)
-        return redirect('/r21/login/' if request.path.startswith('/r22/') else '/login/')
+        # R2.2 隔离配置下唯一的登录入口是 /r21/login/；
+        # 跳 /login/ 会 404（旧登录页未在 urls_r22 挂载）。
+        return redirect('/r21/login/')

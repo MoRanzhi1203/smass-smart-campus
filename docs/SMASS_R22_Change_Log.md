@@ -101,3 +101,20 @@
 **新增数据库账号**：`smass_g5_ro`（仅 `SELECT ON smass.*`）。
 
 **未修改**：`app01/*`、`smass/settings.py`、`AUTH_USER_MODEL`、既有迁移、R2.1 模型。
+---
+
+## 8. R2.2 G6–G8 变更（自主执行轮）
+
+| 文件 | 变更 |
+|---|---|
+| `requirements.txt` | 新增 `cryptography>=41,<51`（运行依赖，修复 MySQL 8 caching_sha2 认证） |
+| `scripts/r22_g6_bench.py`（新） | 合成数据基准：五类身份延迟/SQL、scoping、并发 1/10/50 |
+| `smass/settings_r22_g6.py`（新） | G6 合成库配置（库名强制 `smass_r22_g6_`） |
+| `r22_account/tests/test_g7_browser.py`（新） | 浏览器 E2E 8 例（三端×视口、强制改密、legacy 路由、停用、403） |
+| `r22_account/middleware.py` | 修复 `_deny` 跳转到不存在的 `/login/`（改为 `/r21/login/`） |
+
+**新增数据库**：`smass_r22_g6_synth`（1,146 合成账号，**未删除**）。
+
+**未修改**：`app01/*`、`smass/settings.py`、`AUTH_USER_MODEL`、既有迁移、R2.1 模型。
+
+**测试变化**：267（原 259 + G7 8）。r22_account 由 57 增至 65。
