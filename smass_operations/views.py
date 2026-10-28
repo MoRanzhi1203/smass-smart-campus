@@ -33,3 +33,22 @@ def metrics(request):
 def alerts(request):
     triggered = services.evaluate_rules(persist=False)
     return JsonResponse({'ok': True, 'triggered': triggered})
+# ---------------------------------------------------------------------------
+# R10-01 统一导航
+# ---------------------------------------------------------------------------
+def nav_home(request):
+    """统一入口：展示导航与当前角色，未登录也可访问（便于排障）。"""
+    from django.shortcuts import render
+
+    account = getattr(request, 'user', None)
+    roles = []
+    if account is not None and getattr(account, 'is_authenticated', False):
+        try:
+            roles = sorted(account.active_roles())
+        except Exception:  # noqa: BLE001
+            roles = []
+
+    return render(request, 'r10/home.html', {
+        'account': account if roles else None,
+        'roles': roles,
+    })

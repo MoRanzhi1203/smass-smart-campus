@@ -1,0 +1,14 @@
+{% extends "r10/base.html" %}
+{% block title %}SMASS 发行候选{% endblock %}
+{% block content %}
+<h3 id="r10-title">SMASS 平台（R10 发行候选）</h3>
+<p>当前角色：<span id="r10-roles">{{ roles|join:", " }}</span></p>
+<ul id="r10-modules">
+  <li>R4 组织机构与学生档案</li>
+  <li>R5 教学管理与教师工作台</li>
+  <li>R6 审批工作流与消息</li>
+  <li>R7 指标看板与报表</li>
+  <li>R8 开放 API</li>
+  <li>R9 运维与健康检查</li>
+</ul>
+{% endblock %}

@@ -54,3 +54,24 @@
 
 `manage.py check` 0 issues；`makemigrations --check --dry-run` No changes；
 `smass` 26 表 / 1-3-2 未变。
+---
+
+## 7. 最终验收（R4–R10 全部完成）
+
+| 套件 | 用例 | 结果 |
+|---|---|---|
+| smass_operations（R9+R10） | 31 | PASS |
+| smass_api（R8） | 23 | PASS |
+| smass_analytics（R7） | 31 | PASS |
+| smass_workflow（R6） | 41 | PASS |
+| smass_academic（R5） | 56 | PASS |
+| smass_organization（R4） | 69 | PASS |
+| r22_account | 94 | PASS |
+| r21_account | 72 | PASS |
+| app01 | 114 | PASS |
+| tests_e2e | 16 | PASS |
+| **合计** | **547** | 全绿 |
+
+`scripts/r4_r10_gate.py --strict` → **exit 0（36/36 TESTED）**
+`manage.py check` 0 issues；`makemigrations --check` No changes。
+`smass` 26 表 / Admin 1 · Student 3 · Teacher 2 未变。

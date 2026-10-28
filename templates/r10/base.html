@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}SMASS{% endblock %}</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; }
+  #r10-nav { background: #1f2937; color: #fff; padding: 10px 16px; }
+  #r10-nav a { color: #e5e7eb; margin-right: 16px; text-decoration: none; }
+  #r10-nav a:hover { color: #fff; text-decoration: underline; }
+  #r10-nav .who { float: right; color: #9ca3af; }
+  #r10-main { padding: 16px; }
+  @media (max-width: 600px) {
+    #r10-nav a { display: block; margin: 4px 0; }
+    #r10-nav .who { float: none; display: block; margin-top: 6px; }
+  }
+</style>
+</head>
+<body>
+{% csrf_token %}
+<nav id="r10-nav">
+  <a href="/r10/" id="nav-home">SMASS</a>
+  <a href="/r4/units/" id="nav-org">组织与档案</a>
+  <a href="/r5/years/" id="nav-academic">教学管理</a>
+  <a href="/r6/definitions/" id="nav-workflow">审批流程</a>
+  <a href="/r7/dashboard/" id="nav-analytics">统计看板</a>
+  <a href="/api/v1/openapi.json" id="nav-api">API 文档</a>
+  <a href="/r9/health/" id="nav-ops">运维</a>
+  <span class="who" id="nav-who">{% if account %}{{ account.login_name }}{% else %}未登录{% endif %}</span>
+</nav>
+<main id="r10-main">
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -1,47 +1,83 @@
-# SMASS R4–R10 版本成果矩阵
+# SMASS R4–R10 完成矩阵与发行候选
 
-> 状态词：`NOT_STARTED / IN_PROGRESS / CORE_COMPLETE / TESTED / PARTIAL / BLOCKED / BUSINESS_CONFIG_PENDING / RELEASE_CANDIDATE / RELEASED`
-> 原则：只有真实实现且测试过的能力才记录；其余一律如实标注。
+- 分支：`feat/smass-r4-r10-integrated-platform`
+- 基线：`01fe357`
+- **36/36 强制任务 TESTED**
+- 门禁：`scripts/r4_r10_gate.py --strict` → **exit 0**
+- **R10 = RELEASE_CANDIDATE**（`PRODUCTION_DEPLOYMENT = NOT AUTHORIZED`）
 
-## 1. 总览
+## 1. 逐版本状态
 
-| 版本 | 主题 | 状态 | 真实交付 |
-|---|---|---|---|
-| **R4** | 组织机构与学生档案 | **CORE_COMPLETE / PARTIAL** | 7 模型、组织树服务、字段级权限、导入预检/提交、8 端点、2 模板、23 测试 |
-| R5 | 教学管理与教师工作台 | **NOT_STARTED** | — |
-| R6 | 审批工作流与消息 | **NOT_STARTED** | — |
-| R7 | 数据分析与报表 | **NOT_STARTED** | — |
-| R8 | 开放 API 与集成 | **NOT_STARTED** | — |
-| R9 | 高可靠与安全运维 | **PARTIAL**（沿用 R2/R3） | 告警、审计、备份演练、连接诊断、三引擎浏览器 |
-| R10 | 产品化与发行 | **NOT_STARTED** | — |
+| 版本 | 状态 | 模型 | 页面/端点 | 测试 | 关键能力 |
+|---|---|---|---|---|---|
+| **R4** | **TESTED** | 7 | 9 路由 + 2 页 | **69** | 组织树防环、组织 scope、乐观锁、受限导出、浏览器 E2E |
+| **R5** | **TESTED** | 7 | 15 路由 + 6 页 | **56** | 学年/学期/课程/教学班/任课/修读、三端可见性 |
+| **R6** | **TESTED** | 7 | 8 路由 + 4 页 | **41** | 版本化流程、状态机、待办、通知、UI walkthrough |
+| **R7** | **TESTED** | 5 | 4 路由 + 2 页 | **31** | 指标注册、scope 先于聚合、小样本抑制、报表导出 |
+| **R8** | **TESTED** | 4 | 6 端点 | **23** | /api/v1/、服务身份、限流、幂等、mock 同步、OpenAPI |
+| **R9** | **TESTED** | 4 | 4 端点 | **21** | 遥测、health/ready、告警、CI、备份演练、秘密扫描 |
+| **R10** | **RELEASE_CANDIDATE** | — | 1 路由 + 2 页 | **10** | 统一导航、安装、升级回滚、运维手册、全链路 E2E |
 
-## 2. R4 明细
+## 2. 36 项强制任务
 
-| 维度 | 内容 |
+| 版本 | 任务 | 状态 |
+|---|---|---|
+| R4 | R4-01 组织 scope（P0） | TESTED |
+| R4 | R4-02 并发安全（P0） | TESTED |
+| R4 | R4-03 受限导出 | TESTED |
+| R4 | R4-04 浏览器 E2E | TESTED |
+| R4 | R4-05 集成验收 | TESTED |
+| R5 | R5-01..05 | TESTED |
+| R5 | R5-06 端到端 | TESTED |
+| R6 | R6-01..04 | TESTED |
+| R6 | R6-05 演示流程 | TESTED |
+| R7 | R7-01..05 | TESTED |
+| R8 | R8-01..05 | TESTED |
+| R9 | R9-01..05 | TESTED |
+| R10 | R10-01..05 | TESTED |
+
+## 3. 全量回归
+
+| 套件 | 用例 |
 |---|---|
-| 模型 | `OrganizationUnit`、`OrganizationMembership`、`StudentRecord`、`StudentRecordChange`、`StudentFieldDefinition`、`DataImportJob`、`DataImportRowError` |
-| 迁移 | `smass_organization/migrations/0001_initial.py` |
-| 服务 | 类型约束、防环（环优先）、移动审计、字段级权限、导入预检/提交 |
-| 页面 | `/r4/units/`（组织列表，真实渲染）、`/r4/students/`（学生列表，字段级过滤） |
-| API | `/r4/units/tree/`、`/r4/students/<no>/`、`/r4/import/preview|commit/`、`/r4/health/` |
-| 测试 | 23 例 PASS |
-| 缺失 | 组织级 scope、浏览器 E2E、并发更新测试、导出 |
+| `smass_operations`（R9+R10） | **31** |
+| `smass_api`（R8） | 23 |
+| `smass_analytics`（R7） | 31 |
+| `smass_workflow`（R6） | 41 |
+| `smass_academic`（R5） | 56 |
+| `smass_organization`（R4） | 69 |
+| `r22_account` | 94 |
+| `r21_account` | 72 |
+| `app01` | 114 |
+| `tests_e2e` | 16 |
+| **合计** | **547** |
 
-## 3. R5–R10 为什么没开始
+`check` 0 issues；`makemigrations --check` No changes；`smass` 26 表 / Admin 1 · Student 3 · Teacher 2 未变。
 
-| 版本 | 缺什么 |
+## 4. R10 发行门禁
+
+| 门禁 | 结果 |
 |---|---|
-| R5 | 课程/学期/教学班的真实业务规则（是否要成绩、评分复核规则） |
-| R6 | 审批场景清单（对象、审批链、驳回/撤回/超时规则） |
-| R7 | 指标字典（每个指标的来源、口径、权限） |
-| R8 | 外部系统清单与协议 |
-| R10 | 依赖前六项稳定 |
+| 全链路 E2E（R4→R5→R6→R7→R8） | **PASS** |
+| 跨模块 scope 一致性 | **PASS**（服务层/指标/API 三处一致） |
+| 全新库从零安装 | **PASS**（72 表、0 缺失） |
+| 模块级迁移回滚 | **PASS**（72→66→72，其他数据存活） |
+| 导航可达 | **PASS**（6 个入口全部 200/鉴权后可用） |
+| 移动端视口 | **PASS**（导航堆叠） |
+| 秘密扫描 | **PASS**（0 issues / 33 fixtures） |
+| 依赖审计 | **PASS**（0 漏洞） |
 
-按计划 §4 的 A/B/C 分级：R5–R8 的**模型骨架**属 A/B 类可做，但其**业务规则**属 C 类
-（真实制度），已在业务决策登记册登记。
+## 5. 未解决事项
 
-## 4. 结论
+| 项 | 状态 | 说明 |
+|---|---|---|
+| BD-05/06/07/08 | **BUSINESS_CONFIG_PENDING** | 成绩规则、审批链、指标口径、外部协议——需业务方输入；**未阻断任何已实现能力** |
+| MySQL 条件唯一约束 | 已知限制 | 两个约束未在 DB 创建，靠服务层保证 |
+| 生产部署 | **NOT AUTHORIZED** | 需单独授权 |
+| `smass_r22_g5_stage` | 未清理 | 含真实姓名，需数据责任人批准 |
 
-- R4 有可运行的真实能力（非空壳），但未达完整验收 → `CORE_COMPLETE / PARTIAL`；
-- R5–R10 保持 `NOT_STARTED`，**没有创建任何空壳模型或演示页面**；
-- 下一步建议：先补 R4 的组织级 scope + E2E，再启动 R5 骨架。
+## 6. 结论
+
+**R10 = RELEASE_CANDIDATE**：36/36 强制任务 TESTED，547 测试全绿，全链路 E2E 与安装/升级/回滚演练均通过。
+
+**`PRODUCTION_DEPLOYMENT = NOT AUTHORIZED`** —— 候选状态不等于上线许可。
