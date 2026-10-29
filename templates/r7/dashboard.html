@@ -1,10 +1,10 @@
 {% extends "r10/base.html" %}
 {% block title %}R7 看板{% endblock %}
 {% block content %}
-<h3>指标看板（R7）</h3>
-<table border="1" cellpadding="4" id="dashboard-table">
+<div class="sm-page-head"><div><h1 class="sm-title">指标看板（R7）</h1></div></div>
+<div class="sm-table-wrap"><table class="sm-table" id="dashboard-table">
 <thead><tr><th>指标</th><th>名称</th><th>数值</th><th>查询哈希</th></tr></thead><tbody>
 {% for r in rows %}<tr><td>{{ r.metric }}</td><td>{{ r.name }}</td><td>{{ r.value }}</td><td>{{ r.query_hash }}</td></tr>
 {% empty %}<tr><td colspan="4">暂无可显示指标</td></tr>{% endfor %}
-</tbody></table>
+</tbody></table></div>
 {% endblock %}

@@ -1,12 +1,12 @@
 {% extends "r10/base.html" %}
 {% block title %}R5 教学班{% endblock %}
 {% block content %}
-<h3>教学班（R5）</h3>
-<table border="1" cellpadding="4" id="section-table">
+<div class="sm-page-head"><div><h1 class="sm-title">教学班（R5）</h1></div></div>
+<div class="sm-table-wrap"><table class="sm-table" id="section-table">
 <thead><tr><th>学期</th><th>课程</th><th>班号</th><th>容量</th><th>状态</th></tr></thead>
 <tbody>
 {% for s in sections %}
 <tr><td>{{ s.term }}</td><td>{{ s.course.title }}</td><td>{{ s.code }}</td><td>{{ s.capacity }}</td><td>{{ s.status }}</td></tr>
-{% empty %}<tr><td colspan="5">暂无数据</td></tr>{% endfor %}
-</tbody></table>
+{% empty %}<tr><td colspan="5"><div class="sm-empty"><div class="sm-empty-icon">▤</div><div class="sm-empty-title">暂无数据</div><div class="sm-empty-desc">还没有记录，或当前角色无权查看。</div></div></td></tr>{% endfor %}
+</tbody></table></div>
 {% endblock %}

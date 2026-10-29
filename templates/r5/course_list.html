@@ -1,12 +1,12 @@
 {% extends "r10/base.html" %}
 {% block title %}R5 课程{% endblock %}
 {% block content %}
-<h3>课程目录（R5）</h3>
-<table border="1" cellpadding="4" id="course-table">
+<div class="sm-page-head"><div><h1 class="sm-title">课程目录（R5）</h1></div></div>
+<div class="sm-table-wrap"><table class="sm-table" id="course-table">
 <thead><tr><th>编码</th><th>名称</th><th>学分</th><th>类型</th><th>启用</th></tr></thead>
 <tbody>
 {% for c in courses %}
 <tr><td>{{ c.code }}</td><td>{{ c.title }}</td><td>{{ c.credit|default_if_none:"" }}</td><td>{{ c.course_type }}</td><td>{{ c.is_active }}</td></tr>
-{% empty %}<tr><td colspan="5">暂无数据</td></tr>{% endfor %}
-</tbody></table>
+{% empty %}<tr><td colspan="5"><div class="sm-empty"><div class="sm-empty-icon">▤</div><div class="sm-empty-title">暂无数据</div><div class="sm-empty-desc">还没有记录，或当前角色无权查看。</div></div></td></tr>{% endfor %}
+</tbody></table></div>
 {% endblock %}

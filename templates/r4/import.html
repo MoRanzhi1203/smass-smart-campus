@@ -1,0 +1,187 @@
+{% extends "r10/base.html" %}
+{% block title %}数据导入{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r4/units/">组织与档案</a><span class="sep">/</span><span class="current">数据导入</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">数据导入</h1>
+    <p class="sm-subtitle">CSV 文本导入学生档案。预览阶段**不写入任何数据**，确认后才提交。</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r4/students/">查看学生档案</a>
+  </div>
+</div>
+
+<div class="sm-alert is-info">
+  <span>演示用途：请使用<strong>合成数据</strong>。当前库内学生档案 {{ student_count }} 条。</span>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">第 1 步 · 粘贴 CSV</div>
+  <div class="sm-card-body">
+    <form id="import-form" data-sm-form onsubmit="return false;">
+      <div class="sm-field">
+        <label class="sm-label" for="csv-input">CSV 内容<span class="req">*</span></label>
+        <textarea id="csv-input" name="csv" rows="8" style="width:100%;font-family:ui-monospace,monospace;font-size:12.5px;padding:8px;border:1px solid var(--sm-border-strong);border-radius:6px;"
+          placeholder="student_no,name,unit_code&#10;DEMO-1001,演示学生A,DEMO-K&#10;DEMO-1002,演示学生B,DEMO-K"></textarea>
+        <div class="sm-help">首行必须是表头：student_no,name,unit_code。空行会被忽略。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="sm-btn is-primary" id="btn-preview">预览校验</button>
+        <button type="button" class="sm-btn is-primary" id="btn-commit" disabled>确认导入</button>
+        <button type="button" class="sm-btn is-ghost" id="btn-reset">清空</button>
+      </div>
+    </form>
+    <div id="import-feedback" aria-live="polite" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<div class="sm-card" id="preview-card" hidden>
+  <div class="sm-card-head">第 2 步 · 预览结果（未写入）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="preview-table">
+        <thead><tr><th>#</th><th>学号</th><th>姓名</th><th>组织</th><th>状态</th><th>问题</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">最近导入作业</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="recent-table">
+        <thead><tr><th>编号</th><th>状态</th><th>行数</th><th>时间</th></tr></thead>
+        <tbody>
+          {% for job in recent %}
+          <tr>
+            <td class="sm-mono">{{ job.pk }}</td>
+            <td><span class="sm-badge {% if job.status == 'done' %}is-success{% elif job.status == 'failed' %}is-danger{% else %}is-warning{% endif %}">{{ job.status }}</span></td>
+            <td class="is-num">{{ job.total_rows|default:"-" }}</td>
+            <td class="sm-mono">{{ job.created_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">⇪</div>
+              <div class="sm-empty-title">还没有导入记录</div>
+              <div class="sm-empty-desc">先在上方粘贴 CSV 并预览。</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var csv = document.getElementById('csv-input');
+  var btnPreview = document.getElementById('btn-preview');
+  var btnCommit = document.getElementById('btn-commit');
+  var btnReset = document.getElementById('btn-reset');
+  var feedback = document.getElementById('import-feedback');
+  var previewCard = document.getElementById('preview-card');
+  var tbody = document.querySelector('#preview-table tbody');
+  var pending = null;
+
+  function alertBox(kind, text) {
+    feedback.innerHTML = '';
+    var box = document.createElement('div');
+    box.className = 'sm-alert is-' + kind;
+    box.textContent = text;
+    feedback.appendChild(box);
+  }
+
+  function renderRows(rows) {
+    tbody.innerHTML = '';
+    (rows || []).forEach(function (row, index) {
+      var tr = document.createElement('tr');
+      var ok = row.ok !== false && !row.error;
+      tr.innerHTML = '<td class="sm-mono">' + (index + 1) + '</td>' +
+        '<td>' + (row.student_no || '') + '</td>' +
+        '<td>' + (row.name || '') + '</td>' +
+        '<td>' + (row.unit_code || row.unit || '') + '</td>' +
+        '<td><span class="sm-badge ' + (ok ? 'is-success' : 'is-danger') + '">' +
+          (ok ? '可导入' : '将跳过') + '</span></td>' +
+        '<td>' + (row.error || row.reason || '') + '</td>';
+      tbody.appendChild(tr);
+    });
+    previewCard.hidden = !(rows && rows.length);
+  }
+
+  btnPreview.addEventListener('click', function () {
+    var text = csv.value;
+    if (!text.trim()) { alertBox('warning', '请先粘贴 CSV 内容。'); return; }
+
+    btnPreview.disabled = true;
+    btnPreview.innerHTML = '<span class="sm-spinner"></span> 校验中…';
+
+    SM.request('/r4/import/preview/', { method: 'POST', body: { csv: text } })
+      .then(function (res) {
+        btnPreview.disabled = false;
+        btnPreview.textContent = '预览校验';
+        if (!res.ok || !res.data || res.data.ok === false) {
+          alertBox('error', (res.data && res.data.reason) || '预览失败（HTTP ' + res.status + '）');
+          return;
+        }
+        pending = text;
+        var preview = res.data.preview || {};
+        var rows = preview.rows || [];
+        renderRows(rows);
+        var valid = rows.filter(function (r) { return r.ok !== false && !r.error; }).length;
+        alertBox('info', '预览完成：共 ' + rows.length + ' 行，可导入 ' + valid + ' 行。此时数据库尚未写入。');
+        btnCommit.disabled = rows.length === 0;
+      })
+      .catch(function () {
+        btnPreview.disabled = false;
+        btnPreview.textContent = '预览校验';
+        alertBox('error', '网络错误，请重试。');
+      });
+  });
+
+  btnCommit.addEventListener('click', function () {
+    if (!pending) { alertBox('warning', '请先预览。'); return; }
+    SM.confirm('确认将预览中的数据写入数据库？此操作会创建学生档案。', {
+      okText: '确认导入', danger: false
+    }).then(function (ok) {
+      if (!ok) return;
+      btnCommit.disabled = true;
+      btnCommit.innerHTML = '<span class="sm-spinner"></span> 导入中…';
+      SM.request('/r4/import/commit/', { method: 'POST', body: { csv: pending } })
+        .then(function (res) {
+          btnCommit.textContent = '确认导入';
+          if (!res.ok || !res.data || res.data.ok === false) {
+            alertBox('error', (res.data && res.data.reason) || '导入失败');
+            btnCommit.disabled = false;
+            return;
+          }
+          var result = res.data.result || res.data;
+          alertBox('success', '导入完成：新增 ' + (result.created ?? result.inserted ?? '?') +
+            ' 条，跳过 ' + (result.skipped ?? result.invalid ?? 0) + ' 条。');
+          SM.toast('导入完成', 'success');
+          setTimeout(function () { window.location.reload(); }, 1200);
+        })
+        .catch(function () {
+          btnCommit.disabled = false;
+          btnCommit.textContent = '确认导入';
+          alertBox('error', '网络错误，请重试。');
+        });
+    });
+  });
+
+  btnReset.addEventListener('click', function () {
+    csv.value = '';
+    feedback.innerHTML = '';
+    previewCard.hidden = true;
+    btnCommit.disabled = true;
+    pending = null;
+  });
+})();
+</script>
+{% endblock %}

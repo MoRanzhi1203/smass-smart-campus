@@ -1,17 +1,53 @@
 {% extends "r10/base.html" %}
-{% block title %}SMASS 发行候选{% endblock %}
+{% block title %}SMASS 平台{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><span class="current">概览</span>{% endblock %}
 {% block content %}
-<h3 id="r10-title">SMASS 平台（R10 发行候选）</h3>
-<p class="sub">当前角色：<span id="r10-roles">{{ roles|join:", " }}</span></p>
-<table id="r10-modules">
-<thead><tr><th>模块</th><th>能力</th><th>入口</th></tr></thead>
-<tbody>
-<tr><td>R4</td><td>组织机构与学生档案</td><td><a href="/r4/units/">/r4/units/</a></td></tr>
-<tr><td>R5</td><td>教学管理与教师工作台</td><td><a href="/r5/years/">/r5/years/</a></td></tr>
-<tr><td>R6</td><td>审批工作流与消息</td><td><a href="/r6/definitions/">/r6/definitions/</a></td></tr>
-<tr><td>R7</td><td>指标看板与报表</td><td><a href="/r7/dashboard/">/r7/dashboard/</a></td></tr>
-<tr><td>R8</td><td>开放 API</td><td><a href="/api/v1/openapi.json">/api/v1/openapi.json</a></td></tr>
-<tr><td>R9</td><td>运维与健康检查</td><td><a href="/r9/health/">/r9/health/</a></td></tr>
-</tbody>
-</table>
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title" id="r10-title">SMASS 平台</h1>
+    <p class="sm-subtitle">当前角色：<span id="r10-roles">{{ roles|join:", " }}</span></p>
+  </div>
+</div>
+
+<div class="sm-kpi-grid">
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">组织单元</div>
+    <div class="sm-kpi-value">R4</div>
+    <div class="sm-kpi-unit">组织机构与学生档案</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">教学管理</div>
+    <div class="sm-kpi-value">R5</div>
+    <div class="sm-kpi-unit">学年、课程、教学班</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">审批流程</div>
+    <div class="sm-kpi-value">R6</div>
+    <div class="sm-kpi-unit">定义、实例、待办</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">统计分析</div>
+    <div class="sm-kpi-value">R7</div>
+    <div class="sm-kpi-unit">指标看板与报表</div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">模块入口</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="r10-modules">
+        <thead><tr><th>模块</th><th>能力</th><th>入口</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sm-badge is-primary">R4</span></td><td>组织机构与学生档案</td><td><a href="/r4/units/">组织单元</a></td></tr>
+          <tr><td><span class="sm-badge is-primary">R5</span></td><td>教学管理与教师工作台</td><td><a href="/r5/years/">学年学期</a></td></tr>
+          <tr><td><span class="sm-badge is-primary">R6</span></td><td>审批工作流与消息</td><td><a href="/r6/definitions/">流程定义</a></td></tr>
+          <tr><td><span class="sm-badge is-primary">R7</span></td><td>指标看板与报表</td><td><a href="/r7/dashboard/">指标看板</a></td></tr>
+          <tr><td><span class="sm-badge">R8</span></td><td>开放 API</td><td><a href="/r8/docs/">API 文档</a></td></tr>
+          <tr><td><span class="sm-badge">R9</span></td><td>运维与健康检查</td><td><a href="/r9/status/">运维状态</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

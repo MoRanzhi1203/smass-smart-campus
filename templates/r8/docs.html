@@ -1,0 +1,72 @@
+{% extends "r10/base.html" %}
+{% block title %}API 文档{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><span class="current">API 文档</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">API 文档</h1>
+    <p class="sm-subtitle">{{ schema.info.title }} · {{ schema.info.version }} — 服务账号 Bearer 认证</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/api/v1/openapi.json" target="_blank" rel="noopener">原始 OpenAPI JSON</a>
+  </div>
+</div>
+
+<div class="sm-alert is-warning">
+  <span>这是<strong>隔离演示环境</strong>。所有数据为合成数据，接口未连接任何真实外部系统。</span>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">端点（{{ endpoints|length }}）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="endpoint-table">
+        <thead><tr><th>方法</th><th>路径</th><th>说明</th><th>响应码</th></tr></thead>
+        <tbody>
+          {% for ep in endpoints %}
+          <tr>
+            <td><span class="sm-badge {% if ep.method == 'GET' %}is-info{% else %}is-warning{% endif %}">{{ ep.method }}</span></td>
+            <td class="sm-mono">{{ ep.path }}</td>
+            <td>{{ ep.summary|default:"—" }}</td>
+            <td class="sm-mono">{{ ep.responses|join:", " }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4"><div class="sm-empty"><div class="sm-empty-title">未找到端点</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">可用权限范围（scope）</div>
+  <div class="sm-card-body">
+    <p class="sm-subtitle" style="margin:0 0 10px;">
+      服务账号默认<strong>没有任何 scope</strong>；且 <code>read:students</code> 不等于全校可见。
+    </p>
+    {% for scope in scope_list %}
+      <span class="sm-badge is-primary" style="margin:0 6px 6px 0;">{{ scope }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">调用示例</div>
+  <div class="sm-card-body">
+<pre class="sm-mono" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:8px;overflow-x:auto;font-size:12.5px;margin:0;"># 1. 携带服务令牌
+curl -H "Authorization: Bearer &lt;token&gt;" \
+     http://127.0.0.1:8000/api/v1/units/?page=1&amp;page_size=20
+
+# 2. 幂等写入（同 key 同内容只执行一次）
+curl -X POST -H "Authorization: Bearer &lt;token&gt;" \
+     -H "Idempotency-Key: demo-001" \
+     -H "Content-Type: application/json" \
+     -d '{"records":[{"external_id":"a1"}]}' \
+     http://127.0.0.1:8000/api/v1/sync/
+
+# 3. 错误格式统一为
+# {"error": {"code": "FORBIDDEN", "message": "缺少 scope: read:students"}}</pre>
+  </div>
+</div>
+{% endblock %}

@@ -81,7 +81,7 @@ class NavIntegrationTests(TestCase):
             if resp.status_code != 200:
                 self.fail('{} 返回 {}'.format(url, resp.status_code))
             body = resp.content.decode('utf-8')
-            if 'id="r10-nav"' not in body:
+            if 'id="sm-sidebar"' not in body:
                 missing.append(url)
 
         self.assertEqual(missing, [], '以下页面缺少统一导航: {}'.format(missing))
@@ -99,19 +99,23 @@ class NavIntegrationTests(TestCase):
         resp = self.client.get('/r4/units/')
         body = resp.content.decode('utf-8')
         for href in ('/r4/units/', '/r5/years/', '/r6/definitions/',
-                     '/r7/dashboard/', '/api/v1/openapi.json', '/r9/health/'):
+                     '/r7/dashboard/', '/r8/docs/', '/r9/status/'):
             self.assertIn(href, body)
 
     def test_nav_shows_current_user(self):
         resp = self.client.get('/r5/years/')
         body = resp.content.decode('utf-8')
-        self.assertIn('R10NAVADM', body)
+        # 新外壳优先展示 display_name，回退 login_name
+        self.assertTrue(
+            'nav-admin' in body or 'R10NAVADM' in body,
+            '导航未显示当前用户',
+        )
 
     def test_nav_present_on_empty_page(self):
         """无数据的分支也必须带导航（empty 分支容易漏）。"""
         resp = self.client.get('/r5/courses/?q=不存在的课程')
         body = resp.content.decode('utf-8')
-        self.assertIn('id="r10-nav"', body)
+        self.assertIn('id="sm-sidebar"', body)
 
     def test_no_duplicate_csrf_token(self):
         """子模板不应再重复输出 csrf_token（base 已提供）。"""

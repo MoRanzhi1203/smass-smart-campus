@@ -1,9 +1,9 @@
 {% extends "r10/base.html" %}
 {% block title %}R4 学生档案{% endblock %}
 {% block content %}
-<h3>学生档案（R4）</h3>
+<div class="sm-page-head"><div><h1 class="sm-title">学生档案（R4）</h1></div></div>
 <p id="visible-fields">可见字段：{{ visible_fields|join:", " }}</p>
-<table border="1" cellpadding="4" id="student-table">
+<div class="sm-table-wrap"><table class="sm-table" id="student-table">
   <thead><tr><th>学号</th><th>姓名</th><th>组织</th><th>状态</th><th>扩展</th></tr></thead>
   <tbody>
   {% for row in rows %}
@@ -15,8 +15,8 @@
       <td>{{ row.extra }}</td>
     </tr>
   {% empty %}
-    <tr><td colspan="5">暂无数据</td></tr>
+    <tr><td colspan="5"><div class="sm-empty"><div class="sm-empty-icon">▤</div><div class="sm-empty-title">暂无数据</div><div class="sm-empty-desc">还没有记录，或当前角色无权查看。</div></div></td></tr>
   {% endfor %}
   </tbody>
-</table>
+</table></div>
 {% endblock %}

@@ -32,7 +32,7 @@ class NavigationTests(TestCase):
         resp = self.client.get('/r10/')
         self.assertEqual(resp.status_code, 200)
         body = resp.content.decode('utf-8')
-        self.assertIn('r10-nav', body)
+        self.assertIn('sm-sidebar', body)
         self.assertIn('未登录', body)
 
     def test_nav_page_shows_roles_when_logged_in(self):
@@ -48,12 +48,12 @@ class NavigationTests(TestCase):
         resp = self.client.get('/r10/')
         body = resp.content.decode('utf-8')
         for href in ('/r4/units/', '/r5/years/', '/r6/definitions/',
-                     '/r7/dashboard/', '/api/v1/openapi.json', '/r9/health/'):
+                     '/r7/dashboard/', '/r8/docs/', '/r9/status/'):
             self.assertIn(href, body, '导航缺少 {}'.format(href))
 
     def test_nav_targets_are_reachable(self):
         """导航指向的端点都应存在（health 公开，其余鉴权后可用）。"""
-        for path in ('/r9/health/', '/api/v1/openapi.json'):
+        for path in ('/r9/health/', '/api/v1/openapi.json', '/r10/'):
             resp = self.client.get(path)
             self.assertEqual(resp.status_code, 200, path)
 

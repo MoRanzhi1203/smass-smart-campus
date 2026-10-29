@@ -1,10 +1,10 @@
 {% extends "r10/base.html" %}
 {% block title %}R6 流程实例{% endblock %}
 {% block content %}
-<h3>流程实例（R6）</h3>
-<table border="1" cellpadding="4" id="instance-table">
+<div class="sm-page-head"><div><h1 class="sm-title">流程实例（R6）</h1></div></div>
+<div class="sm-table-wrap"><table class="sm-table" id="instance-table">
 <thead><tr><th>业务</th><th>状态</th><th>当前节点</th></tr></thead><tbody>
 {% for i in instances %}<tr><td>{{ i.subject_type }}:{{ i.subject_id }}</td><td>{{ i.status }}</td><td>{% if i.current_node %}{{ i.current_node.code }}{% endif %}</td></tr>
-{% empty %}<tr><td colspan="3">暂无数据</td></tr>{% endfor %}
-</tbody></table>
+{% empty %}<tr><td colspan="3"><div class="sm-empty"><div class="sm-empty-icon">▤</div><div class="sm-empty-title">暂无数据</div><div class="sm-empty-desc">还没有记录，或当前角色无权查看。</div></div></td></tr>{% endfor %}
+</tbody></table></div>
 {% endblock %}

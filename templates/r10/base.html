@@ -1,57 +1,154 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}SMASS{% endblock %}</title>
-<style>
-  * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-         margin: 0; background: #f9fafb; color: #111827; }
-  #r10-nav { background: #1f2937; color: #fff; padding: 0 16px;
-             display: flex; flex-wrap: wrap; align-items: center;
-             gap: 4px 16px; min-height: 48px; }
-  #r10-nav a { color: #d1d5db; text-decoration: none; font-size: 14px;
-               padding: 6px 0; }
-  #r10-nav a:hover { color: #fff; text-decoration: underline; }
-  #r10-nav .brand { font-weight: 600; color: #fff; margin-right: 8px; }
-  #r10-nav .who { margin-left: auto; color: #9ca3af; font-size: 13px; }
-  #r10-main { padding: 20px 16px 40px; max-width: 1100px; }
-  h3 { margin: 0 0 4px; font-size: 18px; }
-  .sub { color: #6b7280; font-size: 13px; margin: 0 0 14px; }
-  table { border-collapse: collapse; background: #fff; width: 100%;
-          max-width: 900px; font-size: 14px;
-          box-shadow: 0 1px 2px rgba(0,0,0,.06); border-radius: 6px;
-          overflow: hidden; }
-  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-  th { background: #f3f4f6; font-weight: 600; color: #374151; }
-  tbody tr:last-child td { border-bottom: 0; }
-  tbody tr:hover { background: #f9fafb; }
-  .empty { color: #9ca3af; }
-  @media (max-width: 600px) {
-    #r10-nav { flex-direction: column; align-items: flex-start; padding: 8px 12px; }
-    #r10-nav a { padding: 4px 0; }
-    #r10-nav .who { margin-left: 0; }
-    #r10-main { padding: 14px 10px 30px; }
-    h3 { font-size: 16px; }
-    th, td { padding: 7px 8px; font-size: 13px; }
-  }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}SMASS{% endblock %} · SMASS</title>
+<link rel="stylesheet" href="{% static 'plugins/bootstrap-5.3.2/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/r10.css' %}">
+{% block head_extra %}{% endblock %}
 </head>
-<body>
+<body class="sm-body">
 {% csrf_token %}
-<nav id="r10-nav">
-  <a href="/r10/" class="brand" id="nav-home">SMASS</a>
-  <a href="/r4/units/" id="nav-org">组织与档案</a>
-  <a href="/r5/years/" id="nav-academic">教学管理</a>
-  <a href="/r6/definitions/" id="nav-workflow">审批流程</a>
-  <a href="/r7/dashboard/" id="nav-analytics">统计看板</a>
-  <a href="/api/v1/openapi.json" id="nav-api">API 文档</a>
-  <a href="/r9/health/" id="nav-ops">运维</a>
-  <span class="who" id="nav-who">{% if request.user.is_authenticated %}{{ request.user.login_name }}{% else %}未登录{% endif %}</span>
-</nav>
-<main id="r10-main">
-{% block content %}{% endblock %}
-</main>
+
+<div class="sm-shell">
+
+  {# ---------------- 侧边栏 ---------------- #}
+  <aside class="sm-sidebar" id="sm-sidebar" aria-label="主导航" aria-hidden="false">
+    <a class="sm-brand" href="/r10/">SMASS<small>学校管理平台</small></a>
+
+    <div class="sm-nav-group">
+      <div class="sm-nav-label">组织与档案</div>
+      <a class="sm-nav-link {% if request.path|slice:':3' == '/r4' %}is-active{% endif %}"
+         href="/r4/units/" id="nav-r4-units">
+        <span class="sm-nav-icon" aria-hidden="true">▤</span>组织单元
+      </a>
+      <a class="sm-nav-link {% if '/r4/students' in request.path %}is-active{% endif %}"
+         href="/r4/students/" id="nav-r4-students">
+        <span class="sm-nav-icon" aria-hidden="true">▤</span>学生档案
+      </a>
+      <a class="sm-nav-link {% if '/r4/import' in request.path %}is-active{% endif %}"
+         href="/r4/import/" id="nav-r4-import">
+        <span class="sm-nav-icon" aria-hidden="true">⇪</span>数据导入
+      </a>
+    </div>
+
+    <div class="sm-nav-group">
+      <div class="sm-nav-label">教学管理</div>
+      <a class="sm-nav-link {% if '/r5/years' in request.path or '/r5/terms' in request.path %}is-active{% endif %}"
+         href="/r5/years/" id="nav-r5-years">
+        <span class="sm-nav-icon" aria-hidden="true">▦</span>学年学期
+      </a>
+      <a class="sm-nav-link {% if '/r5/courses' in request.path %}is-active{% endif %}"
+         href="/r5/courses/" id="nav-r5-courses">
+        <span class="sm-nav-icon" aria-hidden="true">▦</span>课程目录
+      </a>
+      <a class="sm-nav-link {% if '/r5/sections' in request.path %}is-active{% endif %}"
+         href="/r5/sections/" id="nav-r5-sections">
+        <span class="sm-nav-icon" aria-hidden="true">▦</span>教学班
+      </a>
+      <a class="sm-nav-link {% if '/r5/workspace' in request.path %}is-active{% endif %}"
+         href="/r5/workspace/" id="nav-r5-workspace">
+        <span class="sm-nav-icon" aria-hidden="true">◈</span>教师工作台
+      </a>
+      <a class="sm-nav-link {% if '/r5/my-courses' in request.path %}is-active{% endif %}"
+         href="/r5/my-courses/" id="nav-r5-my">
+        <span class="sm-nav-icon" aria-hidden="true">◈</span>我的课程
+      </a>
+    </div>
+
+    <div class="sm-nav-group">
+      <div class="sm-nav-label">审批流程</div>
+      <a class="sm-nav-link {% if '/r6/definitions' in request.path %}is-active{% endif %}"
+         href="/r6/definitions/" id="nav-r6-definitions">
+        <span class="sm-nav-icon" aria-hidden="true">◇</span>流程定义
+      </a>
+      <a class="sm-nav-link {% if '/r6/instances' in request.path %}is-active{% endif %}"
+         href="/r6/instances/" id="nav-r6-instances">
+        <span class="sm-nav-icon" aria-hidden="true">◇</span>流程实例
+      </a>
+      <a class="sm-nav-link {% if '/r6/tasks' in request.path %}is-active{% endif %}"
+         href="/r6/tasks/" id="nav-r6-tasks">
+        <span class="sm-nav-icon" aria-hidden="true">◇</span>待办任务
+      </a>
+      <a class="sm-nav-link {% if '/r6/notifications' in request.path %}is-active{% endif %}"
+         href="/r6/notifications/" id="nav-r6-notifications">
+        <span class="sm-nav-icon" aria-hidden="true">✉</span>消息中心
+      </a>
+    </div>
+
+    <div class="sm-nav-group">
+      <div class="sm-nav-label">统计分析</div>
+      <a class="sm-nav-link {% if '/r7/dashboard' in request.path %}is-active{% endif %}"
+         href="/r7/dashboard/" id="nav-r7-dashboard">
+        <span class="sm-nav-icon" aria-hidden="true">◔</span>指标看板
+      </a>
+      <a class="sm-nav-link {% if '/r7/metrics' in request.path or '/r7/reports' in request.path %}is-active{% endif %}"
+         href="/r7/metrics/" id="nav-r7-metrics">
+        <span class="sm-nav-icon" aria-hidden="true">◔</span>指标与报表
+      </a>
+    </div>
+
+    <div class="sm-nav-group">
+      <div class="sm-nav-label">平台</div>
+      <a class="sm-nav-link {% if '/r8/' in request.path or request.path|slice:':5' == '/api/' %}is-active{% endif %}"
+         href="/r8/docs/" id="nav-r8-docs">
+        <span class="sm-nav-icon" aria-hidden="true">⌗</span>API 文档
+      </a>
+      <a class="sm-nav-link {% if '/r9/' in request.path %}is-active{% endif %}"
+         href="/r9/status/" id="nav-r9-status">
+        <span class="sm-nav-icon" aria-hidden="true">◎</span>运维状态
+      </a>
+    </div>
+  </aside>
+
+  <div class="sm-backdrop" id="sm-backdrop" aria-hidden="true"></div>
+
+  {# ---------------- 主区域 ---------------- #}
+  <div class="sm-main">
+
+    <header class="sm-topbar">
+      <button type="button" class="sm-drawer-toggle" id="sm-drawer-toggle"
+              aria-label="打开导航菜单" aria-controls="sm-sidebar" aria-expanded="false"></button>
+
+      <nav class="sm-breadcrumb" aria-label="面包屑">
+        <a href="/r10/">首页</a>
+        {% block breadcrumb %}{% endblock %}
+      </nav>
+
+      <div class="sm-user">
+        {% if request.user.is_authenticated %}
+          <span class="sm-avatar" aria-hidden="true">{{ request.user.login_name|slice:':2'|upper }}</span>
+          <span id="nav-who">{{ request.user.display_name|default:request.user.login_name }}</span>
+          <a class="sm-btn is-ghost is-sm" href="/r21/logout/" id="nav-logout">退出</a>
+        {% else %}
+          <span id="nav-who">未登录</span>
+          <a class="sm-btn is-sm" href="/r21/login/" id="nav-login">登录</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="sm-content" id="sm-content">
+      {% if messages %}
+        <div id="sm-messages" aria-live="polite">
+          {% for message in messages %}
+            <div class="sm-alert {% if message.tags %}is-{{ message.tags }}{% else %}is-info{% endif %}">
+              <span>{{ message }}</span>
+              <button type="button" class="sm-alert-close" aria-label="关闭提示">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<div class="sm-toast-host" id="sm-toast-host" role="status" aria-live="polite"></div>
+
+<script src="{% static 'plugins/bootstrap-5.3.2/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/r10.js' %}"></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
