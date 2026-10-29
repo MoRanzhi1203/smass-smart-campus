@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head><meta charset="UTF-8"><title>R4 组织单元</title></head>
-<body>
-{% csrf_token %}
+{% extends "r10/base.html" %}
+{% block title %}R4 组织单元{% endblock %}
+{% block content %}
 <h3>组织单元（R4）</h3>
 <table border="1" cellpadding="4" id="unit-table">
   <thead><tr><th>编码</th><th>名称</th><th>类型</th><th>上级</th><th>状态</th></tr></thead>
@@ -20,5 +18,4 @@
   {% endfor %}
   </tbody>
 </table>
-</body>
-</html>
+{% endblock %}

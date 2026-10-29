@@ -5,29 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}SMASS{% endblock %}</title>
 <style>
-  body { font-family: system-ui, sans-serif; margin: 0; }
-  #r10-nav { background: #1f2937; color: #fff; padding: 10px 16px; }
-  #r10-nav a { color: #e5e7eb; margin-right: 16px; text-decoration: none; }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+         margin: 0; background: #f9fafb; color: #111827; }
+  #r10-nav { background: #1f2937; color: #fff; padding: 0 16px;
+             display: flex; flex-wrap: wrap; align-items: center;
+             gap: 4px 16px; min-height: 48px; }
+  #r10-nav a { color: #d1d5db; text-decoration: none; font-size: 14px;
+               padding: 6px 0; }
   #r10-nav a:hover { color: #fff; text-decoration: underline; }
-  #r10-nav .who { float: right; color: #9ca3af; }
-  #r10-main { padding: 16px; }
+  #r10-nav .brand { font-weight: 600; color: #fff; margin-right: 8px; }
+  #r10-nav .who { margin-left: auto; color: #9ca3af; font-size: 13px; }
+  #r10-main { padding: 20px 16px 40px; max-width: 1100px; }
+  h3 { margin: 0 0 4px; font-size: 18px; }
+  .sub { color: #6b7280; font-size: 13px; margin: 0 0 14px; }
+  table { border-collapse: collapse; background: #fff; width: 100%;
+          max-width: 900px; font-size: 14px;
+          box-shadow: 0 1px 2px rgba(0,0,0,.06); border-radius: 6px;
+          overflow: hidden; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { background: #f3f4f6; font-weight: 600; color: #374151; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: #f9fafb; }
+  .empty { color: #9ca3af; }
   @media (max-width: 600px) {
-    #r10-nav a { display: block; margin: 4px 0; }
-    #r10-nav .who { float: none; display: block; margin-top: 6px; }
+    #r10-nav { flex-direction: column; align-items: flex-start; padding: 8px 12px; }
+    #r10-nav a { padding: 4px 0; }
+    #r10-nav .who { margin-left: 0; }
+    #r10-main { padding: 14px 10px 30px; }
+    h3 { font-size: 16px; }
+    th, td { padding: 7px 8px; font-size: 13px; }
   }
 </style>
 </head>
 <body>
 {% csrf_token %}
 <nav id="r10-nav">
-  <a href="/r10/" id="nav-home">SMASS</a>
+  <a href="/r10/" class="brand" id="nav-home">SMASS</a>
   <a href="/r4/units/" id="nav-org">组织与档案</a>
   <a href="/r5/years/" id="nav-academic">教学管理</a>
   <a href="/r6/definitions/" id="nav-workflow">审批流程</a>
   <a href="/r7/dashboard/" id="nav-analytics">统计看板</a>
   <a href="/api/v1/openapi.json" id="nav-api">API 文档</a>
   <a href="/r9/health/" id="nav-ops">运维</a>
-  <span class="who" id="nav-who">{% if account %}{{ account.login_name }}{% else %}未登录{% endif %}</span>
+  <span class="who" id="nav-who">{% if request.user.is_authenticated %}{{ request.user.login_name }}{% else %}未登录{% endif %}</span>
 </nav>
 <main id="r10-main">
 {% block content %}{% endblock %}

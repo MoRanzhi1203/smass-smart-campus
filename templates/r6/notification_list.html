@@ -1,7 +1,10 @@
-﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R6 消息</title></head>
-<body>{% csrf_token %}<h3>站内消息（R6）</h3>
+{% extends "r10/base.html" %}
+{% block title %}R6 消息{% endblock %}
+{% block content %}
+<h3>站内消息（R6）</h3>
 <table border="1" cellpadding="4" id="notification-table">
 <thead><tr><th>标题</th><th>已读</th></tr></thead><tbody>
 {% for n in rows %}<tr><td>{{ n.title }}</td><td>{{ n.is_read }}</td></tr>
 {% empty %}<tr><td colspan="2">暂无消息</td></tr>{% endfor %}
-</tbody></table></body></html>
+</tbody></table>
+{% endblock %}

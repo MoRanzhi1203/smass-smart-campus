@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head><meta charset="UTF-8"><title>R4 学生档案</title></head>
-<body>
+{% extends "r10/base.html" %}
+{% block title %}R4 学生档案{% endblock %}
+{% block content %}
 <h3>学生档案（R4）</h3>
 <p id="visible-fields">可见字段：{{ visible_fields|join:", " }}</p>
 <table border="1" cellpadding="4" id="student-table">
@@ -20,5 +19,4 @@
   {% endfor %}
   </tbody>
 </table>
-</body>
-</html>
+{% endblock %}

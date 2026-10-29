@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R5 课程</title></head>
-<body>{% csrf_token %}
+{% extends "r10/base.html" %}
+{% block title %}R5 课程{% endblock %}
+{% block content %}
 <h3>课程目录（R5）</h3>
 <table border="1" cellpadding="4" id="course-table">
 <thead><tr><th>编码</th><th>名称</th><th>学分</th><th>类型</th><th>启用</th></tr></thead>
@@ -8,4 +9,4 @@
 <tr><td>{{ c.code }}</td><td>{{ c.title }}</td><td>{{ c.credit|default_if_none:"" }}</td><td>{{ c.course_type }}</td><td>{{ c.is_active }}</td></tr>
 {% empty %}<tr><td colspan="5">暂无数据</td></tr>{% endfor %}
 </tbody></table>
-</body></html>
+{% endblock %}

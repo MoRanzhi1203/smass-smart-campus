@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>R5 学期</title></head>
-<body>{% csrf_token %}
+{% extends "r10/base.html" %}
+{% block title %}R5 学期{% endblock %}
+{% block content %}
 <h3>学期（R5）</h3>
 <table border="1" cellpadding="4" id="term-table">
 <thead><tr><th>学年</th><th>学期</th><th>开始</th><th>结束</th><th>当前</th></tr></thead>
@@ -8,4 +9,4 @@
 <tr><td>{{ t.year.code }}</td><td>{{ t.get_semester_display }}</td><td>{{ t.start_date }}</td><td>{{ t.end_date }}</td><td>{{ t.is_active }}</td></tr>
 {% empty %}<tr><td colspan="5">暂无数据</td></tr>{% endfor %}
 </tbody></table>
-</body></html>
+{% endblock %}

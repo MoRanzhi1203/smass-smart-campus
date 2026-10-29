@@ -2,13 +2,16 @@
 {% block title %}SMASS 发行候选{% endblock %}
 {% block content %}
 <h3 id="r10-title">SMASS 平台（R10 发行候选）</h3>
-<p>当前角色：<span id="r10-roles">{{ roles|join:", " }}</span></p>
-<ul id="r10-modules">
-  <li>R4 组织机构与学生档案</li>
-  <li>R5 教学管理与教师工作台</li>
-  <li>R6 审批工作流与消息</li>
-  <li>R7 指标看板与报表</li>
-  <li>R8 开放 API</li>
-  <li>R9 运维与健康检查</li>
-</ul>
+<p class="sub">当前角色：<span id="r10-roles">{{ roles|join:", " }}</span></p>
+<table id="r10-modules">
+<thead><tr><th>模块</th><th>能力</th><th>入口</th></tr></thead>
+<tbody>
+<tr><td>R4</td><td>组织机构与学生档案</td><td><a href="/r4/units/">/r4/units/</a></td></tr>
+<tr><td>R5</td><td>教学管理与教师工作台</td><td><a href="/r5/years/">/r5/years/</a></td></tr>
+<tr><td>R6</td><td>审批工作流与消息</td><td><a href="/r6/definitions/">/r6/definitions/</a></td></tr>
+<tr><td>R7</td><td>指标看板与报表</td><td><a href="/r7/dashboard/">/r7/dashboard/</a></td></tr>
+<tr><td>R8</td><td>开放 API</td><td><a href="/api/v1/openapi.json">/api/v1/openapi.json</a></td></tr>
+<tr><td>R9</td><td>运维与健康检查</td><td><a href="/r9/health/">/r9/health/</a></td></tr>
+</tbody>
+</table>
 {% endblock %}
