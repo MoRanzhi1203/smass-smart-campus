@@ -223,13 +223,13 @@ class ApprovalTask(models.Model):
 
     class Meta:
         verbose_name = '审批任务'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['instance', 'node'],
-                condition=Q(status='open'),
-                name='r6_uniq_open_task',
-            ),
-        ]
+        # H2：MySQL 不支持条件唯一索引（models.W036），原
+        # UniqueConstraint(condition=Q(status='open')) 在数据库层从未被创建。
+        # 真实约束由迁移 0003_open_task_unique 的两个生成列
+        # （open_instance_id / open_node_id）+ 唯一索引 uq_r6_open_task 提供：
+        #   open 行    -> 生成列 = instance_id / node_id
+        #   其他状态   -> NULL（唯一索引中 NULL 互不相等）
+        constraints = []
         indexes = [models.Index(fields=['assignee', 'status'])]
 
 

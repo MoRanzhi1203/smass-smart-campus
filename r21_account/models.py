@@ -194,13 +194,13 @@ class AccountRole(models.Model):
 
     class Meta:
         verbose_name = '角色授予'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['account', 'role'],
-                condition=models.Q(revoked_at__isnull=True),
-                name='r21_uniq_active_role',
-            ),
-        ]
+        # H2：MySQL 不支持条件唯一索引（models.W036），原
+        # UniqueConstraint(condition=Q(revoked_at__isnull=True)) 在数据库层
+        # 从未被创建。真实约束由迁移 0002_active_role_unique 的
+        # 生成列 active_account_id + 唯一索引 uq_r21_active_role 提供：
+        #   active 行 -> active_account_id = account_id
+        #   撤销行   -> NULL（MySQL 唯一索引中 NULL 互不相等）
+        constraints = []
         indexes = [models.Index(fields=['account', 'revoked_at'])]
 
     def __str__(self):
