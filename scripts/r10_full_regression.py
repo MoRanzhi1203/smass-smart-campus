@@ -19,8 +19,10 @@ SUITES = [
     ('smass_operations', 'smass.settings_r10'),
     ('smass_analytics', 'smass.settings_r7'),
     ('smass_organization', 'smass.settings_r4'),
-    # S25 统一数据交换中心（依赖 R4 业务 app，因此用 settings_r4）
-    ('smass_data_exchange', 'smass.settings_r4'),
+    # S25 数据交换中心：R4 与 R5 适配器需要不同的 settings，分开跑避免重复
+    ('smass_data_exchange.tests.test_s25_roundtrip,smass_data_exchange.tests.test_s25_ui',
+     'smass.settings_r4'),
+    ('smass_data_exchange.tests.test_s25_r5', 'smass.settings_r5'),
     ('smass_academic', 'smass.settings_r5'),
     ('smass_workflow', 'smass.settings_r6'),
     ('smass_api', 'smass.settings_r8'),
@@ -35,7 +37,9 @@ FAILED_RE = re.compile(r'^FAILED \((.*)\)', re.M)
 
 
 def run_suite(name, settings_name):
-    cmd = [PYTHON, 'manage.py', 'test', name, '-v', '1']
+    # ``name`` 允许用逗号分隔多个测试标签（同一 settings 下跑多组）
+    labels = [t for t in name.split(',') if t]
+    cmd = [PYTHON, 'manage.py', 'test', *labels, '-v', '1']
     if settings_name:
         cmd.append('--settings={}'.format(settings_name))
 

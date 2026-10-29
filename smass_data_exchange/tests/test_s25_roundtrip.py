@@ -40,6 +40,15 @@ from smass_data_exchange import (
 )
 
 # 适配器依赖 smass_organization，需在 settings 已安装该 app 的环境下显式加载
+import unittest
+
+from django.conf import settings as _dj_settings
+
+_APPS = {a.split('.')[0] for a in _dj_settings.INSTALLED_APPS}
+if 'smass_organization' not in _APPS:
+    # 本文件验证 R4 适配器，需要 smass_organization；在只装了 R5 的 settings 下跳过
+    raise unittest.SkipTest('smass_organization 未安装在当前 settings，跳过 R4 适配器测试')
+
 load_builtin_adapters()
 
 from smass_organization.models import (  # noqa: E402
@@ -137,10 +146,10 @@ class TemplateTests(TestCase):
         data = build_xlsx_template(self.schema)
         wb = load_workbook(io.BytesIO(data))
         ws = wb['Data']
-        # 表头行可能因示例注释列而带尾部空单元格，过滤后比对
+        # 表头末尾有 __example__ 标记列（用于跳过示例行），比对时排除
         headers = [str(c.value or '').strip().rstrip('*').strip().lower()
                    for c in ws[1]]
-        headers = [h for h in headers if h]
+        headers = [h for h in headers if h and h != '__example__']
         self.assertEqual(headers, list(self.schema.codes))
 
     def test_xlsx_example_row_is_synthetic(self):
@@ -225,12 +234,28 @@ class ParsingTests(TestCase):
         with self.assertRaises(ParseError):
             parse(b'\xff\xfe\x00\x00student_no', 'a.csv', self.schema)
 
-    def test_example_row_is_skipped(self):
-        template = build_csv_template(self.schema)
-        rows, meta, errors = parse(template, 'a.csv', self.schema)
+    def test_example_row_is_skipped_via_marker(self):
+        """xlsx 模板的示例行由 __example__ 标记列识别并跳过。"""
+        template = build_xlsx_template(self.schema)
+        rows, meta, errors = parse(template, 'a.xlsx', self.schema)
         self.assertEqual(meta['skipped_example_rows'], 1)
         self.assertEqual(len(rows), 0)
         self.assertEqual(errors, [])
+
+    def test_csv_template_has_no_example_row(self):
+        """CSV 模板只含表头，避免用户必须手工删示例行。"""
+        template = build_csv_template(self.schema)
+        rows, meta, errors = parse(template, 'a.csv', self.schema)
+        self.assertEqual(meta['skipped_example_rows'], 0)
+        self.assertEqual(len(rows), 0)
+
+    def test_user_data_equal_to_example_is_not_dropped(self):
+        """用户数据恰好等于示例值时必须被导入，不能被当成示例丢弃。"""
+        example = self.schema.example_row()
+        csv_bytes = fill_csv(build_csv_template(self.schema), [example])
+        rows, meta, errors = parse(csv_bytes, 'a.csv', self.schema)
+        self.assertEqual(meta['skipped_example_rows'], 0)
+        self.assertEqual(len(rows), 1, '示例同值的数据不得被丢弃')
 
     def test_bad_enum_value_reported(self):
         csv_bytes = fill_csv(build_csv_template(self.schema), [

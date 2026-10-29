@@ -27,27 +27,32 @@ def template_filename(schema: DatasetSchema, ext: str) -> str:
     return 'smass_template_{}_v{}.{}'.format(safe, schema.version, ext)
 
 
+#: 示例行标记列名。带下划线双前缀，不会与业务字段冲突；
+#: 解析器只在这一列被显式标记时跳过该行，**不再按值猜**——
+#: 否则用户数据恰好等于示例值就会被静默丢弃。
+EXAMPLE_MARKER = '__example__'
+
+
 def _header_cells(schema):
-    """表头文本：``code`` + 必填标记 + 中文名。"""
+    """表头文本：``code``（必填加 ``*``）+ 末尾示例标记列。"""
     cells = []
     for f in schema.fields:
-        label = f.code if not f.required else '{}*'.format(f.code)
-        cells.append(label)
+        cells.append('{}*'.format(f.code) if f.required else f.code)
+    cells.append(EXAMPLE_MARKER)
     return cells
 
 
 def build_csv_template(schema: DatasetSchema) -> bytes:
-    """UTF-8(BOM) CSV：表头 + 一行合成示例。
+    """UTF-8(BOM) CSV：**只有表头**（不含示例行）。
 
-    说明文字放在行首注释会破坏 CSV 结构，因此 CSV 模板只含表头与示例；
-    字段说明随 ``Instructions`` 单独以 xlsx 或页面形式提供。
+    CSV 没有可靠的注释机制，若放示例行会让用户必须手工删行；
+    因此 CSV 模板保持"表头即用"，示例与说明放在 xlsx 的
+    ``Instructions`` 表与页面帮助文本里。
     """
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator='\r\n')
-    writer.writerow(_header_cells(schema))
-    writer.writerow([schema.example_row().get(f.code, '') for f in schema.fields])
-    data = buffer.getvalue().encode(CSV_ENCODING)
-    return data
+    writer.writerow([f.code for f in schema.fields])
+    return buffer.getvalue().encode(CSV_ENCODING)
 
 
 def build_xlsx_template(schema: DatasetSchema) -> bytes:
@@ -75,10 +80,9 @@ def build_xlsx_template(schema: DatasetSchema) -> bytes:
     for col, f in enumerate(schema.fields, start=1):
         cell = ws.cell(row=2, column=col, value=example.get(f.code, ''))
         cell.font = Font(italic=True, color='808080')
-    # 明确标注第 2 行是示例，导入时会被忽略（见 parsing）
-    ws.cell(row=2, column=len(schema.fields) + 2,
-            value='← 此行是示例，导入时自动忽略，可删除').font = Font(
-                italic=True, color='C00000')
+    # 示例行用显式标记列标识；解析器只认这一列，不按值猜。
+    marker_cell = ws.cell(row=2, column=len(schema.fields) + 1, value=1)
+    marker_cell.font = Font(italic=True, color='C00000')
 
     # 列宽
     for col, f in enumerate(schema.fields, start=1):

@@ -25,3 +25,6 @@ R22_FLAGS = {
     'dry_run': False,
     'legacy_bridge': False,
 }
+
+# S25 数据交换中心：未登录时的跳转目标
+LOGIN_URL = '/r4/login/'

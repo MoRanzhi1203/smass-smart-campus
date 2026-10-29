@@ -18,6 +18,15 @@ from smass_data_exchange import build_csv_template, build_xlsx_template, get, \
     load_builtin_adapters
 from smass_organization.models import OrganizationUnit, StudentRecord
 
+import unittest
+
+from django.conf import settings as _dj_settings
+
+_APPS = {a.split('.')[0] for a in _dj_settings.INSTALLED_APPS}
+if 'smass_organization' not in _APPS:
+    # 本文件验证 R4 适配器，需要 smass_organization；在只装了 R5 的 settings 下跳过
+    raise unittest.SkipTest('smass_organization 未安装在当前 settings，跳过 R4 适配器测试')
+
 load_builtin_adapters()
 
 DATASET = 'r4_students'
@@ -39,7 +48,11 @@ def make_importer(login_name='S25UI', roles=None):
 
 
 def login(client, login_name, password=PASSWORD):
-    return client.post('/r4/login/', {'login_name': login_name, 'password': password})
+    """登录地址由 settings.LOGIN_URL 决定（R4 与 R5 的登录页不同）。"""
+    from django.conf import settings as _settings
+
+    return client.post(_settings.LOGIN_URL,
+                       {'login_name': login_name, 'password': password})
 
 
 def xlsx_with_rows(rows) -> bytes:
@@ -50,7 +63,7 @@ def xlsx_with_rows(rows) -> bytes:
     wb = load_workbook(io.BytesIO(template))
     ws = wb['Data']
     headers = [str(c.value or '').strip().rstrip('*').strip().lower() for c in ws[1]]
-    headers = [h for h in headers if h]
+    headers = [h for h in headers if h and h != '__example__']
     ws.delete_rows(2, 1)
     for offset, row in enumerate(rows):
         for col, code in enumerate(headers, start=1):
@@ -229,13 +242,15 @@ class VisibleFlowTests(TestCase):
 
 class PermissionTests(TestCase):
     def test_anonymous_redirected_to_login(self):
+        from django.conf import settings as _settings
+
         client = Client()
         for path in ('/exchange/', '/exchange/import/{}/'.format(DATASET),
                      '/exchange/template/{}/'.format(DATASET)):
             with self.subTest(path=path):
                 resp = client.get(path)
                 self.assertEqual(resp.status_code, 302)
-                self.assertIn('/r4/login/', resp['Location'])
+                self.assertIn(_settings.LOGIN_URL, resp['Location'])
 
     def test_anonymous_cannot_preview(self):
         resp = Client().post('/exchange/preview/{}/'.format(DATASET), {})

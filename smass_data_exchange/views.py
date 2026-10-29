@@ -30,8 +30,11 @@ from .service import (
 )
 from .templates import build_template
 
-#: 登录后跳转的登录页（R4/R5 隔离环境复用 R2.1 统一认证）
-LOGIN_URL = '/r4/login/'
+def _login_url():
+    """取当前 settings 的登录页（R4 是 /r4/login/，R5 是 /r5/login/）。"""
+    from django.conf import settings
+
+    return getattr(settings, 'LOGIN_URL', '/r4/login/')
 
 
 def require_login(view):
@@ -39,7 +42,7 @@ def require_login(view):
     def _wrapped(request, *args, **kwargs):
         if not getattr(request.user, 'is_authenticated', False):
             target = request.get_full_path()
-            return redirect('{}?next={}'.format(LOGIN_URL, quote(target)))
+            return redirect('{}?next={}'.format(_login_url(), quote(target)))
         return view(request, *args, **kwargs)
 
     return _wrapped

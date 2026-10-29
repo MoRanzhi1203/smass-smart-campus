@@ -1,8 +1,9 @@
-"""R5 隔离 URL：学年/学期/课程/教学班/工作台/我的课程。"""
+"""R5 隔离 URL：学年/学期/课程/教学班/工作台/我的课程 + 统一数据导入。"""
 from django.urls import path
 
 from r21_account import views as r21_views
 from smass_academic import views
+from smass_data_exchange import views as exchange_views
 
 urlpatterns = [
     path('r5/login/', r21_views.login_view, name='r5_login'),
@@ -27,4 +28,23 @@ urlpatterns = [
     path('r5/sections/<int:pk>/roster/', views.section_roster, name='r5_section_roster'),
 
     path('r5/my-courses/', views.my_sections, name='r5_my_sections'),
+
+    # ------------------------------------------------------------------
+    # S25 统一数据交换中心（R5 的学年/学期/课程/教学班/选课五类模板与导入）
+    # ------------------------------------------------------------------
+    path('exchange/', exchange_views.exchange_home, name='exchange_home'),
+    path('exchange/template/<str:dataset>/', exchange_views.template_download,
+         name='exchange_template'),
+    path('exchange/import/<str:dataset>/', exchange_views.import_page,
+         name='exchange_import'),
+    path('exchange/preview/<str:dataset>/', exchange_views.api_preview,
+         name='exchange_preview'),
+    path('exchange/commit/<str:dataset>/', exchange_views.api_commit,
+         name='exchange_commit'),
+    path('exchange/errors/<str:dataset>/<int:job_id>/', exchange_views.error_download,
+         name='exchange_errors'),
+    path('exchange/history/<str:dataset>/', exchange_views.job_history,
+         name='exchange_history'),
+    path('exchange/export/<str:dataset>/', exchange_views.export_view,
+         name='exchange_export'),
 ]

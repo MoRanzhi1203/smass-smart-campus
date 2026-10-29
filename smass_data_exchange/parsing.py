@@ -149,12 +149,21 @@ def _read_csv_rows(content: bytes) -> tuple[list[list], str]:
     return rows, encoding
 
 
-def _is_example_row(values: list[str], schema: DatasetSchema) -> bool:
-    """模板第 2 行是合成示例，导入时自动忽略。"""
-    example = schema.example_row()
-    expected = [str(example.get(f.code, '')).strip() for f in schema.fields]
-    actual = [str(v or '').strip() for v in values[:len(expected)]]
-    return bool(expected) and actual == expected
+def _is_example_row(values: list, headers: list) -> bool:
+    """示例行判定：只认模板写入的显式标记列，**不按值猜**。
+
+    早期实现用"单元格值等于示例"来跳过，结果用户数据恰好与示例相同时
+    会被静默丢弃（实测踩到）。现在改为标记列 ``__example__``。
+    """
+    from .templates import EXAMPLE_MARKER
+
+    try:
+        index = headers.index(EXAMPLE_MARKER)
+    except ValueError:
+        return False
+    if index >= len(values):
+        return False
+    return str(values[index] or '').strip() in ('1', 'true', 'yes', 'y')
 
 
 def parse(content: bytes, filename: str, schema: DatasetSchema) -> tuple[list[dict], dict]:
@@ -193,9 +202,9 @@ def parse(content: bytes, filename: str, schema: DatasetSchema) -> tuple[list[di
     unknown = [h for h in headers if h and h not in schema.codes]
     data_rows = table[1:]
 
-    # 跳过示例行
+    # 跳过示例行（仅当模板写入了 __example__ 标记）
     skipped_example = 0
-    if data_rows and _is_example_row(data_rows[0], schema):
+    if data_rows and _is_example_row(data_rows[0], headers):
         data_rows = data_rows[1:]
         skipped_example = 1
 

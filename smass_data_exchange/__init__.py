@@ -57,14 +57,37 @@ from .templates import (
 )
 
 def load_builtin_adapters():
-    """显式加载内置适配器。
+    """显式加载内置适配器，按 app 可用性分组容错。
 
-    适配器依赖具体业务 app（``smass_organization`` 等），因此不在包初始化时
-    自动加载。视图层/测试在确定业务 app 已安装后调用本函数。
+    - ``r4_students`` 依赖 ``smass_organization``；
+    - R5 五类依赖 ``smass_academic``。
+
+    缺少某组依赖时只跳过该组并记录原因，不让整个包导入失败
+    （例如 ``settings_r5`` 没有安装 ``smass_organization``）。
     """
-    from . import adapters as _adapters  # noqa: F401  触发注册副作用
+    import importlib
+    import logging
 
-    return True
+    logger = logging.getLogger('smass.audit')
+    loaded = {}
+
+    for module_name, group in (('adapters', 'r4'), ('adapters_r5', 'r5')):
+        try:
+            module = importlib.import_module('.' + module_name, __name__)
+            register_all = getattr(module, 'register_all', None)
+            # 注册本身也可能失败：适配器在实例化时才导入业务模型，
+            # 而那个 app 可能没装在这个 settings 里。
+            loaded[group] = register_all() if callable(register_all) else True
+        except Exception as exc:  # noqa: BLE001 - 对应业务 app 未安装
+            logger.info('data_exchange_adapters_skipped group=%s reason=%s: %s',
+                        group, type(exc).__name__, exc)
+            continue
+
+    from .schema import all_schemas
+
+    logger.info('data_exchange_adapters_loaded groups=%s datasets=%s',
+                loaded, len(tuple(all_schemas())))
+    return loaded
 
 
 __all__ = [
