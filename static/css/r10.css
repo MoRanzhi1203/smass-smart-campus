@@ -417,3 +417,54 @@ table.sm-table .sm-mono {
   .sm-sidebar, .sm-topbar, .sm-toast-host { display: none !important; }
   .sm-content { padding: 0; max-width: none; }
 }
+
+
+/* ---------- 13. 跳转链接（H4 可访问性） ---------- */
+.sm-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: #ffffff;
+  color: #111827;
+  padding: 10px 16px;
+  border-radius: 0 0 var(--sm-radius-sm) 0;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--sm-shadow);
+}
+.sm-skip:focus,
+.sm-skip:focus-visible {
+  left: 0;
+  outline: 3px solid var(--sm-primary);
+  outline-offset: 2px;
+}
+
+/* 高对比 / 强制颜色模式：保证边框与焦点可见 */
+@media (forced-colors: active) {
+  .sm-btn,
+  .sm-nav-link,
+  .sm-card,
+  table.sm-table th,
+  table.sm-table td {
+    border: 1px solid CanvasText;
+  }
+  .sm-btn:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+  .sm-sidebar { border-right: 1px solid CanvasText; }
+}
+
+/* 200% 缩放（视口等效 640px 宽）下的可读性保障 */
+@media (max-width: 640px) {
+  .sm-content { padding: var(--sm-3) var(--sm-2) var(--sm-5); }
+  .sm-breadcrumb { display: none; }
+  .sm-kpi-grid { grid-template-columns: 1fr; }
+  table.sm-table th,
+  table.sm-table td { padding: 8px 8px; }
+}

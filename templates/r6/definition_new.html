@@ -31,13 +31,13 @@
         <div class="sm-field">
           <label class="sm-label" for="f-code">流程编码<span class="req">*</span></label>
           <input type="text" id="f-code" name="code" value="{{ form.code }}"
-                 class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+                 class="{% if errors.code %}is-invalid{% endif %}" autofocus aria-invalid="true" aria-describedby="err-code">
           {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
         </div>
         <div class="sm-field">
           <label class="sm-label" for="f-name">流程名称<span class="req">*</span></label>
           <input type="text" id="f-name" name="name" value="{{ form.name }}"
-                 class="{% if errors.name %}is-invalid{% endif %}">
+                 class="{% if errors.name %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-name">
           {% if errors.name %}<div class="sm-error">{{ errors.name }}</div>{% endif %}
         </div>
       </div>

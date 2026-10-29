@@ -26,7 +26,7 @@
         <div class="sm-field">
           <label class="sm-label" for="f-code">学年编码<span class="req">*</span></label>
           <input type="text" id="f-code" name="code" value="{{ form.code }}"
-                 placeholder="2025-2026" class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+                 placeholder="2025-2026" class="{% if errors.code %}is-invalid{% endif %}" autofocus aria-invalid="true" aria-describedby="err-code">
           {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
         </div>
         <div class="sm-field">

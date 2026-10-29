@@ -26,13 +26,13 @@
         <div class="sm-field">
           <label class="sm-label" for="f-code">课程编码<span class="req">*</span></label>
           <input type="text" id="f-code" name="code" value="{{ form.code }}"
-                 class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+                 class="{% if errors.code %}is-invalid{% endif %}" autofocus aria-invalid="true" aria-describedby="err-code">
           {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
         </div>
         <div class="sm-field">
           <label class="sm-label" for="f-title">课程名称<span class="req">*</span></label>
           <input type="text" id="f-title" name="title" value="{{ form.title }}"
-                 class="{% if errors.title %}is-invalid{% endif %}">
+                 class="{% if errors.title %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-title">
           {% if errors.title %}<div class="sm-error">{{ errors.title }}</div>{% endif %}
         </div>
       </div>
@@ -40,7 +40,7 @@
         <div class="sm-field">
           <label class="sm-label" for="f-credit">学分</label>
           <input type="number" step="0.5" id="f-credit" name="credit" value="{{ form.credit }}"
-                 class="{% if errors.credit %}is-invalid{% endif %}">
+                 class="{% if errors.credit %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-credit">
           {% if errors.credit %}<div class="sm-error">{{ errors.credit }}</div>{% endif %}
         </div>
         <div class="sm-field">

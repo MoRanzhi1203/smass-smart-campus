@@ -38,7 +38,7 @@
           <label class="sm-label" for="f-name">姓名{% if 'name' in editable %}<span class="req">*</span>{% endif %}</label>
           <input type="text" id="f-name" name="name" value="{{ form.name }}"
                  class="{% if errors.name %}is-invalid{% endif %}"
-                 {% if 'name' not in editable %}disabled{% endif %}>
+                 {% if 'name' not in editable %}disabled{% endif %} aria-invalid="true" aria-describedby="err-name">
           {% if errors.name %}<div class="sm-error" id="err-name">{{ errors.name }}</div>{% endif %}
           {% if 'name' not in editable %}<div class="sm-help">当前角色无此字段编辑权限</div>{% endif %}
         </div>
@@ -48,7 +48,7 @@
         <div class="sm-field">
           <label class="sm-label" for="f-status">学籍状态</label>
           <select id="f-status" name="status" class="{% if errors.status %}is-invalid{% endif %}"
-                  {% if 'status' not in editable %}disabled{% endif %}>
+                  {% if 'status' not in editable %}disabled{% endif %} aria-invalid="true" aria-describedby="err-status">
             {% for s in statuses %}
             <option value="{{ s }}" {% if form.status == s %}selected{% endif %}>{{ s }}</option>
             {% endfor %}
@@ -59,7 +59,7 @@
         <div class="sm-field">
           <label class="sm-label" for="f-unit">所属组织</label>
           <select id="f-unit" name="unit" class="{% if errors.unit %}is-invalid{% endif %}"
-                  {% if 'unit' not in editable %}disabled{% endif %}>
+                  {% if 'unit' not in editable %}disabled{% endif %} aria-invalid="true" aria-describedby="err-unit">
             <option value="">（未分配）</option>
             {% for u in units %}
             <option value="{{ u.pk }}" {% if form.unit == u.pk|stringformat:"s" %}selected{% endif %}>

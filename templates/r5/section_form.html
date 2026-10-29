@@ -25,7 +25,7 @@
       <div class="sm-form-row">
         <div class="sm-field">
           <label class="sm-label" for="f-term">学期<span class="req">*</span></label>
-          <select id="f-term" name="term" class="{% if errors.term %}is-invalid{% endif %}">
+          <select id="f-term" name="term" class="{% if errors.term %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-term">
             <option value="">请选择</option>
             {% for t in terms %}
             <option value="{{ t.pk }}" {% if form.term == t.pk|stringformat:"s" %}selected{% endif %}>
@@ -37,7 +37,7 @@
         </div>
         <div class="sm-field">
           <label class="sm-label" for="f-course">课程<span class="req">*</span></label>
-          <select id="f-course" name="course" class="{% if errors.course %}is-invalid{% endif %}">
+          <select id="f-course" name="course" class="{% if errors.course %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-course">
             <option value="">请选择</option>
             {% for c in courses %}
             <option value="{{ c.pk }}" {% if form.course == c.pk|stringformat:"s" %}selected{% endif %}>
@@ -52,13 +52,13 @@
         <div class="sm-field">
           <label class="sm-label" for="f-code">班号<span class="req">*</span></label>
           <input type="text" id="f-code" name="code" value="{{ form.code }}"
-                 placeholder="A" class="{% if errors.code %}is-invalid{% endif %}">
+                 placeholder="A" class="{% if errors.code %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-code">
           {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
         </div>
         <div class="sm-field">
           <label class="sm-label" for="f-capacity">容量</label>
           <input type="number" id="f-capacity" name="capacity" value="{{ form.capacity }}"
-                 class="{% if errors.capacity %}is-invalid{% endif %}">
+                 class="{% if errors.capacity %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-capacity">
           {% if errors.capacity %}<div class="sm-error">{{ errors.capacity }}</div>{% endif %}
           <div class="sm-help">0 表示不限制</div>
         </div>

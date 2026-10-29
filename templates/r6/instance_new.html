@@ -25,7 +25,7 @@
       {% csrf_token %}
       <div class="sm-field">
         <label class="sm-label" for="f-definition">流程<span class="req">*</span></label>
-        <select id="f-definition" name="definition" class="{% if errors.definition %}is-invalid{% endif %}">
+        <select id="f-definition" name="definition" class="{% if errors.definition %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-definition">
           <option value="">请选择</option>
           {% for d in definitions %}
           <option value="{{ d.pk }}" {% if form.definition == d.pk|stringformat:"s" %}selected{% endif %}>
@@ -41,13 +41,13 @@
         <div class="sm-field">
           <label class="sm-label" for="f-subject_type">业务类型<span class="req">*</span></label>
           <input type="text" id="f-subject_type" name="subject_type" value="{{ form.subject_type }}"
-                 placeholder="leave / student_record" class="{% if errors.subject_type %}is-invalid{% endif %}">
+                 placeholder="leave / student_record" class="{% if errors.subject_type %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-subject_type">
           {% if errors.subject_type %}<div class="sm-error">{{ errors.subject_type }}</div>{% endif %}
         </div>
         <div class="sm-field">
           <label class="sm-label" for="f-subject_id">业务标识<span class="req">*</span></label>
           <input type="text" id="f-subject_id" name="subject_id" value="{{ form.subject_id }}"
-                 placeholder="DEMO-001" class="{% if errors.subject_id %}is-invalid{% endif %}">
+                 placeholder="DEMO-001" class="{% if errors.subject_id %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-subject_id">
           {% if errors.subject_id %}<div class="sm-error">{{ errors.subject_id }}</div>{% endif %}
         </div>
       </div>

@@ -25,7 +25,7 @@
       <div class="sm-form-row">
         <div class="sm-field">
           <label class="sm-label" for="f-year">所属学年<span class="req">*</span></label>
-          <select id="f-year" name="year" class="{% if errors.year %}is-invalid{% endif %}">
+          <select id="f-year" name="year" class="{% if errors.year %}is-invalid{% endif %}" aria-invalid="true" aria-describedby="err-year">
             <option value="">请选择</option>
             {% for y in years %}
             <option value="{{ y.pk }}" {% if form.year == y.pk|stringformat:"s" %}selected{% endif %}>

@@ -6,7 +6,7 @@ h3{margin:0 0 16px}input{width:100%;padding:8px;margin:6px 0 14px;box-sizing:bor
 button{width:100%;padding:9px;background:#2563eb;color:#fff;border:0;border-radius:4px;cursor:pointer}
 .err{background:#fee2e2;color:#991b1b;padding:8px;border-radius:4px;margin-bottom:12px;font-size:13px}
 </style></head><body>
-<div class="box"><h3>SMASS 登录</h3>
+<div class="box"><h1 class="sm-title" style="margin:0 0 16px;font-size:19px;">SMASS 登录</h1>
 {% if error %}<div class="err">{{ error }}</div>{% endif %}
 <form method="post" action="/r21/login/">{% csrf_token %}
 <label for="id_login_name">登录名</label><input type="text" name="login_name" id="id_login_name" autofocus>
