@@ -42,6 +42,7 @@ ALLOWLIST = {
     'SynthR3#2024': '测试夹具口令',
     'SynthCap#2024': '测试夹具口令',
     'dev-insecure-secret-key-for-smass-only': '开发默认 SECRET_KEY（正式环境必须覆盖）',
+    'Demo#2024': '隔离演示环境的演示账号口令（可由 SMASS_DEMO_PASSWORD 覆盖，非生产凭据）',
 }
 
 

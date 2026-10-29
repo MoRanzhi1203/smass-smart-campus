@@ -10,7 +10,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent.parent
 OUT = BASE / 'docs' / 'screenshots'
 BASE_URL = 'http://127.0.0.1:8000'
-PASSWORD = 'Demo#2024'
+PASSWORD = os.environ.get('SMASS_DEMO_PASSWORD', 'Demo#2024')
 
 
 def main():

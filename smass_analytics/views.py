@@ -30,9 +30,23 @@ def dashboard(request):
     for metric in metrics:
         try:
             value, meta = services.compute_metric(metric, account)
-            rows.append(meta)
         except services.AnalyticsError:
             continue
+        rows.append({
+            # 同时提供 metric / code：旧 JSON 消费者用 metric，
+            # 新模板用 code（向后兼容，不破坏既有测试）
+            'metric': metric.code,
+            'code': metric.code,
+            'name': metric.name,
+            'description': metric.description,
+            'data_source': metric.data_source,
+            'unit': (metric.definition.get('unit', '')
+                     if isinstance(metric.definition, dict) else ''),
+            'version': metric.version,
+            'value': meta['value'],
+            'suppressed': meta['suppressed'],
+            'query_hash': meta['query_hash'],
+        })
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True, 'rows': rows})

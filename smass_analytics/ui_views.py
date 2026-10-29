@@ -45,6 +45,9 @@ def dashboard_page(request):
         except services.AnalyticsError:
             continue
         rows.append({
+            # 同时提供 metric / code：旧 JSON 消费者用 metric，
+            # 新模板用 code（向后兼容，不破坏既有测试）
+            'metric': metric.code,
             'code': metric.code,
             'name': metric.name,
             'description': metric.description,

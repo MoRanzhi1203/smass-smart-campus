@@ -1,3 +1,4 @@
+import os
 """U8：真实服务器上的三引擎探针（补充 LiveServerTestCase 的引擎盲区）。
 
 背景：WebKit 在 Django `LiveServerTestCase`（WSGI 线程服务器）下登录时，
@@ -13,7 +14,7 @@ import sys
 
 BASE = 'http://127.0.0.1:8000'
 LOGIN = 'admin'
-PASSWORD = 'Demo#2024'
+PASSWORD = os.environ.get('SMASS_DEMO_PASSWORD', 'Demo#2024')
 
 PAGES = ['/r10/', '/r4/units/', '/r5/years/', '/r6/definitions/',
          '/r7/dashboard/', '/r8/docs/', '/r9/status/']

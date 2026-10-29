@@ -26,7 +26,7 @@ from smass_organization import services as org_services  # noqa: E402
 from smass_organization.models import StudentRecord  # noqa: E402
 from smass_workflow import services as workflow_services  # noqa: E402
 
-PASSWORD = 'Demo#2024'
+PASSWORD = os.environ.get('SMASS_DEMO_PASSWORD', 'Demo#2024')
 
 
 def guard():
