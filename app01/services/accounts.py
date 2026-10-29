@@ -10,6 +10,7 @@
 5. **登录限速**：基于 Session 的失败计数，超限后短时锁定，避免暴力破解。
 """
 import logging
+import os
 import re
 import secrets
 import string
@@ -27,9 +28,61 @@ from app01.utils.encrypt import md5
 
 logger = logging.getLogger('smass.audit')
 
-#: 历史 MD5 实现写死在旧 settings 中的密钥。
-#: 该值已随源码/版本历史泄漏，此处仅用于校验历史密码，新密码一律使用官方哈希。
-LEGACY_MD5_SECRET_KEY = 'django-insecure-REDACTED__SEE_LOCAL_RESTRICTED_ARCHIVE'
+# ---------------------------------------------------------------------------
+# S01：历史 MD5 密钥治理
+# ---------------------------------------------------------------------------
+# 背景：历史实现把 MD5 密钥硬编码在源码里，该字面量已随源码与 Git 历史泄漏，
+# 视为**已失效凭据**。治理要求（主任务书 S01）：
+#   1. 新代码禁止硬编码任何密钥；
+#   2. 历史密钥只能从受限来源（环境变量）注入，代码内不保留任何默认值；
+#   3. 未注入 / 未显式开启迁移模式时，MD5 兼容校验整体**不可用**（安全默认）；
+#   4. 密钥与哈希绝不进入日志、异常文本或审计载荷。
+#
+# 因此本模块不再持有密钥字面量：`LEGACY_MD5_SECRET_KEY` 由模块级 __getattr__
+# 动态返回当前环境变量值，避免在 import 时被固化。
+LEGACY_MD5_SECRET_KEY_ENV = 'SMASS_LEGACY_MD5_SECRET_KEY'
+LEGACY_MD5_COMPAT_ENV = 'SMASS_LEGACY_MD5_COMPAT'
+
+_TRUTHY = {'1', 'true', 'yes', 'on'}
+
+
+class LegacyHashUnavailable(RuntimeError):
+    """历史 MD5 兼容不可用（未注入密钥或未开启迁移模式）。
+
+    这是**预期行为**而不是故障：泄漏的密钥不应继续作为默认凭据存在于代码中。
+    """
+
+
+def legacy_md5_secret():
+    """返回当前注入的历史 MD5 密钥；未注入时返回空串。"""
+    return (os.environ.get(LEGACY_MD5_SECRET_KEY_ENV) or '').strip()
+
+
+def legacy_md5_compat_enabled():
+    """迁移模式开关；默认关闭，必须显式开启才允许消费历史 MD5。"""
+    return (os.environ.get(LEGACY_MD5_COMPAT_ENV) or '').strip().lower() in _TRUTHY
+
+
+def legacy_md5_compat_status():
+    """给运维/审计用的无敏感信息状态摘要。"""
+    return {
+        'secret_injected': bool(legacy_md5_secret()),
+        'compat_enabled': legacy_md5_compat_enabled(),
+        'available': bool(legacy_md5_secret()) and legacy_md5_compat_enabled(),
+        'secret_env': LEGACY_MD5_SECRET_KEY_ENV,
+        'compat_env': LEGACY_MD5_COMPAT_ENV,
+    }
+
+
+def __getattr__(name):
+    """让 ``accounts.LEGACY_MD5_SECRET_KEY`` 始终反映当前注入值。
+
+    不使用模块级常量，避免 import 时把密钥快照固化进进程内存；
+    只有显式注入环境变量后该属性才非空。
+    """
+    if name == 'LEGACY_MD5_SECRET_KEY':
+        return legacy_md5_secret()
+    raise AttributeError('module {!r} has no attribute {!r}'.format(__name__, name))
 
 # ---------------------------------------------------------------------------
 # 角色
@@ -119,9 +172,17 @@ def generate_password(length=DEFAULT_PASSWORD_LENGTH):
     return ''.join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
 
 
-def legacy_md5(raw_password):
-    """用当年泄漏的密钥重算历史 MD5，仅用于兼容校验。"""
-    return md5(raw_password, secret_key=LEGACY_MD5_SECRET_KEY)
+def legacy_md5(raw_password, secret_key=None):
+    """用**注入的**历史密钥重算 MD5，仅用于兼容校验。
+
+    :param secret_key: 显式密钥（测试/迁移工具）；``None`` 时读环境变量
+    :raises LegacyHashUnavailable: 未注入密钥——这是安全默认，不是故障
+    """
+    key = secret_key if secret_key is not None else legacy_md5_secret()
+    if not key:
+        raise LegacyHashUnavailable(
+            '未注入历史 MD5 密钥（{}），历史哈希兼容不可用'.format(LEGACY_MD5_SECRET_KEY_ENV))
+    return md5(raw_password, secret_key=key)
 
 
 def is_legacy_hash(encoded):
@@ -172,6 +233,10 @@ def verify_password(account, raw_password):
 
     返回 ``True`` 表示通过。若命中历史 MD5（含"双重哈希"的坏数据），
     在通过的同时把该账号升级为官方哈希。
+
+    安全默认（S01）：历史 MD5 分支**只有在**迁移模式显式开启且密钥已注入时
+    才参与校验；否则一律拒绝并记录审计事件。拒绝不区分"账号不存在/密码错误"
+    以免账号枚举，但审计里会记录原因分类。
     """
     if account is None or not raw_password:
         return False
@@ -182,6 +247,19 @@ def verify_password(account, raw_password):
 
     # ---- 历史 MD5 分支（含被 save() 二次哈希的坏数据）----
     if is_legacy_hash(encoded):
+        if not legacy_md5_compat_enabled():
+            logger.warning(
+                'legacy_md5_rejected reason=compat_disabled object_id=%s',
+                getattr(account, 'pk', '-'),
+            )
+            return False
+        if not legacy_md5_secret():
+            logger.warning(
+                'legacy_md5_rejected reason=secret_not_injected object_id=%s',
+                getattr(account, 'pk', '-'),
+            )
+            return False
+
         single = legacy_md5(raw_password)
         double = legacy_md5(single)
         if secrets.compare_digest(encoded, single) or secrets.compare_digest(encoded, double):

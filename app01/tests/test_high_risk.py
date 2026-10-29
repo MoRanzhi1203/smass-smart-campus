@@ -8,7 +8,9 @@
 - 历史 MD5 的独立向量交叉验证（不硬编码真实口令）。
 """
 import hashlib
+import os
 from io import StringIO
+from unittest import mock
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -18,6 +20,9 @@ from app01 import models
 from app01.services import accounts
 from app01.templatetags import custom_filters
 from app01.tests import helpers
+
+#: S01 治理后历史密钥不再硬编码：向量测试用合成密钥注入，不依赖真实泄漏值。
+TEST_LEGACY_SECRET = 'unit-test-only-legacy-secret'
 
 #: 三个仍保留路由、但已停用 HTTP 清表的入口
 DISABLED_CLEAR_ENDPOINTS = (
@@ -191,17 +196,22 @@ class StudentPhoneIsMaskedInTemplateTests(TestCase):
         self.assertNotContains(resp, '13987654321')
 
 
+@mock.patch.dict(os.environ, {
+    'SMASS_LEGACY_MD5_SECRET_KEY': TEST_LEGACY_SECRET,
+    'SMASS_LEGACY_MD5_COMPAT': '1',
+})
 class LegacyHashVectorTests(TestCase):
     """历史 MD5 的独立向量交叉验证。
 
-    用 hashlib 独立重算，验证 ``md5(SECRET_KEY + plain)`` 的构造没有被悄悄改变。
+    用 hashlib 独立重算，验证 ``md5(secret + plain)`` 的构造没有被悄悄改变。
+    密钥来自注入（S01 治理后不再硬编码），本测试用合成测试密钥。
     这里使用测试字符串，不涉及任何真实口令。
     """
 
     def test_legacy_md5_matches_independent_computation(self):
         plain = 'vector-test-plain'
         expected = hashlib.md5(
-            accounts.LEGACY_MD5_SECRET_KEY.encode('utf-8') + plain.encode('utf-8')
+            accounts.legacy_md5_secret().encode('utf-8') + plain.encode('utf-8')
         ).hexdigest()
         self.assertEqual(accounts.legacy_md5(plain), expected)
 
@@ -214,7 +224,7 @@ class LegacyHashVectorTests(TestCase):
         plain = 'double-vector'
         single = accounts.legacy_md5(plain)
         expected_double = hashlib.md5(
-            accounts.LEGACY_MD5_SECRET_KEY.encode('utf-8') + single.encode('utf-8')
+            accounts.legacy_md5_secret().encode('utf-8') + single.encode('utf-8')
         ).hexdigest()
         self.assertEqual(accounts.legacy_md5(single), expected_double)
 

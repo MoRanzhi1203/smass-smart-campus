@@ -5,6 +5,7 @@
 """
 import hashlib
 import importlib.util
+import os
 import random
 import re
 from pathlib import Path
@@ -13,8 +14,20 @@ from django.test import TestCase
 
 BASE = Path(__file__).resolve().parents[2]
 
+# S01 治理后生成器不再硬编码历史密钥：测试时注入**合成密钥**，
+# 使 fixture 模块在 exec_module 时能读到非空值。
+_TEST_SECRET = 'pmr-pm2-synthetic-test-key'
+os.environ.setdefault('SMASS_LEGACY_MD5_SECRET_KEY', _TEST_SECRET)
+
+
+def tearDownModule():
+    if os.environ.get('SMASS_LEGACY_MD5_SECRET_KEY') == _TEST_SECRET:
+        os.environ.pop('SMASS_LEGACY_MD5_SECRET_KEY', None)
+
 
 def load_fixture_module():
+    # 幂等注入：不依赖其它测试模块的 tearDownModule 是否已经清理过环境变量。
+    os.environ.setdefault('SMASS_LEGACY_MD5_SECRET_KEY', _TEST_SECRET)
     path = BASE / 'scripts' / 'pmr_synthetic_fixture.py'
     spec = importlib.util.spec_from_file_location('pmr_fixture', path)
     module = importlib.util.module_from_spec(spec)

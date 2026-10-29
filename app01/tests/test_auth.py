@@ -7,11 +7,17 @@
 - 历史 MD5（含"双重哈希"坏数据）兼容与自动升级；
 - 会话轮换、登出失效、登录失败锁定、开放重定向防护。
 """
+import os
+from unittest import mock
+
 from django.test import Client, TestCase
 
 from app01 import models
 from app01.services import accounts
 from app01.tests import helpers
+
+#: S01 治理后历史密钥不再硬编码：兼容路径用合成密钥注入后测试。
+TEST_LEGACY_SECRET = 'unit-test-only-legacy-secret'
 
 
 class LoginTests(TestCase):
@@ -238,8 +244,12 @@ class StudentChangePasswordTests(TestCase):
         self.assertEqual(resp.status_code, 405)
 
 
+@mock.patch.dict(os.environ, {
+    'SMASS_LEGACY_MD5_SECRET_KEY': TEST_LEGACY_SECRET,
+    'SMASS_LEGACY_MD5_COMPAT': '1',
+})
 class LegacyHashTests(TestCase):
-    """历史 MD5 数据的兼容与升级。"""
+    """历史 MD5 数据的兼容与升级（密钥由测试注入，S01 治理后不再硬编码）。"""
 
     def test_legacy_md5_login_upgrades_hash(self):
         legacy = accounts.legacy_md5('Legacy#2019')

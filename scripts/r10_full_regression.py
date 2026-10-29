@@ -38,7 +38,12 @@ def run_suite(name, settings_name):
         cmd.append('--settings={}'.format(settings_name))
 
     started = time.perf_counter()
-    result = subprocess.run(cmd, cwd=str(BASE), capture_output=True, text=True)
+    result = subprocess.run(
+        cmd, cwd=str(BASE), capture_output=True, text=True,
+        # 子进程输出为 UTF-8（含中文用例名）。Windows 默认按 GBK 解码会抛
+        # UnicodeDecodeError，导致统计为 0 并把通过的套件误判为失败。
+        encoding='utf-8', errors='replace',
+    )
     elapsed = round(time.perf_counter() - started, 1)
     output = (result.stdout or '') + (result.stderr or '')
 

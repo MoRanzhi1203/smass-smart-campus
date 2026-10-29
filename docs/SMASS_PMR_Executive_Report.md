@@ -38,16 +38,22 @@ PRODUCTION_DEPLOYMENT                   = NOT_AUTHORIZED
 `app01/services/accounts.py` 里：
 
 ```python
-LEGACY_MD5_SECRET_KEY = 'django-insecure-REDACTED__SEE_LOCAL_RESTRICTED_ARCHIVE'
+LEGACY_MD5_SECRET_KEY = '<REDACTED — 该字面量已移除，改为环境变量注入>'
 ```
 
-**密钥硬编码在源码**（66 字符，`django-insecure-` 前缀），意味着旧 MD5 哈希
-（无盐、无迭代）**可被离线破解**。
+原文记录：密钥曾**硬编码在源码**中（`django-insecure-` 前缀，长度不在文档中复述），
+意味着旧 MD5 哈希（无盐、无迭代）**可被离线破解**。
+
+> **2026-10-30 更新（S01 治理）**：该字面量已从源码移除。密钥改为仅能从
+> 受限来源（环境变量 `SMASS_LEGACY_MD5_SECRET_KEY`）注入，且历史 MD5 兼容
+> 校验默认**关闭**（需 `SMASS_LEGACY_MD5_COMPAT=1` 显式开启）。
+> 详情见 `docs/SMASS_S01_Legacy_Secret_Containment.md`。
 
 - 缓解：只在**校验**时用；命中即升级为 PBKDF2；不导出哈希
 - 残余风险：升级窗口期内，若哈希泄漏仍可被解开
 - 建议：**生产切换后强制全员改密或重置**
-- 处置：不隐藏密钥（它已在版本历史里），用 3 个断言固化事实
+- 处置（历史）：当时不隐藏密钥（已在版本历史里），用断言固化事实
+- 处置（现状，S01）：密钥从源码移除；断言改为“源码中不得出现该字面量”
 
 ### 3.2 CSV 导出在 10k 规模需 12.5 秒
 

@@ -12,10 +12,18 @@ import importlib.util
 import os
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from django.test import TestCase, TransactionTestCase
 
 BASE = Path(__file__).resolve().parents[2]
+
+#: S01 治理后历史密钥不再硬编码：本模块用合成密钥注入 + 显式开启迁移模式。
+_TEST_SECRET = 'pmr-pm5-synthetic-test-key'
+_LEGACY_ENV = {
+    'SMASS_LEGACY_MD5_SECRET_KEY': _TEST_SECRET,
+    'SMASS_LEGACY_MD5_COMPAT': '1',
+}
 
 # 演练脚本用原生 pymysql 连接，需要 root 口令；测试环境从环境变量继承。
 # 若未设置则跳过依赖真实连接的用例（不伪造通过）。
@@ -61,7 +69,15 @@ class HashCarrierTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # 幂等注入：不依赖其它测试模块是否已清理环境变量
+        cls._legacy_env = mock.patch.dict(os.environ, _LEGACY_ENV, clear=False)
+        cls._legacy_env.start()
         cls.mod = load_module()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._legacy_env.stop()
+        super().tearDownClass()
 
     def test_carrier_accepts_correct_password(self):
         from app01.services.accounts import legacy_md5, verify_password

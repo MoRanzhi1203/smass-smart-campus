@@ -45,9 +45,10 @@ OUT_DIR = Path(os.environ.get('TEMP', '.')) / 'pmr_fixtures'
 SOURCE_DB = 'smass'
 DB_PREFIX = 'smass_pmr_'
 
-#: 旧密钥（与 app01/services/accounts.py 一致；仅用于生成合成旧哈希）
-LEGACY_MD5_SECRET_KEY = (
-    'django-insecure-REDACTED__SEE_LOCAL_RESTRICTED_ARCHIVE')
+#: 旧密钥：**不再硬编码**（S01 治理）。
+#: 历史 MD5 只能从受限来源注入；未注入时本工具拒绝生成合成旧哈希（fail fast，
+#: 避免用错密钥造出与真实数据不匹配的假 fixture）。
+LEGACY_MD5_SECRET_KEY = (os.environ.get('SMASS_LEGACY_MD5_SECRET_KEY') or '').strip()
 
 SCALES = {
     'tiny': 10,
@@ -73,8 +74,13 @@ ADVERSARIAL_CASES = [
 ]
 
 
-def legacy_md5(raw, secret=LEGACY_MD5_SECRET_KEY):
-    return hashlib.md5(secret.encode('utf-8') + raw.encode('utf-8')).hexdigest()
+def legacy_md5(raw, secret=None):
+    key = secret if secret is not None else LEGACY_MD5_SECRET_KEY
+    if not key:
+        raise SystemExit(
+            '未注入 SMASS_LEGACY_MD5_SECRET_KEY，无法生成合成历史 MD5。\n'
+            '迁移演练时从本地受限存档注入该值；合成测试可用任意测试密钥。')
+    return hashlib.md5(key.encode('utf-8') + raw.encode('utf-8')).hexdigest()
 
 
 def pbkdf2(raw):
