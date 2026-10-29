@@ -1,0 +1,220 @@
+{% extends "r10/base.html" %}
+{% block title %}{{ schema.title }} - 数据导入{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/exchange/">数据交换</a><span class="sep">/</span><span class="current">{{ schema.title }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ schema.title }}</h1>
+    <p class="sm-subtitle">
+      数据集 <code>{{ dataset }}</code> · 模板版本 v{{ schema.version }} ·
+      流程：下载模板 → 填写 → 上传 → 预检 → 确认导入
+    </p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/exchange/template/{{ dataset }}/?fmt=xlsx">下载 Excel 模板</a>
+    <a class="sm-btn" href="/exchange/template/{{ dataset }}/?fmt=csv">下载 CSV 模板</a>
+    <a class="sm-btn" href="/exchange/history/{{ dataset }}/">导入历史</a>
+  </div>
+</div>
+
+<div class="sm-alert is-info">
+  <span>预检<strong>不写入任何数据</strong>；确认导入时若存在错误行，默认整体拒绝。单文件上限 {{ max_upload_mb }} MB。</span>
+</div>
+
+<div class="sm-card" style="margin-bottom:16px;">
+  <div class="sm-card-head">第 1 步 · 选择文件</div>
+  <div class="sm-card-body">
+    <div class="sm-field">
+      <label class="sm-label" for="file-input">Excel 或 CSV 文件<span class="req">*</span></label>
+      <input id="file-input" name="file" type="file" accept=".xlsx,.csv"
+             style="display:block;padding:8px;border:1px dashed var(--sm-border-strong);border-radius:6px;width:100%;">
+      <div class="sm-help">支持 .xlsx（用本页模板生成）与 .csv（UTF-8 / GBK 自动识别）。</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="sm-btn is-primary" id="btn-preview">上传并预检</button>
+      <button type="button" class="sm-btn" id="btn-reset">清空</button>
+    </div>
+    <div id="msg" class="sm-alert" style="display:none;margin-top:12px;"></div>
+  </div>
+</div>
+
+<div class="sm-card" id="step-preview" style="display:none;margin-bottom:16px;">
+  <div class="sm-card-head">第 2 步 · 预检结果</div>
+  <div class="sm-card-body">
+    <div id="summary" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;"></div>
+    <div id="errors-wrap" style="display:none;margin-bottom:12px;">
+      <div class="sm-alert is-warn"><span id="errors-head"></span></div>
+      <div style="max-height:280px;overflow:auto;border:1px solid var(--sm-border);border-radius:6px;">
+        <table class="sm-table" style="width:100%;font-size:12.5px;">
+          <thead><tr><th>行号</th><th>列</th><th>错误码</th><th>说明</th></tr></thead>
+          <tbody id="errors-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="diff-wrap" style="display:none;margin-bottom:12px;">
+      <details>
+        <summary style="cursor:pointer;font-weight:600;">查看差异预览（最多 200 行）</summary>
+        <div style="max-height:280px;overflow:auto;margin-top:8px;border:1px solid var(--sm-border);border-radius:6px;">
+          <table class="sm-table" style="width:100%;font-size:12.5px;">
+            <thead><tr><th>行</th><th>学号</th><th>姓名</th><th>组织</th><th>状态</th><th>动作</th></tr></thead>
+            <tbody id="diff-body"></tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="sm-btn is-primary" id="btn-commit">确认导入</button>
+      <a class="sm-btn" id="btn-errors" href="#" style="display:none;">下载错误工作簿</a>
+    </div>
+    <p class="sm-help" id="ticket-note" style="margin-top:8px;"></p>
+  </div>
+</div>
+
+<div class="sm-card" id="step-result" style="display:none;">
+  <div class="sm-card-head">第 3 步 · 导入结果</div>
+  <div class="sm-card-body">
+    <div id="result-body"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var DATASET = "{{ dataset }}";
+  var state = { file: null, ticket: null, jobId: null };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var msg = $('msg');
+
+  function showMessage(text, kind) {
+    msg.style.display = 'block';
+    msg.className = 'sm-alert ' + (kind === 'error' ? 'is-warn' : 'is-info');
+    msg.innerHTML = '<span></span>';
+    msg.firstChild.textContent = text;
+  }
+  function clearMessage() { msg.style.display = 'none'; }
+
+  function csrf() {
+    var m = document.cookie.match(/(^|;)\s*csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[2]) : '';
+  }
+
+  function esc(text) {
+    return String(text == null ? '' : text).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  $('file-input').addEventListener('change', function (e) {
+    state.file = e.target.files[0] || null;
+    state.ticket = null;
+    $('step-preview').style.display = 'none';
+    $('step-result').style.display = 'none';
+    clearMessage();
+  });
+
+  $('btn-reset').addEventListener('click', function () {
+    $('file-input').value = '';
+    state = { file: null, ticket: null, jobId: null };
+    $('step-preview').style.display = 'none';
+    $('step-result').style.display = 'none';
+    clearMessage();
+  });
+
+  $('btn-preview').addEventListener('click', function () {
+    if (!state.file) { showMessage('请先选择文件', 'error'); return; }
+    clearMessage();
+    var data = new FormData();
+    data.append('file', state.file);
+    data.append('csrfmiddlewaretoken', csrf());
+
+    $('btn-preview').disabled = true;
+    fetch('/exchange/preview/' + DATASET + '/', {
+      method: 'POST', body: data, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      $('btn-preview').disabled = false;
+      if (res.error) { showMessage(res.error, 'error'); return; }
+      renderPreview(res);
+    }).catch(function (err) {
+      $('btn-preview').disabled = false;
+      showMessage('预检请求失败：' + err, 'error');
+    });
+  });
+
+  function renderPreview(res) {
+    var s = res.summary || {};
+    $('summary').innerHTML = [
+      ['总行数', s.total], ['可导入', s.ok], ['错误行', s.errors],
+      ['将新增', s.would_create], ['将更新', s.would_update],
+      ['无变化', s.would_skip]
+    ].map(function (pair) {
+      return '<div><div style="font-size:12px;color:var(--sm-text-muted);">' + pair[0] +
+             '</div><div style="font-size:20px;font-weight:700;">' + (pair[1] || 0) + '</div></div>';
+    }).join('');
+
+    var errors = res.errors || [];
+    $('errors-wrap').style.display = errors.length ? 'block' : 'none';
+    $('errors-head').textContent = '预检发现 ' + (s.errors || errors.length) + ' 行错误，导入将被拒绝';
+    $('errors-body').innerHTML = errors.map(function (e) {
+      return '<tr><td>' + esc(e.row) + '</td><td>' + esc(e.column) + '</td><td>' +
+             esc(e.code) + '</td><td>' + esc(e.message) + '</td></tr>';
+    }).join('');
+
+    var diff = res.diff || [];
+    $('diff-wrap').style.display = diff.length ? 'block' : 'none';
+    $('diff-body').innerHTML = diff.map(function (d) {
+      return '<tr><td>' + esc(d.row) + '</td><td>' + esc(d.student_no) + '</td><td>' +
+             esc(d.name) + '</td><td>' + esc(d.unit_code) + '</td><td>' +
+             esc(d.status) + '</td><td>' + esc(d.plan) + '</td></tr>';
+    }).join('');
+
+    state.ticket = res.ticket;
+    $('step-preview').style.display = 'block';
+    $('ticket-note').textContent = res.ticket
+      ? '预检令牌已生成，30 分钟内有效；文件或操作者变化会导致提交被拒绝。'
+      : '预检未生成令牌，请修正后重试。';
+    $('btn-commit').disabled = !(res.ticket && (s.errors || 0) === 0);
+  }
+
+  $('btn-commit').addEventListener('click', function () {
+    if (!state.ticket) { showMessage('请先预检', 'error'); return; }
+    if (!state.file) { showMessage('文件已失效，请重新选择', 'error'); return; }
+
+    var data = new FormData();
+    data.append('file', state.file);
+    data.append('ticket', state.ticket);
+    data.append('csrfmiddlewaretoken', csrf());
+
+    $('btn-commit').disabled = true;
+    fetch('/exchange/commit/' + DATASET + '/', {
+      method: 'POST', body: data, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      $('btn-commit').disabled = false;
+      if (res.error) { showMessage(res.error, 'error'); return; }
+      renderResult(res);
+    }).catch(function (err) {
+      $('btn-commit').disabled = false;
+      showMessage('提交请求失败：' + err, 'error');
+    });
+  });
+
+  function renderResult(res) {
+    state.jobId = res.job_id || null;
+    var body = $('result-body');
+    if (res.committed) {
+      var st = res.stats || {};
+      body.innerHTML = '<div class="sm-alert is-info"><span>导入完成：新增 ' + (st.created || 0) +
+        '，更新 ' + (st.updated || 0) + '，跳过 ' + (st.skipped || 0) +
+        '，冲突 ' + (st.conflict || 0) + '。</span></div>' +
+        (res.job_id ? '<p class="sm-help">批次 ID：<code>' + esc(res.batch_id) + '</code></p>' : '') +
+        '<a class="sm-btn" href="/exchange/history/' + DATASET + '/">查看导入历史</a>';
+    } else {
+      body.innerHTML = '<div class="sm-alert is-warn"><span>导入被拒绝：' +
+        (res.error_count || 0) + ' 行存在错误。修正后重新预检。</span></div>' +
+        (res.job_id ? '<a class="sm-btn" href="/exchange/errors/' + DATASET + '/' +
+          res.job_id + '/">下载错误工作簿</a>' : '');
+    }
+    $('step-result').style.display = 'block';
+  }
+})();
+</script>
+{% endblock %}

@@ -19,6 +19,8 @@ SUITES = [
     ('smass_operations', 'smass.settings_r10'),
     ('smass_analytics', 'smass.settings_r7'),
     ('smass_organization', 'smass.settings_r4'),
+    # S25 统一数据交换中心（依赖 R4 业务 app，因此用 settings_r4）
+    ('smass_data_exchange', 'smass.settings_r4'),
     ('smass_academic', 'smass.settings_r5'),
     ('smass_workflow', 'smass.settings_r6'),
     ('smass_api', 'smass.settings_r8'),

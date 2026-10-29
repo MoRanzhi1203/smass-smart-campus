@@ -3,6 +3,7 @@ from django.urls import path
 
 from r21_account import views as r21_views
 
+from smass_data_exchange import views as exchange_views
 from smass_organization import views
 
 urlpatterns = [
@@ -19,4 +20,23 @@ urlpatterns = [
     path('r4/import/preview/', views.import_preview_view, name='r4_import_preview'),
     path('r4/import/commit/', views.import_commit_view, name='r4_import_commit'),
     path('r4/health/', views.health, name='r4_health'),
+
+    # ------------------------------------------------------------------
+    # S25 统一数据交换中心：模板下载 / 上传预检 / 提交 / 错误 / 历史 / 导出
+    # ------------------------------------------------------------------
+    path('exchange/', exchange_views.exchange_home, name='exchange_home'),
+    path('exchange/template/<str:dataset>/', exchange_views.template_download,
+         name='exchange_template'),
+    path('exchange/import/<str:dataset>/', exchange_views.import_page,
+         name='exchange_import'),
+    path('exchange/preview/<str:dataset>/', exchange_views.api_preview,
+         name='exchange_preview'),
+    path('exchange/commit/<str:dataset>/', exchange_views.api_commit,
+         name='exchange_commit'),
+    path('exchange/errors/<str:dataset>/<int:job_id>/', exchange_views.error_download,
+         name='exchange_errors'),
+    path('exchange/history/<str:dataset>/', exchange_views.job_history,
+         name='exchange_history'),
+    path('exchange/export/<str:dataset>/', exchange_views.export_view,
+         name='exchange_export'),
 ]

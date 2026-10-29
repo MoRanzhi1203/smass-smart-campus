@@ -1,0 +1,50 @@
+{% extends "r10/base.html" %}
+{% block title %}{{ schema.title }} - 导入历史{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/exchange/">数据交换</a><span class="sep">/</span><a href="/exchange/import/{{ dataset }}/">{{ schema.title }}</a><span class="sep">/</span><span class="current">导入历史</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">导入历史</h1>
+    <p class="sm-subtitle">数据集 <code>{{ dataset }}</code> · 最近 50 个批次（含失败的批次，可下载错误工作簿）</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/exchange/import/{{ dataset }}/">继续导入</a>
+  </div>
+</div>
+
+{% if not jobs %}
+  <div class="sm-alert is-info"><span>还没有导入记录。</span></div>
+{% else %}
+<div class="sm-card">
+  <div class="sm-card-body" style="overflow:auto;">
+    <table class="sm-table" style="width:100%;font-size:13px;">
+      <thead>
+        <tr>
+          <th>批次</th><th>状态</th><th>总行</th><th>成功</th><th>错误</th>
+          <th>操作者</th><th>创建时间</th><th>提交时间</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for j in jobs %}
+        <tr>
+          <td><code>{{ j.pk }}</code></td>
+          <td>{{ j.status }}</td>
+          <td>{{ j.total_rows }}</td>
+          <td>{{ j.success_rows }}</td>
+          <td>{{ j.error_rows }}</td>
+          <td>{{ j.created_by|default:"-" }}</td>
+          <td>{{ j.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td>{% if j.committed_at %}{{ j.committed_at|date:"Y-m-d H:i:s" }}{% else %}-{% endif %}</td>
+          <td>
+            {% if j.error_rows %}
+              <a href="/exchange/errors/{{ dataset }}/{{ j.pk }}/">下载错误</a>
+            {% else %}-{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
