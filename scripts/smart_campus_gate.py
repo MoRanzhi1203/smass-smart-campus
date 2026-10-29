@@ -243,10 +243,21 @@ def check_state_sync(tasks: list[dict], state_doc: dict, rep: Report) -> None:
     cur = state_doc.get('current_task')
     by_id = {t['id']: t for t in tasks}
     if cur and cur in by_id:
-        if by_id[cur].get('state') not in ADVANCEABLE | {DONE}:
-            rep.fail('current_task 合法', f'{cur} 状态为 {by_id[cur].get("state")}')
+        task = by_id[cur]
+        state_now = task.get('state')
+        deps_ok = all(
+            by_id.get(d, {}).get('state') == DONE
+            for d in (task.get('depends_on') or [])
+        )
+        if state_now in ADVANCEABLE | {DONE}:
+            rep.ok('current_task 合法', f'{cur} = {state_now}')
+        elif state_now == 'PENDING' and deps_ok:
+            # 「下一个可执行任务」尚未开工时允许是 PENDING（诚实状态），
+            # 前提是它的依赖都已 TESTED。
+            rep.ok('current_task 合法', f'{cur} = PENDING（下一可执行，依赖已满足）')
         else:
-            rep.ok('current_task 合法', f'{cur} = {by_id[cur].get("state")}')
+            rep.fail('current_task 合法',
+                     f'{cur} 状态为 {state_now}（依赖未满足或状态异常）')
     elif cur:
         rep.fail('current_task 合法', f'{cur} 不在账本中')
 

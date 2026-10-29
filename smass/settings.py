@@ -102,6 +102,8 @@ MIDDLEWARE = [
     'app01.middleware.auth.AuthMiddleware',
     # 含一次性口令等敏感内容的响应禁止缓存（R1.5-B.7）
     'app01.middleware.privacy.SensitiveResponseMiddleware',
+    # S02：会话世代校验 + 强制改密（仅在 PASSWORD_LIFECYCLE['ENABLED'] 时生效）
+    'app01.middleware.password_lifecycle.PasswordLifecycleMiddleware',
 ]
 
 ROOT_URLCONF = 'smass.urls'
@@ -170,6 +172,28 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+# ---------------------------------------------------------------------------
+# 密码生命周期策略（S02）
+# ---------------------------------------------------------------------------
+# 全部默认关闭：学校具体密码政策未确认前，不得擅自对真实用户强制改密。
+# 需要启用时通过环境变量打开，或直接覆盖本字典。
+# 状态数据存放在 app01.AccountSecurityState（独立表，不改既有账号表）。
+PASSWORD_LIFECYCLE = {
+    # 总开关；关闭时中间件与强制改密拦截完全不起作用
+    'ENABLED': env_bool('SMASS_PASSWORD_LIFECYCLE', False),
+    # 仍持有 32 位历史 MD5 的账号，在启用后强制改密
+    'FORCE_RESET_LEGACY': env_bool('SMASS_FORCE_RESET_LEGACY', False),
+    # 被停用的账号强制改密（停用本身已经阻止登录）
+    'FORCE_RESET_INACTIVE': env_bool('SMASS_FORCE_RESET_INACTIVE', False),
+    # 密码最大使用天数；0 表示不按时间强制
+    'MAX_AGE_DAYS': env_int('SMASS_PASSWORD_MAX_AGE_DAYS', 0),
+    # 管理员发放的一次性口令有效分钟数
+    'TEMP_PASSWORD_TTL_MINUTES': env_int('SMASS_TEMP_PASSWORD_TTL_MINUTES', 1440),
+    # 登录时自动识别并登记遗留哈希（不改密码，只登记状态）
+    'DETECT_LEGACY_ON_LOGIN': env_bool('SMASS_DETECT_LEGACY_ON_LOGIN', True),
+}
 
 
 # ---------------------------------------------------------------------------

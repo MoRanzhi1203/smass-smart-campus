@@ -66,7 +66,11 @@ class WebKitLoginRepro(StaticLiveServerTestCase):
         self.context = self.browser.new_context(
             viewport={'width': 1280, 'height': 860})
         self.page = self.context.new_page()
-        self.page.set_default_timeout(15000)
+        # WebKit on Windows 的 load 事件偶发明显滞后（本机实测有 15s 超时记录）。
+        # 本测试的被测对象是「登录是否返回 500」，导航耗时不是断言目标，
+        # 因此放宽到 30s 以降低 flaky 率；这不是掩盖问题——
+        # 一旦真的卡死仍会超时失败。
+        self.page.set_default_timeout(int(os.environ.get('R10_H3_TIMEOUT_MS', '30000')))
 
     def tearDown(self):
         if self.context is not None:

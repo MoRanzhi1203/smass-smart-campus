@@ -429,6 +429,19 @@ def establish_session(request, account, role):
     }
     request.session.set_expiry(settings.SESSION_COOKIE_AGE)
     clear_login_failures(request)
+
+    # S02：把当前会话世代写入 session，供 PasswordLifecycleMiddleware 校验。
+    # 延迟导入避免循环依赖；状态表未落地时（正式库未迁移）静默跳过，
+    # 不改变既有登录行为。
+    try:
+        from app01.services import password_lifecycle
+
+        password_lifecycle.write_session_epoch(request.session, role, account.pk)
+        if password_lifecycle.lifecycle_enabled():
+            password_lifecycle.sync_legacy_flag(account, role)
+    except Exception:  # noqa: BLE001 - 安全状态不可用不应阻断登录
+        logger.warning('password_lifecycle_unavailable role=%s object_id=%s', role, account.pk)
+
     logger.info(
         'login_success role=%s object_id=%s ip=%s',
         role,

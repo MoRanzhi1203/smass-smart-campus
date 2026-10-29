@@ -335,3 +335,66 @@ class ClassCommittee(models.Model):
     def __str__(self):
         # 返回字符串类型
         return str(self.committee)
+
+
+class AccountSecurityState(models.Model):
+    """账号安全状态（S02 密码生命周期）。
+
+    设计约束：
+    - **独立表**，不修改 ``Admin`` / ``Student`` / ``Teacher`` 既有表结构，
+      避免对正式库做破坏性 ALTER；
+    - 账号用 ``(account_type, account_id)`` 复合定位，与三张既有账号表解耦；
+    - 所有策略默认关闭；本表只承载"状态"，策略本身来自可配置的 settings；
+    - 表不存在时服务层降级（见 ``services/password_lifecycle.py``），
+      保证"未迁移正式库"不会导致 500。
+    """
+
+    ACCOUNT_ADMIN = 'admin'
+    ACCOUNT_STUDENT = 'student'
+    ACCOUNT_TEACHER = 'teacher'
+    ACCOUNT_TYPE_CHOICES = (
+        (ACCOUNT_ADMIN, '管理员'),
+        (ACCOUNT_STUDENT, '学生'),
+        (ACCOUNT_TEACHER, '教师'),
+    )
+
+    account_type = models.CharField(
+        verbose_name='账号类型', max_length=16, choices=ACCOUNT_TYPE_CHOICES)
+    account_id = models.CharField(verbose_name='账号标识', max_length=32)
+
+    must_change_password = models.BooleanField(verbose_name='需强制改密', default=False)
+    is_active = models.BooleanField(verbose_name='启用', default=True)
+    legacy_hash_pending = models.BooleanField(verbose_name='仍持有历史MD5', default=False)
+
+    password_changed_at = models.DateTimeField(
+        verbose_name='最近改密时间', null=True, blank=True)
+    temp_password_expires_at = models.DateTimeField(
+        verbose_name='临时口令到期', null=True, blank=True)
+
+    #: 会话世代：改密/重置/停用时 +1，旧会话因世代不匹配而失效
+    session_epoch = models.PositiveIntegerField(verbose_name='会话世代', default=0)
+
+    last_reset_by = models.CharField(
+        verbose_name='最近重置操作者', max_length=32, blank=True, default='')
+
+    created_at = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name='更新时间', auto_now=True)
+
+    class Meta:
+        db_table = 'app01_account_security_state'
+        verbose_name = '账号安全状态'
+        verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(
+                fields=['account_type', 'account_id'],
+                name='uniq_app01_account_security_state',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=['must_change_password'], name='idx_ass_must_change'),
+            models.Index(fields=['legacy_hash_pending'], name='idx_ass_legacy_pending'),
+            models.Index(fields=['is_active'], name='idx_ass_is_active'),
+        ]
+
+    def __str__(self):
+        return '{}:{}'.format(self.account_type, self.account_id)

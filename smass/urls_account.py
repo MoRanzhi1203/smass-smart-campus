@@ -4,7 +4,7 @@
 """
 from django.urls import path
 
-from app01.views import account
+from app01.views import account, password_lifecycle
 
 urlpatterns = [
     # 登录主页面（角色选择）
@@ -17,4 +17,10 @@ urlpatterns = [
     path('login/account/teacher/', account.login_teacher, name='login_teacher'),
     # 注销
     path('logout/', account.logout_account, name='logout'),
+
+    # S02：强制改密（三端共用）与管理员发放一次性临时口令
+    path('account/password/forced/', password_lifecycle.password_forced_change,
+         name='password_forced_change'),
+    path('admin/admin/temp-password/', password_lifecycle.admin_issue_temp_password,
+         name='admin_issue_temp_password'),
 ]
