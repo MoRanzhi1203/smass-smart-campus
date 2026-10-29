@@ -138,4 +138,4 @@ PRODUCTION_DEPLOYMENT             = NOT_AUTHORIZED
 - 性能达标（CSV 导出 12.5s 未优化）
 - 业务规则完备（BD-05..08 未输入）
 
-**PASTE_FINAL_SHA_PLACEHOLDER**
+**FINAL_GIT_SHA = $sha**
