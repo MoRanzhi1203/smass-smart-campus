@@ -107,3 +107,34 @@ BASE_EDIT_ROLES = {'system_admin', 'college_admin'}
 **scope 先于聚合（测试锁定）**：
 - A 院管理员看到 8（本院），B 院看到抑制（2 < 阈值 5），系统管理员看到 10
 - 三者的 `scope_hash` 互不相同
+## R8 API 文档（U7）✅
+
+| 项 | 实现 | 测试 |
+|---|---|---|
+| 端点表 | 从 `openapi_schema()` 动态生成，与真实路由**逐条比对** | `test_docs_lists_every_real_endpoint` |
+| scope 说明 | 列出全部 5 个 scope，明写"默认没有任何 scope" | `test_docs_shows_all_scopes` |
+| 不泄漏令牌 | 创建服务账号后，页面不含明文与摘要 | `test_docs_does_not_leak_tokens` |
+| 环境标识 | "隔离演示环境 / 合成数据 / 未接外部系统" | `test_docs_marks_isolated_environment` |
+| 权限 | staff-only；学生/匿名 403 | 3 例 |
+
+## R9 运维状态（U7）✅
+
+| 项 | 实现 | 测试 |
+|---|---|---|
+| 就绪探针 | database + migrations 明细 | `test_status_shows_readiness_checks` |
+| 延迟分位 | P50/P95/P99 | `test_status_shows_latency_percentiles` |
+| 告警规则 | 阈值/窗口/触发状态 | 页面渲染 |
+| STAGING 标识 | "非生产环境，不承载真实数据" | `test_status_shows_staging_label` |
+| 只读性 | 断言无 `method="post"`、无 `max_connections`、无"重启" | `test_status_has_no_write_actions` |
+| 不泄漏 | 断言无 password / mysql:// | `test_status_does_not_leak_secrets` |
+
+## API 不变量回归（U7 不得破坏）✅
+
+| 不变量 | 测试 |
+|---|---|
+| scope 强制（有 read:units 无 read:students → 403） | `test_scope_still_enforced` |
+| 默认空 scope | `test_default_scope_is_empty` |
+| `read:students` ≠ 全校 | `test_read_students_does_not_mean_whole_school` |
+| 限流 429 | `test_rate_limit_still_enforced` |
+| 幂等重放 | `test_idempotency_still_enforced` |
+| 令牌不存明文 | `test_token_not_stored_in_plaintext` |
