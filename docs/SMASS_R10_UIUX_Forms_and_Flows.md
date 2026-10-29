@@ -88,3 +88,22 @@ BASE_EDIT_ROLES = {'system_admin', 'college_admin'}
 
 **R6 审计**：每次 `transition` 写 `WorkflowEvent`（action/from/to/actor/reason）；
 端到端测试断言 `['create','submit','approve','approve']` 全部有 actor。
+## R7 分析（U6）✅
+
+| 操作 | 路由 | 角色 | 服务 | 关键约束 |
+|---|---|---|---|---|
+| 看板 | `/r7/dashboard/` | staff | `compute_metric` | KPI 卡 + 数据源筛选；抑制显示「已抑制」 |
+| 指标注册表 | `/r7/metrics/` | staff | — | 指标 + 报表 + 最近运行 |
+| 报表运行 | `/r7/reports/<code>/` | 按 permission_roles | `run_report` | 显示 query_hash/scope_hash |
+| 报表导出 | `/r7/reports/<code>/export/` | 同上 | `export_report_csv` | CSV + `X-Query-Hash` |
+| 快照序列 | `/r7/metric-series/` | 同上 | `MetricSnapshot` | 只读已存快照，不重算 |
+
+**抑制不泄漏（测试锁定）**：
+- HTML 中抑制指标渲染 `已抑制` 徽章，**不含数值节点** `id="value-<code>"`
+- JSON 中 `value == 0` 且 `suppressed == true`
+- CSV 中数值列为 `0`
+- 真实值仅在服务端计算，从不下发
+
+**scope 先于聚合（测试锁定）**：
+- A 院管理员看到 8（本院），B 院看到抑制（2 < 阈值 5），系统管理员看到 10
+- 三者的 `scope_hash` 互不相同

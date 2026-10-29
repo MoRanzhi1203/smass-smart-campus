@@ -64,11 +64,16 @@ def main():
     student = make_account('student', RoleCode.STUDENT, 'student', '演示学生')
 
     # ---- R4 组织 + 学生（6 人，超过小样本阈值）----
-    college = org_services.create_unit(code='DEMO-C', name='信息工程学院', unit_type='college')
-    major = org_services.create_unit(
-        code='DEMO-M', name='信息安全技术', unit_type='major', parent=college)
-    klass = org_services.create_unit(
-        code='DEMO-K', name='信安2101', unit_type='class', parent=major)
+    from smass_organization.models import OrganizationUnit
+
+    college, _ = OrganizationUnit.objects.get_or_create(
+        code='DEMO-C', defaults={'name': '信息工程学院', 'unit_type': 'college'})
+    major, _ = OrganizationUnit.objects.get_or_create(
+        code='DEMO-M', defaults={'name': '信息安全技术', 'unit_type': 'major',
+                                 'parent': college})
+    klass, _ = OrganizationUnit.objects.get_or_create(
+        code='DEMO-K', defaults={'name': '信安2101', 'unit_type': 'class',
+                                 'parent': major})
 
     created_students = 0
     for index in range(6):
@@ -104,8 +109,14 @@ def main():
         term=term, course=course, code='A',
         defaults={'capacity': 30},
     )
-    academic_services.assign_teacher(section, teacher, assigned_by='demo_seed')
-    academic_services.enroll(section, student, actor='demo_seed')
+    try:
+        academic_services.assign_teacher(section, teacher, assigned_by='demo_seed')
+    except Exception:  # noqa: BLE001 - 已分配则跳过（幂等）
+        pass
+    try:
+        academic_services.enroll(section, student, actor='demo_seed')
+    except Exception:  # noqa: BLE001 - 已选则跳过（幂等）
+        pass
 
     # ---- R6 流程定义 + 实例 ----
     if not workflow_services.WorkflowDefinition.objects.filter(code='DEMO-LEAVE').exists():
@@ -141,6 +152,20 @@ def main():
     )
     if not metric2.is_enabled:
         analytics_services.validate_metric(metric2)
+
+    # ---- R7 报表（U6 需要）----
+    from smass_analytics.models import ReportDefinition
+
+    report, created = ReportDefinition.objects.get_or_create(
+        code='DEMO-RPT',
+        defaults={'name': '演示综合报表', 'permission_roles': ['system_admin',
+                                                             'college_admin',
+                                                             'teacher']},
+    )
+    report.metrics.set([metric, metric2])
+    if not report.is_enabled:
+        report.is_enabled = True
+        report.save(update_fields=['is_enabled'])
 
     print('')
     print('demo accounts (password = {}):'.format(PASSWORD))

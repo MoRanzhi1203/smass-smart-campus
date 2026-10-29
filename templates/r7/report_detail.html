@@ -1,0 +1,71 @@
+{% extends "r10/base.html" %}
+{% block title %}报表 {{ report.code }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r7/metrics/">指标与报表</a><span class="sep">/</span><span class="current">{{ report.code }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ report.name }}</h1>
+    <p class="sm-subtitle">编码 {{ report.code }} · 指标 {{ report.metrics.count }} 项</p>
+  </div>
+  <div class="sm-page-actions">
+    {% if not disabled %}
+    <a class="sm-btn is-primary" href="/r7/reports/{{ report.code }}/export/" id="btn-export">导出 CSV</a>
+    {% endif %}
+    <a class="sm-btn" href="/r7/metrics/">返回</a>
+  </div>
+</div>
+
+{% if disabled %}
+<div class="sm-alert is-warning" id="report-disabled">
+  <span>该报表尚未启用，不能运行。请联系管理员在注册表中启用。</span>
+</div>
+{% else %}
+
+{% if meta %}
+<div class="sm-card">
+  <div class="sm-card-head">查询指纹（用于对账）</div>
+  <div class="sm-card-body">
+    <table class="sm-table" id="meta-table">
+      <tbody>
+        <tr><th style="width:160px;">query_hash</th><td class="sm-mono">{{ meta.query_hash }}</td></tr>
+        <tr><th>scope_hash</th><td class="sm-mono">{{ meta.scope_hash }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">结果（{{ rows|length }} 行）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="report-table">
+        <thead><tr><th>指标</th><th>名称</th><th>数值</th><th>查询哈希</th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td class="sm-mono">{{ row.metric }}</td>
+            <td>{{ row.name }}</td>
+            <td class="is-num">
+              {% if row.suppressed %}
+                <span class="sm-badge is-warning">已抑制</span>
+              {% else %}{{ row.value }}{% endif %}
+            </td>
+            <td class="sm-mono">{{ row.query_hash }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">◔</div>
+              <div class="sm-empty-title">没有可显示的指标</div>
+              <div class="sm-empty-desc">报表内的指标可能都未启用，或被你的角色权限过滤。</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

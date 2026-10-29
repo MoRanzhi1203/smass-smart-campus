@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 
 from r21_account import views as r21_views
 from smass_academic import ui_views as r5_ui
+from smass_analytics import ui_views as r7_ui
 from smass_operations import ui_views, views as ops_views
 from smass_organization import ui_views as r4_ui
 from smass_workflow import ui_views as r6_ui
@@ -60,6 +61,13 @@ urlpatterns = [
     path('r6/tasks/', r6_ui.task_list_page, name='r6_task_list_page'),
     path('r6/notifications/<int:pk>/read/', r6_ui.notification_read, name='r6_notification_read'),
     path('r6/notifications/', r6_ui.notification_page, name='r6_notification_page'),
+
+    # U6：R7
+    path('r7/dashboard/', r7_ui.dashboard_page, name='r7_dashboard_page'),
+    path('r7/metrics/', r7_ui.metric_list_page, name='r7_metric_list_page'),
+    path('r7/reports/<str:code>/', r7_ui.report_detail_page, name='r7_report_detail_page'),
+    path('r7/reports/<str:code>/export/', r7_ui.report_export_page, name='r7_report_export_page'),
+    path('r7/metric-series/', r7_ui.metric_series, name='r7_metric_series'),
 
     # U7
     path('r8/docs/', ui_views.api_docs, name='r8_api_docs'),
