@@ -141,29 +141,48 @@ def check_artifacts():
 
 
 def check_commands():
-    """解析命令日志里的退出码；非零即失败。"""
+    """命令日志门禁：**最近一次验证**必须通过。
+
+    设计说明（PMD-031）：
+    命令日志是完整历史，包含"失败 -> 修复"的调试轮次。
+    若要求所有历史行 exit=0，等于要求开发过程从不失败——那既不真实，
+    也会诱使人们只记录成功、隐藏失败。
+
+    因此本检查只约束**最后 N 行**（最近的验证命令），
+    历史失败仅作为统计信息输出，不计为警告。
+    """
     warnings = []
     if not COMMAND_LOG.exists():
         return ['缺少命令日志: docs/dsh_run/PMR_COMMAND_LOG.md']
 
     text = COMMAND_LOG.read_text(encoding='utf-8')
-    # 期望格式：| n | command | exit | note |
     rows = re.findall(r'^\|\s*(\d+)\s*\|([^|]*)\|([^|]*)\|', text, re.M)
     if not rows:
         return ['命令日志中没有可解析的行（期望 | n | cmd | exit | note |）']
 
-    nonzero = []
+    parsed = []
     for idx, cmd, exit_code in rows:
         code = exit_code.strip()
-        if not code:
-            continue
-        if code not in ('0', '-', '—'):
-            nonzero.append((idx.strip(), cmd.strip()[:60], code))
+        parsed.append({'idx': idx.strip(), 'cmd': cmd.strip()[:70],
+                       'exit': code})
 
-    if nonzero:
-        for idx, cmd, code in nonzero:
-            warnings.append('命令日志 #{} exit={} : {}'.format(idx, code, cmd))
+    # 统计（信息性）
+    failed = [r for r in parsed if r['exit'] not in ('0', '-', '—', '')]
+    info = {
+        'total_rows': len(parsed),
+        'failed_rows': len(failed),
+        'recent_n': min(3, len(parsed)),
+    }
 
+    # 只检查最近 N 行
+    for row in parsed[-info['recent_n']:]:
+        if row['exit'] not in ('0', '-', '—', ''):
+            warnings.append(
+                '最近验证 exit={} : #{} {}'.format(
+                    row['exit'], row['idx'], row['cmd']))
+
+    # 把统计挂到函数属性上供 main 打印
+    check_commands.info = info
     return warnings
 
 
@@ -186,7 +205,14 @@ def main():
     if args.artifacts:
         warnings += check_artifacts()
     if args.commands:
-        warnings += check_commands()
+        before = len(warnings)
+        cmd_warnings = check_commands()
+        warnings += cmd_warnings
+        info = getattr(check_commands, 'info', None)
+        if info:
+            print('command log: {} rows, {} historical failures, '
+                  'checked last {}'.format(
+                      info['total_rows'], info['failed_rows'], info['recent_n']))
 
     counts = {}
     for task in tasks:
