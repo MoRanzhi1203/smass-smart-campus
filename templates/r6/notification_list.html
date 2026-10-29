@@ -3,8 +3,8 @@
 {% block content %}
 <div class="sm-page-head"><div><h1 class="sm-title">站内消息（R6）</h1></div></div>
 <div class="sm-table-wrap"><table class="sm-table" id="notification-table">
-<thead><tr><th>标题</th><th>已读</th></tr></thead><tbody>
-{% for n in rows %}<tr><td>{{ n.title }}</td><td>{{ n.is_read }}</td></tr>
-{% empty %}<tr><td colspan="2">暂无消息</td></tr>{% endfor %}
+<thead><tr><th>标题</th><th>内容</th><th>已读</th><th>操作</th></tr></thead><tbody>
+{% for n in rows %}<tr><td>{{ n.title }}</td><td>{{ n.body|default:"—" }}</td><td>{% if n.is_read %}<span class="sm-badge is-success">已读</span>{% else %}<span class="sm-badge is-warning">未读</span>{% endif %}</td><td>{% if not n.is_read %}<form method="post" action="/r6/notifications/{{ n.pk }}/read/" style="display:inline;">{% csrf_token %}<button type="submit" class="sm-btn is-sm" id="btn-read-{{ n.pk }}">标记已读</button></form>{% else %}—{% endif %}</td></tr>
+{% empty %}<tr><td colspan="4">暂无消息</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

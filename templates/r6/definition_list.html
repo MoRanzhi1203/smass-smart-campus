@@ -1,7 +1,7 @@
 {% extends "r10/base.html" %}
 {% block title %}R6 流程定义{% endblock %}
 {% block content %}
-<div class="sm-page-head"><div><h1 class="sm-title">流程定义（R6）</h1></div></div>
+<div class="sm-page-head"><div><h1 class="sm-title">流程定义（R6）</h1></div><div class="sm-page-actions"><a class="sm-btn is-primary" href="/r6/definitions/new/">新建流程</a></div></div>
 <div class="sm-table-wrap"><table class="sm-table" id="definition-table">
 <thead><tr><th>编码</th><th>名称</th><th>启用</th><th>版本数</th></tr></thead><tbody>
 {% for d in definitions %}<tr><td>{{ d.code }}</td><td>{{ d.name }}</td><td>{{ d.is_active }}</td><td>{{ d.versions.count }}</td></tr>

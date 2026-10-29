@@ -3,8 +3,8 @@
 {% block content %}
 <div class="sm-page-head"><div><h1 class="sm-title">待办任务（R6）</h1></div></div>
 <div class="sm-table-wrap"><table class="sm-table" id="task-table">
-<thead><tr><th>实例</th><th>节点</th><th>处理人</th></tr></thead><tbody>
-{% for t in tasks %}<tr><td>{{ t.instance_id }}</td><td>{{ t.node.code }}</td><td>{{ t.assignee }}</td></tr>
-{% empty %}<tr><td colspan="3">暂无待办</td></tr>{% endfor %}
+<thead><tr><th>实例</th><th>节点</th><th>处理人</th><th>操作</th></tr></thead><tbody>
+{% for t in tasks %}<tr><td><a href="/r6/instances/{{ t.instance_id }}/">#{{ t.instance_id }}</a></td><td class="sm-mono">{{ t.node.code }}</td><td>{{ t.assignee|default:"—" }}</td><td><a class="sm-btn is-sm" href="/r6/instances/{{ t.instance_id }}/">查看</a> <form method="post" action="/r6/tasks/{{ t.pk }}/complete/" style="display:inline;">{% csrf_token %}<button type="submit" class="sm-btn is-sm is-primary" id="btn-complete-{{ t.pk }}">完成</button></form></td></tr>
+{% empty %}<tr><td colspan="4">暂无待办</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

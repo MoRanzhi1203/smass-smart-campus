@@ -1,7 +1,7 @@
 {% extends "r10/base.html" %}
 {% block title %}R6 流程实例{% endblock %}
 {% block content %}
-<div class="sm-page-head"><div><h1 class="sm-title">流程实例（R6）</h1></div></div>
+<div class="sm-page-head"><div><h1 class="sm-title">流程实例（R6）</h1></div><div class="sm-page-actions"><a class="sm-btn is-primary" href="/r6/instances/new/">发起流程</a></div></div>
 <div class="sm-table-wrap"><table class="sm-table" id="instance-table">
 <thead><tr><th>业务</th><th>状态</th><th>当前节点</th></tr></thead><tbody>
 {% for i in instances %}<tr><td>{{ i.subject_type }}:{{ i.subject_id }}</td><td>{{ i.status }}</td><td>{% if i.current_node %}{{ i.current_node.code }}{% endif %}</td></tr>

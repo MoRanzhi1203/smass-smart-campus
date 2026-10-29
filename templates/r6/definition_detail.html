@@ -1,0 +1,108 @@
+{% extends "r10/base.html" %}
+{% block title %}{{ definition.name }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r6/definitions/">流程定义</a><span class="sep">/</span><span class="current">{{ definition.code }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ definition.name }}</h1>
+    <p class="sm-subtitle">编码 {{ definition.code }} · {{ definition.description|default:"无说明" }}</p>
+  </div>
+  <div class="sm-page-actions">
+    {% if not active %}
+    <form method="post" action="/r6/definitions/{{ definition.pk }}/publish/" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="sm-btn is-primary" id="btn-publish">发布草稿</button>
+    </form>
+    {% endif %}
+    <a class="sm-btn" href="/r6/instances/new/">发起流程</a>
+    <a class="sm-btn" href="/r6/definitions/">返回</a>
+  </div>
+</div>
+
+<div class="sm-kpi-grid">
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">状态</div>
+    <div class="sm-kpi-value">
+      {% if definition.is_active %}<span style="color:var(--sm-success);font-size:18px;">已启用</span>
+      {% else %}<span style="color:var(--sm-text-muted);font-size:18px;">未启用</span>{% endif %}
+    </div>
+    <div class="sm-kpi-unit">{% if active %}生效版本 v{{ active.version }}{% else %}无生效版本{% endif %}</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">版本数</div>
+    <div class="sm-kpi-value">{{ versions|length }}</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">节点数</div>
+    <div class="sm-kpi-value">{{ active_nodes|length }}</div>
+    <div class="sm-kpi-unit">当前生效版本</div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">节点（生效版本）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="node-table">
+        <thead><tr><th>顺序</th><th>编码</th><th>名称</th><th>类型</th></tr></thead>
+        <tbody>
+          {% for n in active_nodes %}
+          <tr>
+            <td class="is-num">{{ n.order }}</td>
+            <td class="sm-mono">{{ n.code }}</td>
+            <td>{{ n.name }}</td>
+            <td><span class="sm-badge {% if n.node_type == 'start' %}is-info{% elif n.node_type == 'end' %}is-success{% else %}is-warning{% endif %}">{{ n.node_type }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4"><div class="sm-empty"><div class="sm-empty-title">无生效节点</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">允许的转移（配置驱动，非硬编码）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="transition-table">
+        <thead><tr><th>从</th><th>动作</th><th>到</th></tr></thead>
+        <tbody>
+          {% for t in active_transitions %}
+          <tr>
+            <td class="sm-mono">{{ t.from_node.code }}</td>
+            <td><span class="sm-badge is-primary">{{ t.action }}</span></td>
+            <td class="sm-mono">{{ t.to_node.code }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3"><div class="sm-empty"><div class="sm-empty-title">无转移配置</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">版本历史</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="version-table">
+        <thead><tr><th>版本</th><th>状态</th><th>发布时间</th></tr></thead>
+        <tbody>
+          {% for v in versions %}
+          <tr>
+            <td class="sm-mono">v{{ v.version }}</td>
+            <td><span class="sm-badge {% if v.status == 'active' %}is-success{% elif v.status == 'draft' %}is-warning{% endif %}">{{ v.status }}</span></td>
+            <td class="sm-mono">{{ v.published_at|date:"Y-m-d H:i"|default:"—" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3"><div class="sm-empty"><div class="sm-empty-title">无版本</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

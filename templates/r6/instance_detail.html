@@ -1,0 +1,92 @@
+{% extends "r10/base.html" %}
+{% block title %}实例 {{ instance.pk }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r6/instances/">流程实例</a><span class="sep">/</span><span class="current">#{{ instance.pk }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ instance.subject_type }}:{{ instance.subject_id }}</h1>
+    <p class="sm-subtitle">
+      {{ instance.version.definition.name }} · v{{ instance.version.version }}
+      · 当前节点 {{ instance.current_node.code|default:"—" }}
+    </p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r6/instances/">返回</a>
+  </div>
+</div>
+
+<div class="sm-kpi-grid">
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">状态</div>
+    <div class="sm-kpi-value" style="font-size:18px;">
+      <span class="sm-badge {% if instance.status == 'approved' %}is-success{% elif instance.status == 'rejected' %}is-danger{% elif instance.status == 'pending' %}is-warning{% endif %}"
+            id="instance-status">{{ instance.status }}</span>
+    </div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">当前节点</div>
+    <div class="sm-kpi-value" style="font-size:18px;" id="current-node">{{ instance.current_node.code|default:"—" }}</div>
+  </div>
+  <div class="sm-kpi">
+    <div class="sm-kpi-label">乐观锁版本</div>
+    <div class="sm-kpi-value">{{ instance.version_no }}</div>
+  </div>
+</div>
+
+{% if actions %}
+<div class="sm-card">
+  <div class="sm-card-head">可执行动作（由配置的转移决定）</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" id="action-form"
+          action="/r6/instances/{{ instance.pk }}/action/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-action">动作</label>
+          <select id="f-action" name="action">
+            {% for a in actions %}
+            <option value="{{ a }}">{{ a }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-reason">原因（可选）</label>
+          <input type="text" id="f-reason" name="reason" placeholder="驳回理由等">
+        </div>
+      </div>
+      <button type="submit" class="sm-btn is-primary" id="btn-action"
+              data-sm-confirm="确认执行该动作？执行后不可撤销。">执行</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="sm-alert is-info">
+  <span>该实例已结束或当前节点没有可执行的转移。</span>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">历史（{{ events|length }}）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="event-table">
+        <thead><tr><th>动作</th><th>状态变化</th><th>节点变化</th><th>操作者</th><th>原因</th><th>时间</th></tr></thead>
+        <tbody>
+          {% for e in events %}
+          <tr>
+            <td><span class="sm-badge is-primary">{{ e.action }}</span></td>
+            <td class="sm-mono">{{ e.from_status|default:"—" }} → {{ e.to_status|default:"—" }}</td>
+            <td class="sm-mono">{{ e.from_node|default:"—" }} → {{ e.to_node|default:"—" }}</td>
+            <td class="sm-mono">{{ e.actor|default:"—" }}</td>
+            <td>{{ e.reason|default:"—" }}</td>
+            <td class="sm-mono">{{ e.created_at|date:"Y-m-d H:i:s" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6"><div class="sm-empty"><div class="sm-empty-title">无事件</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

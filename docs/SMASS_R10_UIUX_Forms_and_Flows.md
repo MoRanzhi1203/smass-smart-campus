@@ -61,3 +61,30 @@ BASE_EDIT_ROLES = {'system_admin', 'college_admin'}
 | 成功反馈 | `django.contrib.messages` + PRG 重定向 |
 | 失败反馈 | 顶部 `#form-error` + 行内 `sm-error` |
 | 并发冲突 | HTTP 409 + 明确文案 + 回填最新版本号 |
+
+## R5 教学（U4）✅
+
+| 操作 | 路由 | 角色 | 服务 | 关键校验 |
+|---|---|---|---|---|
+| 学年新建 | `/r5/years/new/` | system_admin | `create_year` | 日期倒置拒绝 |
+| 学期新建 | `/r5/terms/new/` | system_admin | `create_term` | **超出学年范围 -> DATE_RANGE** |
+| 课程新建 | `/r5/courses/new/` | system_admin | `create_course` | 编码唯一、学分数字 |
+| 教学班新建 | `/r5/sections/new/` | system_admin | `create_section` | 同课程同班号唯一 |
+| 任课分配 | `/r5/sections/<pk>/assign/` | admin/college | `assign_teacher` | 重复分配拒绝、撤销即失效 |
+| 名册 | `/r5/sections/<pk>/roster/` | 任课教师/管理员 | `section_roster` | 他人 403 |
+| 选课/退选 | `/r5/enroll/` | student | `enroll`/`drop` | 容量满、重复选课 |
+
+## R6 审批（U5）✅
+
+| 操作 | 路由 | 角色 | 服务 | 关键校验 |
+|---|---|---|---|---|
+| 定义新建 | `/r6/definitions/new/` | admin/college | `create_definition`+`add_node`+`add_transition`+`publish_version` | 模板生成、DEMO_ONLY 标注 |
+| 定义详情 | `/r6/definitions/<pk>/` | admin/college | `active_version` | 展示节点/转移/版本 |
+| 发起流程 | `/r6/instances/new/` | staff | `start_instance` | 必须有生效版本 |
+| 实例详情 | `/r6/instances/<pk>/` | 创建者/管理员 | `transition` | 非创建者 403 |
+| 执行动作 | `/r6/instances/<pk>/action/` | 同上 | `transition` | 非法动作 -> 错误、终态无按钮 |
+| 待办完成 | `/r6/tasks/<pk>/complete/` | staff | `complete_task` | 重复完成 -> 提示 |
+| 消息已读 | `/r6/notifications/<pk>/read/` | 本人 | `mark_read` | 他人 404 |
+
+**R6 审计**：每次 `transition` 写 `WorkflowEvent`（action/from/to/actor/reason）；
+端到端测试断言 `['create','submit','approve','approve']` 全部有 actor。

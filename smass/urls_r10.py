@@ -6,6 +6,7 @@ from r21_account import views as r21_views
 from smass_academic import ui_views as r5_ui
 from smass_operations import ui_views, views as ops_views
 from smass_organization import ui_views as r4_ui
+from smass_workflow import ui_views as r6_ui
 
 from smass.urls_r4 import urlpatterns as r4_patterns
 from smass.urls_r5 import urlpatterns as r5_patterns
@@ -34,7 +35,7 @@ urlpatterns = [
     path('r4/import/preview/', ui_views.import_preview, name='r4_import_preview_ui'),
     path('r4/import/commit/', r4_ui.import_commit_page, name='r4_import_commit_ui'),
 
-    # U4：R5（具体路径必须排在 r5_patterns 之前）
+    # U4：R5
     path('r5/years/new/', r5_ui.year_new, name='r5_year_new'),
     path('r5/terms/new/', r5_ui.term_new, name='r5_term_new'),
     path('r5/courses/new/', r5_ui.course_new, name='r5_course_new'),
@@ -47,6 +48,18 @@ urlpatterns = [
     path('r5/enroll/', r5_ui.enroll_page, name='r5_enroll_page'),
     path('r5/enroll/<int:pk>/', r5_ui.enroll_action, name='r5_enroll_action'),
     path('r5/enrollments/<int:pk>/drop/', r5_ui.drop_action, name='r5_drop_action'),
+
+    # U5：R6
+    path('r6/definitions/new/', r6_ui.definition_new, name='r6_definition_new'),
+    path('r6/definitions/<int:pk>/publish/', r6_ui.definition_publish, name='r6_definition_publish'),
+    path('r6/definitions/<int:pk>/', r6_ui.definition_detail, name='r6_definition_detail'),
+    path('r6/instances/new/', r6_ui.instance_new, name='r6_instance_new'),
+    path('r6/instances/<int:pk>/', r6_ui.instance_detail, name='r6_instance_detail'),
+    path('r6/instances/<int:pk>/action/', r6_ui.instance_action, name='r6_instance_action'),
+    path('r6/tasks/<int:pk>/complete/', r6_ui.task_complete, name='r6_task_complete'),
+    path('r6/tasks/', r6_ui.task_list_page, name='r6_task_list_page'),
+    path('r6/notifications/<int:pk>/read/', r6_ui.notification_read, name='r6_notification_read'),
+    path('r6/notifications/', r6_ui.notification_page, name='r6_notification_page'),
 
     # U7
     path('r8/docs/', ui_views.api_docs, name='r8_api_docs'),

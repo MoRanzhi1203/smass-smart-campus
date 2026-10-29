@@ -1,0 +1,61 @@
+{% extends "r10/base.html" %}
+{% block title %}发起流程{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r6/instances/">流程实例</a><span class="sep">/</span><span class="current">发起</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">发起流程</h1>
+    <p class="sm-subtitle">只能选择已启用且有生效版本的流程。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r6/instances/">返回</a></div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">发起信息</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="instance-form"
+          action="/r6/instances/new/">
+      {% csrf_token %}
+      <div class="sm-field">
+        <label class="sm-label" for="f-definition">流程<span class="req">*</span></label>
+        <select id="f-definition" name="definition" class="{% if errors.definition %}is-invalid{% endif %}">
+          <option value="">请选择</option>
+          {% for d in definitions %}
+          <option value="{{ d.pk }}" {% if form.definition == d.pk|stringformat:"s" %}selected{% endif %}>
+            {{ d.code }} · {{ d.name }}
+          </option>
+          {% empty %}
+          <option value="" disabled>没有已启用的流程（先到流程定义页创建）</option>
+          {% endfor %}
+        </select>
+        {% if errors.definition %}<div class="sm-error">{{ errors.definition }}</div>{% endif %}
+      </div>
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-subject_type">业务类型<span class="req">*</span></label>
+          <input type="text" id="f-subject_type" name="subject_type" value="{{ form.subject_type }}"
+                 placeholder="leave / student_record" class="{% if errors.subject_type %}is-invalid{% endif %}">
+          {% if errors.subject_type %}<div class="sm-error">{{ errors.subject_type }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-subject_id">业务标识<span class="req">*</span></label>
+          <input type="text" id="f-subject_id" name="subject_id" value="{{ form.subject_id }}"
+                 placeholder="DEMO-001" class="{% if errors.subject_id %}is-invalid{% endif %}">
+          {% if errors.subject_id %}<div class="sm-error">{{ errors.subject_id }}</div>{% endif %}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-start">发起</button>
+        <a class="sm-btn" href="/r6/instances/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

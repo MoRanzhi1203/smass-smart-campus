@@ -1,0 +1,64 @@
+{% extends "r10/base.html" %}
+{% block title %}新建流程定义{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r6/definitions/">流程定义</a><span class="sep">/</span><span class="current">新建</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">新建流程定义</h1>
+    <p class="sm-subtitle">选择模板自动生成节点与转移；创建后立即发布。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r6/definitions/">返回</a></div>
+</div>
+
+<div class="sm-alert is-warning">
+  <span><strong>DEMO_ONLY</strong>：以下模板是演示流程，不代表学校正式审批链。正式规则需业务方确认（BD-06）。</span>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">流程信息</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="definition-form"
+          action="/r6/definitions/new/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-code">流程编码<span class="req">*</span></label>
+          <input type="text" id="f-code" name="code" value="{{ form.code }}"
+                 class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+          {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-name">流程名称<span class="req">*</span></label>
+          <input type="text" id="f-name" name="name" value="{{ form.name }}"
+                 class="{% if errors.name %}is-invalid{% endif %}">
+          {% if errors.name %}<div class="sm-error">{{ errors.name }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="sm-field">
+        <label class="sm-label" for="f-desc">说明</label>
+        <input type="text" id="f-desc" name="description" value="{{ form.description }}">
+      </div>
+      <div class="sm-field">
+        <label class="sm-label" for="f-template">流程模板<span class="req">*</span></label>
+        <select id="f-template" name="template" class="{% if errors.template %}is-invalid{% endif %}">
+          {% for code, label in templates %}
+          <option value="{{ code }}" {% if form.template == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <div class="sm-help">单级：发起 → 审批 → 完成；两级：发起 → 初审 → 复审 → 完成。</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-create">创建并发布</button>
+        <a class="sm-btn" href="/r6/definitions/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
