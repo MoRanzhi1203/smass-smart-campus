@@ -1,0 +1,87 @@
+{% extends "r10/base.html" %}
+{% block title %}选课{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/my-courses/">我的课程</a><span class="sep">/</span><span class="current">选课</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">选课</h1>
+    <p class="sm-subtitle">容量已满或被重复选择时会被拒绝，并给出明确原因。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r5/my-courses/">我的课程</a></div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">我已选（{{ mine_rows|length }}）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="my-enroll-table">
+        <thead><tr><th>班号</th><th>课程</th><th>学期</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for row in mine_rows %}
+          <tr>
+            <td class="sm-mono">{{ row.section.code }}</td>
+            <td>{{ row.section.course.title|default:row.section.course.code }}</td>
+            <td>{{ row.section.term }}</td>
+            <td>
+              {% if row.enrollment %}
+              <form method="post" action="/r5/enrollments/{{ row.enrollment.pk }}/drop/" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="sm-btn is-sm is-danger" id="btn-drop-{{ row.section.pk }}"
+                        data-sm-confirm="确认退选该教学班？" data-sm-danger="1">退选</button>
+              </form>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">◈</div>
+              <div class="sm-empty-title">还没有选课</div>
+              <div class="sm-empty-desc">从下方开放的教学班中选择。</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">开放选课的教学班</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="open-section-table">
+        <thead><tr><th>班号</th><th>课程</th><th>学期</th><th>容量</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for s in open_sections %}
+          <tr>
+            <td class="sm-mono">{{ s.code }}</td>
+            <td>{{ s.course.title|default:s.course.code }}</td>
+            <td>{{ s.term }}</td>
+            <td class="is-num">{{ s.capacity|default:"不限" }}</td>
+            <td>
+              {% if s.pk in enrolled_ids %}
+                <span class="sm-badge is-success">已选</span>
+              {% else %}
+              <form method="post" action="/r5/enroll/{{ s.pk }}/" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="sm-btn is-sm is-primary" id="btn-enroll-{{ s.pk }}">选课</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">◈</div>
+              <div class="sm-empty-title">暂无可选教学班</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

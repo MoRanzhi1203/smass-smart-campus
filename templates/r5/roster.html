@@ -1,0 +1,63 @@
+{% extends "r10/base.html" %}
+{% block title %}名册 · {{ section.code }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/sections/">教学班</a><span class="sep">/</span><span class="current">名册</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">教学班名册</h1>
+    <p class="sm-subtitle">{{ section }} · {{ section.course.title|default:section.course.code }} · 容量 {{ section.capacity|default:"不限" }}</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r5/sections/">返回</a>
+    {% if can_teach %}<a class="sm-btn" href="/r5/sections/{{ section.pk }}/assign/">任课分配</a>{% endif %}
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">
+    已选学生（{{ roster|length }}）
+    <span class="sm-badge is-info" style="margin-left:auto;">
+      {% if can_teach %}你是本班任课教师{% else %}管理视角{% endif %}
+    </span>
+  </div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="roster-table">
+        <thead><tr><th>学生</th><th>状态</th><th>选课时间</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for e in roster %}
+          <tr>
+            <td>{{ e.account.login_name }}{% if e.account.display_name %} · {{ e.account.display_name }}{% endif %}</td>
+            <td>
+              {% if e.status == 'enrolled' %}<span class="sm-badge is-success">已选</span>
+              {% else %}<span class="sm-badge">已退</span>{% endif %}
+            </td>
+            <td class="sm-mono">{{ e.created_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if e.status == 'enrolled' %}
+              <form method="post" action="/r5/sections/{{ section.pk }}/roster/{{ e.pk }}/drop/"
+                    style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="sm-btn is-sm is-danger" id="btn-drop-{{ e.pk }}"
+                        data-sm-confirm="确认将 {{ e.account.login_name }} 退选？" data-sm-danger="1">
+                  退选
+                </button>
+              </form>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">◈</div>
+              <div class="sm-empty-title">还没有学生选课</div>
+              <div class="sm-empty-desc">学生可在「选课」页面自行选择。</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

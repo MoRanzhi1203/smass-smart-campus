@@ -1,0 +1,79 @@
+{% extends "r10/base.html" %}
+{% block title %}新建学期{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/years/">学年学期</a><span class="sep">/</span><span class="current">新建学期</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">新建学期</h1>
+    <p class="sm-subtitle">学期日期必须落在所属学年范围内，否则会被拒绝。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r5/terms/">返回</a></div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">学期信息</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="term-form" action="/r5/terms/new/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-year">所属学年<span class="req">*</span></label>
+          <select id="f-year" name="year" class="{% if errors.year %}is-invalid{% endif %}">
+            <option value="">请选择</option>
+            {% for y in years %}
+            <option value="{{ y.pk }}" {% if form.year == y.pk|stringformat:"s" %}selected{% endif %}>
+              {{ y.code }}（{{ y.start_date|date:"Y-m-d" }} ~ {{ y.end_date|date:"Y-m-d" }}）
+            </option>
+            {% endfor %}
+          </select>
+          {% if errors.year %}<div class="sm-error">{{ errors.year }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-semester">学期<span class="req">*</span></label>
+          <select id="f-semester" name="semester">
+            {% for code, label in semesters %}
+            <option value="{{ code }}" {% if form.semester == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="sm-field">
+        <label class="sm-label" for="f-name">名称</label>
+        <input type="text" id="f-name" name="name" value="{{ form.name }}" placeholder="第一学期">
+      </div>
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-start">开始日期<span class="req">*</span></label>
+          <input type="date" id="f-start" name="start_date" value="{{ form.start_date }}"
+                 class="{% if errors.start_date %}is-invalid{% endif %}">
+          {% if errors.start_date %}<div class="sm-error">{{ errors.start_date }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-end">结束日期<span class="req">*</span></label>
+          <input type="date" id="f-end" name="end_date" value="{{ form.end_date }}"
+                 class="{% if errors.end_date %}is-invalid{% endif %}">
+          {% if errors.end_date %}<div class="sm-error">{{ errors.end_date }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="sm-field" style="max-width:220px;">
+        <label class="sm-label" for="f-active">设为当前学期</label>
+        <select id="f-active" name="is_active">
+          <option value="">否</option>
+          <option value="1" {% if form.is_active %}selected{% endif %}>是</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-save">创建</button>
+        <a class="sm-btn" href="/r5/terms/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

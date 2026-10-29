@@ -1,0 +1,66 @@
+{% extends "r10/base.html" %}
+{% block title %}新建课程{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/courses/">课程目录</a><span class="sep">/</span><span class="current">新建课程</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">新建课程</h1>
+    <p class="sm-subtitle">课程编码唯一；停用的课程不能再开班。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r5/courses/">返回</a></div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">课程信息</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="course-form" action="/r5/courses/new/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-code">课程编码<span class="req">*</span></label>
+          <input type="text" id="f-code" name="code" value="{{ form.code }}"
+                 class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+          {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-title">课程名称<span class="req">*</span></label>
+          <input type="text" id="f-title" name="title" value="{{ form.title }}"
+                 class="{% if errors.title %}is-invalid{% endif %}">
+          {% if errors.title %}<div class="sm-error">{{ errors.title }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-credit">学分</label>
+          <input type="number" step="0.5" id="f-credit" name="credit" value="{{ form.credit }}"
+                 class="{% if errors.credit %}is-invalid{% endif %}">
+          {% if errors.credit %}<div class="sm-error">{{ errors.credit }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-type">课程类型</label>
+          <input type="text" id="f-type" name="course_type" value="{{ form.course_type }}"
+                 placeholder="专业必修 / 通识选修">
+        </div>
+      </div>
+      <div class="sm-field" style="max-width:220px;">
+        <label class="sm-label" for="f-active">启用</label>
+        <select id="f-active" name="is_active">
+          <option value="1" {% if form.is_active %}selected{% endif %}>是</option>
+          <option value="">否</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-save">创建</button>
+        <a class="sm-btn" href="/r5/courses/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

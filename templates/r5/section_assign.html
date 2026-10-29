@@ -1,0 +1,84 @@
+{% extends "r10/base.html" %}
+{% block title %}任课分配{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/sections/">教学班</a><span class="sep">/</span><span class="current">任课分配</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">任课分配</h1>
+    <p class="sm-subtitle">{{ section }} · {{ section.course.title|default:section.course.code }}</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r5/sections/">返回</a>
+    <a class="sm-btn" href="/r5/sections/{{ section.pk }}/roster/">查看名册</a>
+  </div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">分配教师</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="assign-form"
+          action="/r5/sections/{{ section.pk }}/assign/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-teacher">教师账号<span class="req">*</span></label>
+          <select id="f-teacher" name="teacher" class="{% if errors.teacher %}is-invalid{% endif %}">
+            <option value="">请选择</option>
+            {% for c in candidates %}
+            <option value="{{ c.pk }}">{{ c.login_name }}{% if c.display_name %} · {{ c.display_name }}{% endif %}</option>
+            {% endfor %}
+          </select>
+          {% if errors.teacher %}<div class="sm-error">{{ errors.teacher }}</div>{% endif %}
+        </div>
+        <div class="sm-field" style="display:flex;align-items:flex-end;">
+          <button type="submit" class="sm-btn is-primary" id="btn-assign">分配</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">当前任课教师（{{ assignments|length }}）</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="assignment-table">
+        <thead><tr><th>教师</th><th>分配时间</th><th>分配人</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for a in assignments %}
+          <tr>
+            <td>{{ a.account.login_name }}{% if a.account.display_name %} · {{ a.account.display_name }}{% endif %}</td>
+            <td class="sm-mono">{{ a.assigned_at|date:"Y-m-d H:i" }}</td>
+            <td class="sm-mono">{{ a.assigned_by|default:"—" }}</td>
+            <td>
+              <form method="post" action="/r5/assignments/{{ a.pk }}/revoke/" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="sm-btn is-sm is-danger" id="btn-revoke-{{ a.pk }}"
+                        data-sm-confirm="确认撤销该教师的任课？撤销后其将立即无法访问此班。" data-sm-danger="1">
+                  撤销
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="sm-empty">
+              <div class="sm-empty-icon">◈</div>
+              <div class="sm-empty-title">尚未分配教师</div>
+              <div class="sm-empty-desc">在上方选择教师后点击「分配」。</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

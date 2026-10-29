@@ -1,0 +1,61 @@
+{% extends "r10/base.html" %}
+{% block title %}新建学年{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r5/years/">学年学期</a><span class="sep">/</span><span class="current">新建学年</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">新建学年</h1>
+    <p class="sm-subtitle">同一时刻只能有一个「当前学年」，启用新的会自动停用旧的。</p>
+  </div>
+  <div class="sm-page-actions"><a class="sm-btn" href="/r5/years/">返回</a></div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">学年信息</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="year-form" action="/r5/years/new/">
+      {% csrf_token %}
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-code">学年编码<span class="req">*</span></label>
+          <input type="text" id="f-code" name="code" value="{{ form.code }}"
+                 placeholder="2025-2026" class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+          {% if errors.code %}<div class="sm-error">{{ errors.code }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-active">设为当前学年</label>
+          <select id="f-active" name="is_active">
+            <option value="">否</option>
+            <option value="1" {% if form.is_active %}selected{% endif %}>是</option>
+          </select>
+        </div>
+      </div>
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-start">开始日期<span class="req">*</span></label>
+          <input type="date" id="f-start" name="start_date" value="{{ form.start_date }}"
+                 class="{% if errors.start_date %}is-invalid{% endif %}">
+          {% if errors.start_date %}<div class="sm-error">{{ errors.start_date }}</div>{% endif %}
+        </div>
+        <div class="sm-field">
+          <label class="sm-label" for="f-end">结束日期<span class="req">*</span></label>
+          <input type="date" id="f-end" name="end_date" value="{{ form.end_date }}"
+                 class="{% if errors.end_date %}is-invalid{% endif %}">
+          {% if errors.end_date %}<div class="sm-error">{{ errors.end_date }}</div>{% endif %}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-save">创建</button>
+        <a class="sm-btn" href="/r5/years/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
