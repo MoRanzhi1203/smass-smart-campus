@@ -1,0 +1,86 @@
+{% extends "r10/base.html" %}
+{% block title %}编辑 {{ record.student_no }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r4/students/">学生档案</a><span class="sep">/</span><a href="/r4/students/{{ record.student_no }}/">{{ record.student_no }}</a><span class="sep">/</span><span class="current">编辑</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">编辑学生档案</h1>
+    <p class="sm-subtitle">学号 {{ record.student_no }} · 仅可修改当前角色有编辑权限的字段</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r4/students/{{ record.student_no }}/">返回详情</a>
+  </div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert {% if conflict %}is-warning{% else %}is-error{% endif %}" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">可修改字段</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="student-form"
+          action="/r4/students/{{ record.student_no }}/edit/">
+      {% csrf_token %}
+      <input type="hidden" name="version" value="{{ form.version }}">
+
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-student_no">学号</label>
+          <input type="text" id="f-student_no" value="{{ record.student_no }}" disabled>
+          <div class="sm-help">学号不可修改</div>
+        </div>
+
+        <div class="sm-field">
+          <label class="sm-label" for="f-name">姓名{% if 'name' in editable %}<span class="req">*</span>{% endif %}</label>
+          <input type="text" id="f-name" name="name" value="{{ form.name }}"
+                 class="{% if errors.name %}is-invalid{% endif %}"
+                 {% if 'name' not in editable %}disabled{% endif %}>
+          {% if errors.name %}<div class="sm-error" id="err-name">{{ errors.name }}</div>{% endif %}
+          {% if 'name' not in editable %}<div class="sm-help">当前角色无此字段编辑权限</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-status">学籍状态</label>
+          <select id="f-status" name="status" class="{% if errors.status %}is-invalid{% endif %}"
+                  {% if 'status' not in editable %}disabled{% endif %}>
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if form.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          {% if errors.status %}<div class="sm-error" id="err-status">{{ errors.status }}</div>{% endif %}
+        </div>
+
+        <div class="sm-field">
+          <label class="sm-label" for="f-unit">所属组织</label>
+          <select id="f-unit" name="unit" class="{% if errors.unit %}is-invalid{% endif %}"
+                  {% if 'unit' not in editable %}disabled{% endif %}>
+            <option value="">（未分配）</option>
+            {% for u in units %}
+            <option value="{{ u.pk }}" {% if form.unit == u.pk|stringformat:"s" %}selected{% endif %}>
+              {{ u.code }} · {{ u.name }}
+            </option>
+            {% endfor %}
+          </select>
+          {% if errors.unit %}<div class="sm-error" id="err-unit">{{ errors.unit }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="sm-help" style="margin-bottom:12px;">
+        版本号 <span class="sm-mono" id="form-version">{{ form.version }}</span>：
+        提交时会校验；若记录已被他人修改，保存会失败并提示刷新。
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="submit" class="sm-btn is-primary" id="btn-save">保存</button>
+        <a class="sm-btn" href="/r4/students/{{ record.student_no }}/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

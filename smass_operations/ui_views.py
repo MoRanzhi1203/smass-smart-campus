@@ -9,6 +9,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods, require_POST
 
+from smass_organization.models import (
+    DataImportJob, DataImportRowError, StudentRecord,
+)
 from smass_organization.views import roles_required
 
 ADMIN_ROLES = {'system_admin', 'college_admin'}
@@ -22,7 +25,6 @@ STAFF_ROLES = {'system_admin', 'college_admin', 'teacher'}
 @roles_required(*ADMIN_ROLES)
 def import_page(request):
     """导入向导：上传 → 预览（零写入）→ 确认 → 结果。"""
-    from smass_organization.models import DataImportJob, StudentRecord
 
     recent = DataImportJob.objects.order_by('-id')[:10]
     return render(request, 'r4/import.html', {
@@ -48,17 +50,42 @@ def import_preview(request):
 
     account = getattr(request, 'user', None)
     try:
-        result = services.import_preview(
+        job, preview = services.import_preview(
             text, actor=getattr(account, 'login_name', '')
         )
     except Exception as exc:  # noqa: BLE001
         return JsonResponse({'ok': False, 'reason': str(exc)[:200]}, status=400)
 
-    if isinstance(result, dict):
-        body = {'ok': True, 'preview': result}
-    else:
-        body = {'ok': True, 'preview': {'rows': result}}
-    return JsonResponse(body)
+    # 行级错误在 DataImportRowError 中，补进预览供前端展示
+    errors = {}
+    for item in DataImportRowError.objects.filter(job=job):
+        errors.setdefault(item.row_number, []).append(item.message)
+
+    rows = []
+    for item in preview:
+        row = {
+            'row': item.get('row'),
+            'ok': bool(item.get('ok')),
+            'student_no': item.get('student_no', ''),
+            'name': item.get('name', ''),
+            'unit_code': item.get('unit', ''),
+            'status': item.get('status', ''),
+            'existing': item.get('existing', False),
+        }
+        if not row['ok']:
+            row['error'] = '；'.join(errors.get(row['row'], [])) or '校验未通过'
+        rows.append(row)
+
+    return JsonResponse({
+        'ok': True,
+        'preview': {
+            'job_id': job.pk,
+            'status': job.status,
+            'rows': rows,
+            'valid': sum(1 for r in rows if r['ok']),
+            'invalid': sum(1 for r in rows if not r['ok']),
+        },
+    })
 
 
 # ---------------------------------------------------------------------------

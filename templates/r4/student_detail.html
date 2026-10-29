@@ -1,0 +1,63 @@
+{% extends "r10/base.html" %}
+{% block title %}学生 {{ record.student_no }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r4/students/">学生档案</a><span class="sep">/</span><span class="current">{{ record.student_no }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ record.name }}</h1>
+    <p class="sm-subtitle">学号 {{ record.student_no }} · 组织 {{ record.unit.code|default:"—" }}</p>
+  </div>
+  <div class="sm-page-actions">
+    {% if 'name' in editable or 'status' in editable or 'unit' in editable %}
+    <a class="sm-btn is-primary" href="/r4/students/{{ record.student_no }}/edit/" id="btn-edit">编辑</a>
+    {% endif %}
+    <a class="sm-btn" href="/r4/students/">返回列表</a>
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">基本信息</div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="student-detail-table">
+        <tbody>
+          <tr><th style="width:160px;">学号</th><td class="sm-mono">{{ record.student_no }}</td></tr>
+          <tr><th>姓名</th><td>{{ record.name }}</td></tr>
+          <tr><th>组织</th><td>{{ record.unit.code|default:"—" }}{% if record.unit %} · {{ record.unit.name }}{% endif %}</td></tr>
+          <tr><th>状态</th>
+            <td><span class="sm-badge {% if record.status == 'active' %}is-success{% else %}is-warning{% endif %}">{{ record.status }}</span></td></tr>
+          <tr><th>记录版本</th><td class="sm-mono" id="record-version">{{ record.version }}</td></tr>
+          <tr><th>更新时间</th><td class="sm-mono">{{ record.updated_at|date:"Y-m-d H:i:s" }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if extra %}
+<div class="sm-card">
+  <div class="sm-card-head">
+    扩展字段
+    <span class="sm-badge is-info" style="margin-left:auto;">按字段级权限过滤后</span>
+  </div>
+  <div class="sm-card-body is-flush">
+    <div class="sm-table-wrap">
+      <table class="sm-table" id="student-extra-table">
+        <thead><tr><th>字段</th><th>值</th></tr></thead>
+        <tbody>
+          {% for key, value in extra.items %}
+          <tr><td class="sm-mono">{{ key }}</td><td>{{ value }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if not editable %}
+<div class="sm-alert is-warning">
+  <span>当前角色只读：没有可编辑字段。</span>
+</div>
+{% endif %}
+{% endblock %}

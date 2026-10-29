@@ -1,0 +1,97 @@
+{% extends "r10/base.html" %}
+{% block title %}{% if mode == 'new' %}新建组织{% else %}编辑组织{% endif %}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><a href="/r4/units/">组织单元</a><span class="sep">/</span><span class="current">{% if mode == 'new' %}新建{% else %}编辑{% endif %}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{% if mode == 'new' %}新建组织单元{% else %}编辑「{{ unit.name }}」{% endif %}</h1>
+    <p class="sm-subtitle">上级与类型的组合受层级规则约束；移动会立即影响数据可见范围。</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r4/units/">返回列表</a>
+  </div>
+</div>
+
+{% if errors.general %}
+<div class="sm-alert is-error" id="form-error">
+  <span>{{ errors.general }}</span>
+  <button type="button" class="sm-alert-close" aria-label="关闭">&times;</button>
+</div>
+{% endif %}
+
+<div class="sm-card">
+  <div class="sm-card-head">{% if mode == 'new' %}组织信息{% else %}可修改字段{% endif %}</div>
+  <div class="sm-card-body">
+    <form method="post" class="sm-form" data-sm-form id="unit-form"
+          action="{% if mode == 'new' %}/r4/units/new/{% else %}/r4/units/{{ unit.pk }}/edit/{% endif %}">
+      {% csrf_token %}
+
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-code">编码<span class="req">*</span></label>
+          {% if mode == 'new' %}
+            <input type="text" id="f-code" name="code" value="{{ form.code }}"
+                   class="{% if errors.code %}is-invalid{% endif %}" autofocus>
+            <div class="sm-help">唯一标识，例如 DEMO-C</div>
+          {% else %}
+            <input type="text" id="f-code" value="{{ form.code }}" disabled>
+            <div class="sm-help">编码创建后不可改</div>
+          {% endif %}
+          {% if errors.code %}<div class="sm-error" id="err-code">{{ errors.code }}</div>{% endif %}
+        </div>
+
+        <div class="sm-field">
+          <label class="sm-label" for="f-name">名称<span class="req">*</span></label>
+          <input type="text" id="f-name" name="name" value="{{ form.name }}"
+                 class="{% if errors.name %}is-invalid{% endif %}"
+                 {% if mode == 'new' %}autofocus{% endif %}>
+          {% if errors.name %}<div class="sm-error" id="err-name">{{ errors.name }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="sm-form-row">
+        <div class="sm-field">
+          <label class="sm-label" for="f-unit_type">类型<span class="req">*</span></label>
+          {% if mode == 'new' %}
+            <select id="f-unit_type" name="unit_type" class="{% if errors.unit_type %}is-invalid{% endif %}">
+              {% for t in unit_types %}
+              <option value="{{ t }}" {% if form.unit_type == t %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="text" id="f-unit_type" value="{{ form.unit_type }}" disabled>
+            <div class="sm-help">类型创建后不可改</div>
+          {% endif %}
+          {% if errors.unit_type %}<div class="sm-error" id="err-unit_type">{{ errors.unit_type }}</div>{% endif %}
+        </div>
+
+        <div class="sm-field">
+          <label class="sm-label" for="f-parent">上级组织</label>
+          <select id="f-parent" name="parent" class="{% if errors.parent %}is-invalid{% endif %}">
+            <option value="">（无，作为根节点）</option>
+            {% for cand in candidates %}
+            <option value="{{ cand.pk }}" {% if form.parent == cand.pk|stringformat:"s" %}selected{% endif %}>
+              {{ cand.code }} · {{ cand.name }}（{{ cand.unit_type }}）
+            </option>
+            {% endfor %}
+          </select>
+          {% if errors.parent %}<div class="sm-error" id="err-parent">{{ errors.parent }}</div>{% endif %}
+          <div class="sm-help">改变上级即移动节点；成环或类型非法会被拒绝。</div>
+        </div>
+      </div>
+
+      <div class="sm-field" style="max-width:220px;">
+        <label class="sm-label" for="f-sort_order">排序</label>
+        <input type="number" id="f-sort_order" name="sort_order" value="{{ form.sort_order }}">
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button type="submit" class="sm-btn is-primary" id="btn-save">
+          {% if mode == 'new' %}创建{% else %}保存{% endif %}
+        </button>
+        <a class="sm-btn" href="/r4/units/" id="btn-cancel">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
