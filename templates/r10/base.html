@@ -18,8 +18,15 @@
     <a class="sm-brand" href="/r10/">SMASS<small>学校管理平台</small></a>
 
     <div class="sm-nav-group">
+      <a class="sm-nav-link {% if request.path == '/r10/' %}is-active{% endif %}"
+         href="/r10/" id="nav-home">
+        <span class="sm-nav-icon" aria-hidden="true">◉</span>概览
+      </a>
+    </div>
+
+    <div class="sm-nav-group">
       <div class="sm-nav-label">组织与档案</div>
-      <a class="sm-nav-link {% if request.path|slice:':3' == '/r4' %}is-active{% endif %}"
+      <a class="sm-nav-link {% if '/r4/units' in request.path or request.path == '/r4/' %}is-active{% endif %}"
          href="/r4/units/" id="nav-r4-units">
         <span class="sm-nav-icon" aria-hidden="true">▤</span>组织单元
       </a>
