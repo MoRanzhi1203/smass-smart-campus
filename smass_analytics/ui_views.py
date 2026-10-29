@@ -59,6 +59,15 @@ def dashboard_page(request):
             'query_hash': meta['query_hash'],
         })
 
+    # AJAX / JSON 消费者（旧浏览器测试与新前端都用这条通道）
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'ok': True,
+            'rows': rows,
+            'source_filter': source_filter,
+            'suppressed_count': sum(1 for r in rows if r['suppressed']),
+        })
+
     return render(request, 'r7/dashboard.html', {
         'rows': rows,
         'sources': MetricDefinition.DATA_SOURCES,

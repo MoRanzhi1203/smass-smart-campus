@@ -7,6 +7,7 @@ from smass_academic import ui_views as r5_ui
 from smass_analytics import ui_views as r7_ui
 from smass_operations import ui_views, views as ops_views
 from smass_organization import ui_views as r4_ui
+from smass_organization.views import student_export as _r4_export
 from smass_workflow import ui_views as r6_ui
 
 from smass.urls_r4 import urlpatterns as r4_patterns
@@ -31,6 +32,9 @@ urlpatterns = [
     # U3：R4
     path('r4/units/new/', r4_ui.unit_new, name='r4_unit_new'),
     path('r4/units/<int:pk>/edit/', r4_ui.unit_edit, name='r4_unit_edit'),
+    # 注意顺序：export 必须排在 <str:student_no> 之前，
+    # 否则 /r4/students/export/ 会被当成 student_no='export' 而 404。
+    path('r4/students/export/', _r4_export, name='r4_student_export_r10'),
     path('r4/students/<str:student_no>/edit/', r4_ui.student_edit, name='r4_student_edit'),
     path('r4/students/<str:student_no>/', r4_ui.student_detail_page, name='r4_student_detail_page'),
     path('r4/import/', ui_views.import_page, name='r4_import_page'),
