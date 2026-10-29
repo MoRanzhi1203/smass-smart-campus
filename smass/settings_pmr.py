@@ -15,9 +15,21 @@ from .settings_r10 import *  # noqa: F401,F403
 
 PMR_DB_NAME = os.environ.get('PMR_DB', 'smass_pmr_target')
 
-if not PMR_DB_NAME.startswith('smass_pmr_target_'):
+# PMR 演练会产生三类库：
+#   smass_pmr_target_*   行迁移 / 双写目标
+#   smass_pmr_upg_*      升级演练
+#   smass_pmr_restore_*  备份恢复验证
+# 三者都需要 Django 能连，因此都放行；仍严格禁止指向正式 smass 或其他前缀。
+ALLOWED_PMR_PREFIXES = (
+    'smass_pmr_target_',
+    'smass_pmr_upg_',
+    'smass_pmr_restore_',
+)
+
+if not PMR_DB_NAME.startswith(ALLOWED_PMR_PREFIXES):
     raise RuntimeError(
-        'PMR 目标库名必须命中 smass_pmr_target_ 前缀，当前 {!r}'.format(PMR_DB_NAME))
+        'PMR 库名必须命中 {} 之一，当前 {!r}'.format(
+            ALLOWED_PMR_PREFIXES, PMR_DB_NAME))
 
 DATABASES['default']['NAME'] = PMR_DB_NAME
 DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_pmr_target'
