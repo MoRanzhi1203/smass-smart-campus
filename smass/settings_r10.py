@@ -12,3 +12,13 @@ DATABASES['default']['NAME'] = R10_DB_NAME
 DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_r10_release'
 
 ROOT_URLCONF = 'smass.urls_r10'
+
+# H3：MySQL 默认 REPEATABLE READ，会让 LiveServerTestCase 的服务器线程
+# 在整个事务里看不到测试线程后来提交的行，导致 Django 自带的
+# update_last_login 信号执行 `save(update_fields=['last_login'])` 时
+# UPDATE 影响 0 行并抛 DatabaseError（表现为 /r21/login/ 500）。
+# READ COMMITTED 让每个语句看到最新已提交数据，是 Django 官方推荐配置。
+DATABASES['default'].setdefault('OPTIONS', {})
+DATABASES['default']['OPTIONS']['init_command'] = (
+    "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED"
+)

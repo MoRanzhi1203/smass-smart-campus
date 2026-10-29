@@ -56,12 +56,6 @@ class BrowserHarness(StaticLiveServerTestCase):
     host = '127.0.0.1'
     engine = 'chromium'
 
-    #: WebKit 在 Django LiveServerTestCase（WSGI 线程服务器）下表单交互不稳定：
-    #: 实测真实服务器上 WebKit 完全正常，但 LiveServerTestCase 下 fill/click 超时。
-    #: 因此 WebKit 只跑只读渲染与静态 a11y 断言，不跑表单提交；
-    #: 真实提交由 Chromium/Firefox 覆盖，并在 E2E 报告中如实说明。
-    SUBMIT_CAPABLE = True
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -128,14 +122,7 @@ class BrowserHarness(StaticLiveServerTestCase):
 class CriticalFlowTests(BrowserHarness):
     """跨模块关键流程：每步都断言 DB 变化。"""
 
-    def _require_submit(self):
-        if not self.SUBMIT_CAPABLE:
-            self.skipTest(
-                '{} 在 LiveServerTestCase 下表单交互不稳定；'
-                '真实服务器已验证，提交由 Chromium/Firefox 覆盖'.format(self.engine))
-
     def test_01_create_org_via_browser(self):
-        self._require_submit()
         page = self.page()
         self.login(page, landing='/r4/units/new/')
 
@@ -143,6 +130,8 @@ class CriticalFlowTests(BrowserHarness):
         page.fill('#f-name', '浏览器建院')
         page.select_option('#f-unit_type', 'college')
         page.click('#btn-save')
+        # 必须等真实导航到列表页（WebKit 在重定向前就会报 load 完成）
+        page.wait_for_url('**/r4/units/', timeout=20000)
         page.wait_for_load_state('load')
 
         self.assertTrue(
@@ -151,7 +140,6 @@ class CriticalFlowTests(BrowserHarness):
         self.assertIn('r4/units', page.url)
 
     def test_02_org_form_validation_shown(self):
-        self._require_submit()
         page = self.page()
         self.login(page, landing='/r4/units/new/')
 
@@ -166,7 +154,6 @@ class CriticalFlowTests(BrowserHarness):
         self.assertFalse(OrganizationUnit.objects.filter(name='缺编码').exists())
 
     def test_03_import_preview_then_commit(self):
-        self._require_submit()
         OrganizationUnit.objects.create(code='E2E-K', name='E2E班', unit_type='class')
 
         page = self.page()
@@ -209,7 +196,6 @@ class CriticalFlowTests(BrowserHarness):
             '导入未写入数据库')
 
     def test_04_workflow_create_and_approve(self):
-        self._require_submit()
         page = self.page()
         self.login(page, landing='/r6/definitions/new/')
 
@@ -217,6 +203,8 @@ class CriticalFlowTests(BrowserHarness):
         page.fill('#f-name', '浏览器流程')
         page.select_option('#f-template', 'single')
         page.click('#btn-create')
+        # 提交后必须真的完成导航（WebKit 比 Chromium 慢，仅 wait_for_load_state 不够）
+        page.wait_for_url('**/r6/definitions/**', timeout=20000)
         page.wait_for_load_state('load')
 
         from smass_workflow.models import WorkflowDefinition
@@ -353,18 +341,25 @@ class AccessibilityTests(BrowserHarness):
         page = self.page(viewport={'width': 390, 'height': 844}, mobile=True)
         self.login(page, landing='/r5/years/')
 
+        # 先把焦点放到触发按钮上，模拟真实键盘用户
+        page.evaluate("() => document.getElementById('sm-drawer-toggle').focus()")
+
         page.click('#sm-drawer-toggle')
-        page.wait_for_timeout(300)
-        # 焦点进入抽屉
+        page.wait_for_timeout(400)
+
         in_drawer = page.evaluate(
             "() => document.getElementById('sm-sidebar').contains(document.activeElement)")
         self.assertTrue(in_drawer, '焦点未进入抽屉')
 
         page.keyboard.press('Escape')
-        page.wait_for_timeout(300)
-        # 焦点回到触发按钮
+        page.wait_for_timeout(400)
+
+        closed = page.evaluate(
+            "() => !document.getElementById('sm-sidebar').classList.contains('is-open')")
+        self.assertTrue(closed, 'Escape 未关闭抽屉')
+
         focused_id = page.evaluate("() => document.activeElement && document.activeElement.id")
-        self.assertEqual(focused_id, 'sm-drawer-toggle')
+        self.assertEqual(focused_id, 'sm-drawer-toggle', '焦点未回到触发按钮')
 
     def test_aria_expanded_syncs(self):
         page = self.page(viewport={'width': 390, 'height': 844}, mobile=True)
@@ -379,39 +374,93 @@ class AccessibilityTests(BrowserHarness):
             page.get_attribute('#sm-drawer-toggle', 'aria-expanded'), 'true')
 
     def test_keyboard_reaches_nav_links(self):
+        """导航链接必须可通过键盘聚焦。
+
+        注意：WebKit/Safari 默认"全键盘控制"关闭时，Tab 只停在表单控件，
+        不会遍历链接。这是浏览器偏好而非页面缺陷。因此这里验证
+        "链接可以获得焦点且焦点可见"，而不是依赖 Tab 遍历次数。
+        """
         page = self.page()
         self.login(page)
 
-        # Tab 若干次后应能聚焦到导航链接
-        focused_hrefs = []
-        for _ in range(8):
-            page.keyboard.press('Tab')
-            href = page.evaluate(
-                "() => document.activeElement && document.activeElement.getAttribute('href')")
-            if href:
-                focused_hrefs.append(href)
+        # 1) 链接可聚焦（所有引擎）
+        focusable = page.evaluate("""
+            () => {
+              const link = document.querySelector('.sm-nav-link[href]');
+              if (!link) return null;
+              link.focus();
+              return {
+                focused: document.activeElement === link,
+                href: link.getAttribute('href'),
+                tabindex: link.tabIndex,
+              };
+            }
+        """)
+        self.assertIsNotNone(focusable, '侧边栏没有链接')
+        self.assertTrue(focusable['focused'], '导航链接无法获得焦点')
+        self.assertGreaterEqual(focusable['tabindex'], 0, '链接不在 Tab 序列中')
 
-        self.assertTrue(
-            any(href.startswith('/r') for href in focused_hrefs),
-            '键盘无法到达导航链接，实际: {}'.format(focused_hrefs))
+        # 2) Chromium/Firefox 额外验证真实 Tab 遍历
+        if self.engine in ('chromium', 'firefox'):
+            page.evaluate("() => document.body.focus()")
+            focused_hrefs = []
+            for _ in range(10):
+                page.keyboard.press('Tab')
+                href = page.evaluate(
+                    "() => document.activeElement && document.activeElement.getAttribute('href')")
+                if href:
+                    focused_hrefs.append(href)
+            self.assertTrue(
+                any(h.startswith('/r') for h in focused_hrefs),
+                'Tab 未到达导航链接: {}'.format(focused_hrefs))
 
     def test_focus_visible_style_exists(self):
+        """焦点样式必须由 CSS 定义；程序化聚焦后应能观察到。
+
+        WebKit 对 `:focus-visible` 的触发条件比 Chromium 严格
+        （程序化 focus 不一定视为 keyboard-visible），因此这里
+        同时验证"CSS 规则存在"与"聚焦后样式已应用"。
+        """
         page = self.page()
         self.login(page, landing='/r5/years/')
 
-        # 聚焦一个按钮并检查 outline/box-shadow 被应用
-        page.focus('#btn-filter') if page.query_selector('#btn-filter') else None
-        page.keyboard.press('Tab')
-        has_focus_style = page.evaluate("""
+        # 1) CSS 中必须存在 :focus-visible 规则
+        has_rule = page.evaluate("""
             () => {
-              const el = document.activeElement;
-              if (!el) return false;
-              const s = getComputedStyle(el);
-              return (s.outlineStyle !== 'none' && s.outlineWidth !== '0px')
-                  || s.boxShadow !== 'none';
+              for (const sheet of document.styleSheets) {
+                try {
+                  for (const rule of sheet.cssRules) {
+                    if (rule.selectorText && rule.selectorText.includes(':focus-visible')) {
+                      return true;
+                    }
+                  }
+                } catch (e) {}
+              }
+              return false;
             }
         """)
-        self.assertTrue(has_focus_style, '活动元素没有可见焦点样式')
+        self.assertTrue(has_rule, 'CSS 中没有 :focus-visible 规则')
+
+        # 2) 聚焦后应应用 outline 或 box-shadow
+        applied = page.evaluate("""
+            () => {
+              const el = document.querySelector('.sm-nav-link[href]');
+              if (!el) return null;
+              el.focus();
+              const s = getComputedStyle(el);
+              return {
+                outline: s.outlineStyle + '/' + s.outlineWidth,
+                boxShadow: s.boxShadow,
+                outlineOrShadow:
+                  (s.outlineStyle !== 'none' && s.outlineWidth !== '0px')
+                  || (s.boxShadow && s.boxShadow !== 'none'),
+              };
+            }
+        """)
+        self.assertIsNotNone(applied)
+        self.assertTrue(
+            applied['outlineOrShadow'],
+            '聚焦后没有可见焦点样式: {}'.format(applied))
 
     def test_table_headers_present_in_dom(self):
         page = self.page()
@@ -506,20 +555,32 @@ class AnonymousRenderTests(BrowserHarness):
 
 
 def _register_engine_classes():
+    """为每个引擎生成测试类。
+
+    H3 已修复 `/r21/login/` 的 500（Django `update_last_login` +
+    MySQL REPEATABLE READ -> 改为 READ COMMITTED，见
+    `docs/SMASS_R10_WebKit_Root_Cause.md`）。
+
+    但 WebKit 在**同一测试类内连续多个测试**时仍会出现登录静默失败
+    （第二个测试起 `page.fill` 超时）。根因尚未定位，已登记为风险 R-15。
+
+    因此：
+    - Chromium / Firefox：跑完整三类（表单提交 + 响应式 + a11y）
+    - WebKit：跑响应式（实测全过）+ 匿名渲染；不跑表单提交
+    - WebKit 的真实浏览器完整流程由 `scripts/r10_browser_probe.py`
+      在真实 runserver 上验证（生产实际形态）
+    """
     module = globals()
     for engine in ENGINES:
         suffix = engine.capitalize()
-        bases = [AnonymousRenderTests] if engine == 'webkit' else [
+        bases = [AnonymousRenderTests, ResponsiveTests] if engine == 'webkit' else [
             CriticalFlowTests, ResponsiveTests, AccessibilityTests,
         ]
         for base in bases:
             if engine == 'chromium':
                 continue  # 基类本身即 chromium
             name = '{}On{}'.format(base.__name__, suffix)
-            module[name] = type(name, (base,), {
-                'engine': engine,
-                'SUBMIT_CAPABLE': engine != 'webkit',
-            })
+            module[name] = type(name, (base,), {'engine': engine})
 
 
 _register_engine_classes()
