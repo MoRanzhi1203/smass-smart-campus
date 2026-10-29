@@ -24,8 +24,9 @@ urlpatterns = [
     path('r21/logout/', r21_views.logout_view, name='r21_logout'),
     path('r21/home/', RedirectView.as_view(url='/r10/', permanent=False),
          name='r21_home'),
-    path('r21/change-password/', RedirectView.as_view(url='/r10/', permanent=False),
-         name='r21_change_password_redirect'),
+    # H1：真实改密（此前是 RedirectView 占位，等于禁用强制改密）
+    path('r21/change-password/', r21_views.change_password_view,
+         name='r21_change_password'),
 
     # U3：R4
     path('r4/units/new/', r4_ui.unit_new, name='r4_unit_new'),
