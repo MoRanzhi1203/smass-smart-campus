@@ -1,0 +1,140 @@
+{% comment %}
+S17 并发登录设备与会话管理页（三端共用）。
+
+设计取舍：
+- **自包含**（不 extend 各角色 layout），保证三端一致且无外部 CDN 依赖；
+- 所有破坏性操作都是带 CSRF 的 POST 表单，禁用 JS 也能工作；
+- 页面不展示服务端 Session Key，仅展示设备标识前 8 位；
+- 表格有 caption、表头 th scope，按钮有明确文案，键盘可达。
+{% endcomment %}<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>登录设备与会话 - SMASS 智慧校园</title>
+  <style>
+    :root { --fg:#1f2329; --muted:#646a73; --line:#dee0e3; --brand:#2563eb; --err:#c0392b; --ok:#1e7e34; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+           color:var(--fg); background:#f5f6f7; }
+    header { background:#fff; border-bottom:1px solid var(--line); padding:14px 24px;
+             display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    header h1 { font-size:17px; margin:0; }
+    .who { color:var(--muted); font-size:13px; }
+    main { max-width:960px; margin:24px auto 48px; padding:0 24px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px 22px;
+            box-shadow:0 6px 20px rgba(0,0,0,.05); }
+    .banner { border-radius:8px; padding:10px 12px; font-size:13px; margin:0 0 16px; }
+    .banner.ok { background:#eaf7ee; border:1px solid #b7e1c1; color:var(--ok); }
+    .banner.err { background:#fdecea; border:1px solid #f5c6cb; color:var(--err); }
+    .banner.info { background:#eef4ff; border:1px solid #c7d9ff; color:#1d4ed8; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    caption { text-align:left; color:var(--muted); font-size:13px; padding:0 0 10px; }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { font-size:12px; color:var(--muted); font-weight:600; white-space:nowrap; }
+    tr:last-child td { border-bottom:0; }
+    .tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px;
+           background:#eaf7ee; color:var(--ok); border:1px solid #b7e1c1; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .muted { color:var(--muted); font-size:12px; }
+    .ua { max-width:320px; overflow-wrap:anywhere; }
+    form.inline { display:inline; margin:0; }
+    button { font:inherit; cursor:pointer; border-radius:8px; padding:8px 12px; border:1px solid var(--line);
+             background:#fff; color:var(--fg); }
+    button.danger { border-color:#f0b4ae; color:var(--err); background:#fdecea; }
+    button.primary { border:0; background:var(--brand); color:#fff; font-weight:600; }
+    button:focus-visible { outline:2px solid #111; outline-offset:2px; }
+    button[disabled] { opacity:.55; cursor:not-allowed; }
+    .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:18px; }
+    .foot { margin-top:16px; font-size:13px; color:var(--muted); }
+    .foot a { color:var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>登录设备与会话</h1>
+    <span class="who">
+      {% if account_name %}{{ role_label }} · {{ account_name }}{% else %}{{ role_label }}{% endif %}
+    </span>
+  </header>
+
+  <main>
+    <section class="card">
+      {% if notice == 'others' %}
+        <p class="banner ok" role="status">已退出其他设备。</p>
+      {% elif notice == 'revoked' %}
+        <p class="banner ok" role="status">已退出所选设备。</p>
+      {% endif %}
+      {% if error == 'current' %}
+        <p class="banner err" role="alert">不能在此踢出当前设备，请使用"退出登录"。</p>
+      {% elif error == 'notfound' %}
+        <p class="banner err" role="alert">设备不存在或已失效。</p>
+      {% endif %}
+
+      {% if idle_enabled %}
+        <p class="banner info" role="status">
+          空闲超时已启用：连续 {{ idle_minutes }} 分钟无操作将自动退出登录。
+        </p>
+      {% else %}
+        <p class="banner info" role="status">
+          空闲超时策略当前未启用（默认关闭）；设备列表与"退出其他设备"仍可用。
+        </p>
+      {% endif %}
+
+      <table>
+        <caption>共 {{ devices|length }} 台在线设备（仅显示当前账号）</caption>
+        <thead>
+          <tr>
+            <th scope="col">设备</th>
+            <th scope="col">来源 IP</th>
+            <th scope="col">客户端</th>
+            <th scope="col">最近活动</th>
+            <th scope="col">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in devices %}
+            <tr>
+              <td>
+                <span class="mono">{{ d.short_id }}</span>
+                {% if d.current %}<br><span class="tag">当前设备</span>{% endif %}
+              </td>
+              <td class="mono">{{ d.ip }}</td>
+              <td class="ua">{{ d.user_agent }}</td>
+              <td>{{ d.last_seen|date:"Y-m-d H:i:s" }}</td>
+              <td>
+                {% if d.current %}
+                  <span class="muted">—</span>
+                {% else %}
+                  <form class="inline" method="post"
+                        action="/account/sessions/revoke/{{ d.device_id }}/">
+                    {% csrf_token %}
+                    <button type="submit" class="danger"
+                            aria-label="退出设备 {{ d.short_id }}">退出该设备</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="muted">暂无在线设备记录。</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <form class="inline" method="post" action="/account/sessions/revoke-others/">
+          {% csrf_token %}
+          <button type="submit" class="primary">退出其他所有设备</button>
+        </form>
+        <a href="{{ home_url }}">返回首页</a>
+        <a href="/logout/">退出登录</a>
+      </div>
+
+      {% if idle_enabled %}
+        <p class="foot">安全提示：发现陌生设备请立即"退出其他所有设备"并修改密码。</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

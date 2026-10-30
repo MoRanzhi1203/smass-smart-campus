@@ -104,6 +104,8 @@ MIDDLEWARE = [
     'app01.middleware.privacy.SensitiveResponseMiddleware',
     # S02：会话世代校验 + 强制改密（仅在 PASSWORD_LIFECYCLE['ENABLED'] 时生效）
     'app01.middleware.password_lifecycle.PasswordLifecycleMiddleware',
+    # S17：空闲超时与设备活动刷新（仅在 SESSION_SECURITY['ENABLED'] 时生效）
+    'app01.middleware.session_security.SessionSecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'smass.urls'
@@ -234,6 +236,12 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # 允许前端通过 X-CSRFToken 头提交令牌
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 CSRF_COOKIE_HTTPONLY = False
+
+# S17：空闲超时与设备会话（默认关闭，避免影响既有部署）
+SESSION_SECURITY = {
+    'ENABLED': env_bool('DJANGO_SESSION_IDLE_ENABLED', False),
+    'IDLE_TIMEOUT_MINUTES': env_int('DJANGO_SESSION_IDLE_MINUTES', 30),
+}
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = True

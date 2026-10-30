@@ -398,3 +398,34 @@ class AccountSecurityState(models.Model):
 
     def __str__(self):
         return '{}:{}'.format(self.account_type, self.account_id)
+
+
+class LoginDevice(models.Model):
+    """登录设备（S17）：用于并发会话列表与远程踢出。
+
+    不直接外键到具体账号模型：生产保持 ``auth.User``，而 R22 使用
+    ``r21_account.Account``，这里用字符串 ID 兼容两种身份来源。
+    """
+
+    device_id = models.CharField('设备标识', max_length=64, unique=True)
+    user_id = models.CharField('用户标识', max_length=32, db_index=True)
+    role = models.CharField('登录角色', max_length=16, blank=True, default='')
+    session_key = models.CharField(
+        '会话键', max_length=64, blank=True, default='', db_index=True)
+    ip = models.CharField('来源 IP', max_length=64, blank=True, default='')
+    user_agent = models.CharField(
+        '客户端', max_length=200, blank=True, default='')
+    created_at = models.DateTimeField('创建时间', auto_now_add=True)
+    last_seen = models.DateTimeField('最近活动', auto_now=True)
+    revoked_at = models.DateTimeField('撤销时间', null=True, blank=True)
+
+    class Meta:
+        db_table = 'app01_login_device'
+        verbose_name = '登录设备'
+        verbose_name_plural = verbose_name
+        indexes = [
+            models.Index(fields=['user_id', 'revoked_at'], name='idx_login_dev_user'),
+        ]
+
+    def __str__(self):
+        return '{}@{}'.format(self.user_id, self.device_id[:8])

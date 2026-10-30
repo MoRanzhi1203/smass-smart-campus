@@ -449,6 +449,14 @@ def establish_session(request, account, role):
         request.META.get('REMOTE_ADDR', '-'),
     )
 
+    # S17：登记登录设备（失败不阻断登录，但需可观测）
+    try:
+        from app01.services import session_security
+
+        session_security.register_device(request, account, role)
+    except Exception:  # noqa: BLE001
+        logger.warning('session_device_register_failed role=%s', role)
+
 
 def destroy_session(request):
     """登出：``flush()`` 丢弃整个会话数据与 Session ID，旧会话立即失效。"""
@@ -459,6 +467,20 @@ def destroy_session(request):
         info.get('id', '-'),
         request.META.get('REMOTE_ADDR', '-'),
     )
+
+    # S17：登出同时撤销设备记录，避免设备列表残留"在线"状态。
+    device_id = request.session.get('device_id')
+    if device_id:
+        try:
+            from django.utils import timezone
+
+            from app01.models import LoginDevice
+
+            LoginDevice.objects.filter(device_id=device_id).update(
+                revoked_at=timezone.now())
+        except Exception:  # noqa: BLE001
+            logger.warning('session_device_revoke_failed')
+
     request.session.flush()
 
 

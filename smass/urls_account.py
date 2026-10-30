@@ -4,7 +4,7 @@
 """
 from django.urls import path
 
-from app01.views import account, password_lifecycle
+from app01.views import account, password_lifecycle, session_devices
 
 urlpatterns = [
     # 登录主页面（角色选择）
@@ -23,4 +23,12 @@ urlpatterns = [
          name='password_forced_change'),
     path('admin/admin/temp-password/', password_lifecycle.admin_issue_temp_password,
          name='admin_issue_temp_password'),
+
+    # S17：并发登录设备与会话管理（三端共用，仅操作本人设备）
+    path('account/sessions/', session_devices.session_list,
+         name='account_sessions'),
+    path('account/sessions/revoke-others/', session_devices.session_revoke_others,
+         name='account_session_revoke_others'),
+    path('account/sessions/revoke/<str:device_id>/', session_devices.session_revoke,
+         name='account_session_revoke'),
 ]
