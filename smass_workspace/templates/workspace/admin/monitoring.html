@@ -1,0 +1,107 @@
+{% extends "workspace/base.html" %}
+{% block title %}运行监控{% endblock %}
+{% block topbar_title %}运行监控{% endblock %}
+{% block topbar_sub %}请求指标、探针与告警{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">运维与安全</div>
+    <h1>运行监控</h1>
+    <p class="ws-sub">数据来自请求指标与探针记录，时间窗口为近 24 小时。</p>
+  </div>
+  <div class="ws-page-actions"><a class="ws-btn" href="/r9/status/">运维状态页</a></div>
+</div>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">请求量</div><div class="ws-stat-value">{{ requests_24h }}</div><div class="ws-stat-foot">近 24 小时</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">5xx 错误</div><div class="ws-stat-value">{{ errors_24h }}</div><div class="ws-stat-foot">需要关注</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">平均耗时</div><div class="ws-stat-value">{{ avg_duration|floatformat:0 }}<small>ms</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">告警</div><div class="ws-stat-value">{{ alerts|length }}</div><div class="ws-stat-foot">最近记录</div></div>
+</div>
+
+<div class="ws-grid ws-grid-2" style="margin-top:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>最慢请求</h2></div>
+    {% if slow %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>路径</th><th class="is-num">耗时</th><th class="is-num">状态</th></tr></thead>
+          <tbody>
+            {% for item in slow %}
+              <tr>
+                <td class="is-muted">{{ item.route|truncatechars:40 }}</td>
+                <td class="is-num">{{ item.duration_ms }} ms</td>
+                <td class="is-num"><span class="ws-badge {% if item.status_code >= 500 %}is-danger{% elif item.status_code >= 400 %}is-warning{% else %}is-success{% endif %}">{{ item.status_code }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无请求指标</b></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>就绪探针</h2><span class="ws-hint">最近 12 次</span></div>
+    {% if probes %}
+      <div class="ws-list">
+        {% for probe in probes %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ probe.name }}</b>
+              <span>{{ probe.checked_at|date:"m-d H:i:s" }} · {{ probe.duration_ms }} ms</span>
+            </div>
+            <span class="ws-badge {% if probe.ok %}is-success{% else %}is-danger{% endif %}">{% if probe.ok %}通过{% else %}异常{% endif %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无探针记录</b><p>探针任务执行后显示。</p></div>
+    {% endif %}
+  </section>
+</div>
+
+<div class="ws-grid ws-grid-2" style="margin-top:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>告警记录</h2></div>
+    {% if alerts %}
+      <div class="ws-timeline" style="padding:16px 18px">
+        {% for alert in alerts %}
+          <div class="ws-timeline-item">
+            <b>{{ alert.rule.name|default:alert.rule.code }} · {{ alert.get_severity_display }}</b>
+            <span>观测 {{ alert.observed|floatformat:2 }} / 阈值 {{ alert.threshold|floatformat:2 }} · {{ alert.created_at|date:"m-d H:i" }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无告警</b></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>告警规则</h2></div>
+    {% if rules %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>规则</th><th>指标</th><th class="is-num">阈值</th><th class="is-num">窗口</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for rule in rules %}
+              <tr>
+                <td class="is-strong">{{ rule.name }}</td>
+                <td>{{ rule.metric }}</td>
+                <td class="is-num">{{ rule.threshold|floatformat:2 }}</td>
+                <td class="is-num">{{ rule.window_seconds }}s</td>
+                <td>{% if rule.is_enabled %}<span class="ws-badge is-success">启用</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无规则</b></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

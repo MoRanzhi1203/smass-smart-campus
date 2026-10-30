@@ -1,0 +1,90 @@
+{% extends "workspace/base.html" %}
+{% block title %}系统配置{% endblock %}
+{% block topbar_title %}系统配置{% endblock %}
+{% block topbar_sub %}权限矩阵、字段策略与安全策略{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">运维与安全</div>
+    <h1>系统配置与权限治理</h1>
+    <p class="ws-sub">仅系统管理员可访问；页面展示的是服务端实际生效的权限判定结果。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-2">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>当前账号的动作权限</h2><span class="ws-hint">服务端实时判定</span></div>
+    <div class="ws-card-body">
+      {% if authz.actions %}
+        <div class="ws-tag-list">
+          {% for action, allowed in authz.actions.items %}
+            <span class="ws-chip">
+              {{ action }}
+              {% if allowed %}<span class="ws-badge is-success">允许</span>{% else %}<span class="ws-badge is-neutral">拒绝</span>{% endif %}
+            </span>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="ws-sub">未返回动作权限。</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>角色账号数</h2></div>
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>角色</th><th>编码</th><th class="is-num">账号数</th></tr></thead>
+        <tbody>
+          {% for role in role_matrix %}
+            <tr>
+              <td class="is-strong">{{ role.label }}</td>
+              <td class="ws-code">{{ role.code }}</td>
+              <td class="is-num">{{ role.count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>学籍字段策略</h2><span class="ws-hint">可见与可编辑角色为允许列表</span></div>
+  {% if fields %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>字段</th><th>显示名</th><th>类型</th><th>敏感</th><th>可见角色</th><th>可编辑角色</th></tr></thead>
+        <tbody>
+          {% for field in fields %}
+            <tr>
+              <td class="ws-code">{{ field.code }}</td>
+              <td>{{ field.label }}</td>
+              <td class="is-muted">{{ field.data_type }}</td>
+              <td>{% if field.is_sensitive %}<span class="ws-badge is-danger">敏感</span>{% else %}—{% endif %}</td>
+              <td class="is-muted">{{ field.visible_roles|join:"、"|default:"（全部）" }}</td>
+              <td class="is-muted">{{ field.editable_roles|join:"、"|default:"（不可编辑）" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无字段策略</b><p>使用默认允许列表策略。</p></div>
+  {% endif %}
+</section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>密码与安全策略</h2></div>
+  <div class="ws-card-body">
+    <div class="ws-meta">
+      <div><span class="is-label">密码生命周期</span><b>{% if lifecycle.ENABLED %}<span class="ws-badge is-success">已启用</span>{% else %}<span class="ws-badge is-neutral">未启用</span>{% endif %}</b></div>
+      <div><span class="is-label">最大使用天数</span><b>{% if lifecycle.MAX_AGE_DAYS %}{{ lifecycle.MAX_AGE_DAYS }} 天{% else %}不限制{% endif %}</b></div>
+      <div><span class="is-label">一次性口令有效期</span><b>{{ lifecycle.TEMP_PASSWORD_TTL_MINUTES|default:"—" }} 分钟</b></div>
+      <div><span class="is-label">历史 MD5 强制改密</span><b>{% if lifecycle.FORCE_RESET_LEGACY %}是{% else %}否{% endif %}</b></div>
+    </div>
+  </div>
+  <div class="ws-card-foot">策略通过环境变量配置，修改后需重启服务生效；正式环境启用前需数据所有者授权。</div>
+</section>
+{% endblock %}

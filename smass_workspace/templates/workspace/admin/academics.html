@@ -1,0 +1,89 @@
+{% extends "workspace/base.html" %}
+{% block title %}学年学期与课程{% endblock %}
+{% block topbar_title %}学年学期与课程{% endblock %}
+{% block topbar_sub %}教务基础数据{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学籍与教学</div>
+    <h1>学年学期与课程</h1>
+    <p class="ws-sub">教务基础数据；新增与编辑沿用教务管理功能页。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="/r5/years/">学年管理</a>
+    <a class="ws-btn" href="/r5/courses/">课程管理</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-2">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>学年</h2><span class="ws-hint">{{ years|length }} 个</span></div>
+    {% if years %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>编码</th><th>起止</th><th>当前</th></tr></thead>
+          <tbody>
+            {% for year in years %}
+              <tr>
+                <td class="is-strong">{{ year.code }}</td>
+                <td class="is-muted">{{ year.start_date|date:"Y-m-d" }} – {{ year.end_date|date:"Y-m-d" }}</td>
+                <td>{% if year.is_active %}<span class="ws-badge is-success">当前学年</span>{% else %}—{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无学年</b><p>先在教务管理中创建学年。</p></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>学期</h2><span class="ws-hint">{{ terms|length }} 个</span></div>
+    {% if terms %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>学年</th><th>学期</th><th>起止</th><th>当前</th></tr></thead>
+          <tbody>
+            {% for term in terms %}
+              <tr>
+                <td>{{ term.year.code }}</td>
+                <td>{{ term.get_semester_display }}</td>
+                <td class="is-muted">{{ term.start_date|date:"Y-m-d" }} – {{ term.end_date|date:"Y-m-d" }}</td>
+                <td>{% if term.is_active %}<span class="ws-badge is-success">当前</span>{% else %}—{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无学期</b></div>
+    {% endif %}
+  </section>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>课程目录</h2><span class="ws-hint">{{ courses|length }} 门</span></div>
+  {% if courses %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>课程编码</th><th>课程名称</th><th class="is-num">学分</th><th>类型</th><th>启用</th></tr></thead>
+        <tbody>
+          {% for course in courses %}
+            <tr>
+              <td class="is-strong">{{ course.code }}</td>
+              <td>{{ course.title }}</td>
+              <td class="is-num">{{ course.credit }}</td>
+              <td class="is-muted">{{ course.course_type|default:"—" }}</td>
+              <td>{% if course.is_active %}<span class="ws-badge is-success">启用</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无课程</b></div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "workspace/base.html" %}
+{% block title %}教学班{% endblock %}
+{% block topbar_title %}教学班{% endblock %}
+{% block topbar_sub %}学生名单与上课信息{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">教学</div>
+    <h1>教学班</h1>
+    <p class="ws-sub">仅展示你本人被分配的教学班；学生名单来自选课记录。</p>
+  </div>
+</div>
+
+{% if rows %}
+  <div class="ws-stack">
+    {% for row in rows %}
+      <section class="ws-card">
+        <div class="ws-card-head">
+          <div>
+            <h2>{{ row.section.course.title }} · {{ row.section.code }} 班</h2>
+            <span class="ws-hint">{{ row.section.term.name|default:row.section.term }} · {{ row.section.get_status_display }}</span>
+          </div>
+          <span class="ws-badge is-accent">{{ row.count }} 名学生</span>
+        </div>
+        {% if row.enrollments %}
+          <div class="ws-table-wrap">
+            <table class="ws-table">
+              <thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>选课状态</th></tr></thead>
+              <tbody>
+                {% for enrollment in row.enrollments %}
+                  <tr>
+                    <td class="is-strong">{{ enrollment.account.login_name }}</td>
+                    <td>{{ enrollment.account.display_name }}</td>
+                    <td class="is-muted">{{ enrollment.account.student_profile.classes_name|default:"—" }}</td>
+                    <td><span class="ws-badge {% if enrollment.status == 'enrolled' %}is-success{% else %}is-neutral{% endif %}">{{ enrollment.get_status_display }}</span></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact"><b>暂无学生选课</b><p>选课开始后名单会自动更新。</p></div>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="ws-empty" style="background:#fff;border:1px solid var(--ws-border);border-radius:var(--ws-radius)">
+    <div class="ws-empty-icon"><svg><use href="#ws-i-clipboard"></use></svg></div>
+    <b>暂无教学班</b>
+    <p>教务完成教学班分配后会显示在这里。</p>
+  </div>
+{% endif %}
+{% endblock %}

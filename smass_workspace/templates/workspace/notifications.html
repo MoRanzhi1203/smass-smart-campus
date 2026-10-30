@@ -1,0 +1,43 @@
+{% extends "workspace/base.html" %}
+{% block title %}通知中心{% endblock %}
+{% block topbar_title %}通知中心{% endblock %}
+{% block topbar_sub %}站内通知与校园公告{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">消息</div>
+    <h1>通知中心</h1>
+    <p class="ws-sub">共 {{ total }} 条；站内通知打开后标记为已读。</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  {% if items %}
+    <div class="ws-list">
+      {% for item in items %}
+        <div class="ws-list-item" style="align-items:flex-start">
+          <div class="ws-list-main">
+            <b>{{ item.title }}</b>
+            <p class="ws-sub" style="margin-top:2px">{{ item.body|default:"—" }}</p>
+            <span>{{ item.source }} · {{ item.time|date:"Y-m-d H:i"|default:"—" }}</span>
+          </div>
+          {% if item.level == 'error' or item.level == 'danger' %}
+            <span class="ws-badge is-danger">重要</span>
+          {% elif item.level == 'warning' %}
+            <span class="ws-badge is-warning">提醒</span>
+          {% else %}
+            <span class="ws-badge is-info">{{ item.source }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-bell"></use></svg></div>
+      <b>暂无通知</b>
+      <p>审批结果、公告与业务提醒会出现在这里。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

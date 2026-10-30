@@ -1,0 +1,88 @@
+{% extends "workspace/base.html" %}
+{% block title %}考勤管理{% endblock %}
+{% block topbar_title %}考勤管理{% endblock %}
+{% block topbar_sub %}发起考勤、登记与统计{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学生事务</div>
+    <h1>考勤管理</h1>
+    <p class="ws-sub">考勤按班级组织发起；登记结果会同步到学生端考勤记录。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>考勤场次</h2><span class="ws-hint">最近 {{ sessions|length }} 场</span></div>
+    {% if sessions %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>日期</th><th>班级</th><th>节次</th><th>说明</th><th>状态</th><th>签到码</th><th></th></tr></thead>
+          <tbody>
+            {% for session in sessions %}
+              <tr>
+                <td class="is-strong">{{ session.session_date|date:"Y-m-d" }}</td>
+                <td>{{ session.unit.name }}</td>
+                <td>{{ session.period }}</td>
+                <td class="is-muted">{{ session.topic|default:"—"|truncatechars:14 }}</td>
+                <td>
+                  <span class="ws-badge {% if session.status == 'open' %}is-success{% else %}is-neutral{% endif %}">{{ session.get_status_display }}</span>
+                </td>
+                <td>{% if session.status == 'open' %}<span class="ws-code">{{ session.code }}</span>{% else %}—{% endif %}</td>
+                <td class="is-num"><a class="ws-btn is-sm" href="{% url 'workspace:teacher_attendance_detail' session.pk %}">登记</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+        <b>还没有考勤场次</b>
+        <p>在右侧选择班级与日期，即可发起一次考勤。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>发起考勤</h2></div>
+    <div class="ws-card-body">
+      {% if classes %}
+        <form method="post" action="{% url 'workspace:teacher_attendance_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="unit">班级</label>
+            <select class="ws-select" name="unit" id="unit" required>
+              {% for unit in classes %}<option value="{{ unit.pk }}">{{ unit.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="session_date">日期</label>
+            <input class="ws-input" type="date" name="session_date" id="session_date" value="{{ today|date:'Y-m-d' }}" required>
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="period">节次</label>
+            <select class="ws-select" name="period" id="period">
+              {% for period in periods %}<option value="{{ period }}">{{ period }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="topic">说明（可选）</label>
+            <input class="ws-input" type="text" name="topic" id="topic" maxlength="100" placeholder="如：课程考勤">
+          </div>
+          <div class="ws-form-actions">
+            <button class="ws-btn is-primary" type="submit">创建考勤</button>
+          </div>
+        </form>
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
+          <b>暂无可考勤班级</b>
+          <p>你的教学班暂无选课学生，或尚未分配班级。</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

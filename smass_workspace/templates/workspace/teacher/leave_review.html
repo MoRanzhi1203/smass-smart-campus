@@ -1,0 +1,77 @@
+{% extends "workspace/base.html" %}
+{% block title %}请假审批{% endblock %}
+{% block topbar_title %}请假审批{% endblock %}
+{% block topbar_sub %}辅导员负责范围{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">辅导员工作</div>
+    <h1>请假审批</h1>
+    <p class="ws-sub">待批 {{ pending|length }} 条；审批结果同步到学生端。</p>
+  </div>
+</div>
+
+{% if pending %}
+  <section class="ws-card" style="margin-bottom:16px">
+    <div class="ws-card-head"><h2>待审批</h2></div>
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>班级</th><th>类型</th><th>起止</th><th>事由</th><th></th></tr></thead>
+        <tbody>
+          {% for leave in pending %}
+            <tr>
+              <td class="is-strong">{{ leave.record.name }}</td>
+              <td>{{ leave.record.unit.name|default:"—" }}</td>
+              <td>{{ leave.get_leave_type_display }}</td>
+              <td>{{ leave.start_date|date:"m-d" }} – {{ leave.end_date|date:"m-d" }}</td>
+              <td class="is-muted">{{ leave.reason|truncatechars:20 }}</td>
+              <td class="is-num">
+                <div style="display:flex;gap:6px;justify-content:flex-end">
+                  <form method="post" action="{% url 'workspace:teacher_leave_action' leave.pk 'approve' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                  </form>
+                  <form method="post" action="{% url 'workspace:teacher_leave_action' leave.pk 'reject' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% else %}
+  <div class="ws-empty" style="background:#fff;border:1px solid var(--ws-border);border-radius:var(--ws-radius);margin-bottom:16px">
+    <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+    <b>没有待审批的请假</b>
+    <p>负责范围内学生提交请假后会出现在这里。</p>
+  </div>
+{% endif %}
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>审批记录</h2><span class="ws-hint">最近 60 条</span></div>
+  {% if leaves %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>类型</th><th>起止</th><th>状态</th><th>审批人</th><th>审批时间</th></tr></thead>
+        <tbody>
+          {% for leave in leaves %}
+            <tr>
+              <td>{{ leave.record.name }}</td>
+              <td>{{ leave.get_leave_type_display }}</td>
+              <td>{{ leave.start_date|date:"m-d" }} – {{ leave.end_date|date:"m-d" }}</td>
+              <td><span class="ws-badge {% if leave.status == 'approved' %}is-success{% elif leave.status == 'submitted' %}is-warning{% elif leave.status == 'rejected' %}is-danger{% else %}is-neutral{% endif %}">{{ leave.get_status_display }}</span></td>
+              <td class="is-muted">{{ leave.reviewed_by|default:"—" }}</td>
+              <td class="is-muted">{{ leave.reviewed_at|date:"Y-m-d H:i"|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无审批记录</b></div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "workspace/base.html" %}
+{% block title %}学生组织{% endblock %}
+{% block topbar_title %}学生组织{% endblock %}
+{% block topbar_sub %}团委、学生会与部门{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园生活</div>
+    <h1>学生组织</h1>
+    <p class="ws-sub">组织归属来自统一组织架构；任职与干部信息由管理端维护。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>组织名录</h2><span class="ws-hint">院级 / 校级学生组织</span></div>
+    {% if overview.departments %}
+      <div class="ws-list">
+        {% for unit in overview.departments %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ unit.name }}</b>
+              <span>{{ unit.code }}{% if unit.parent %} · 上级：{{ unit.parent.name }}{% endif %}</span>
+            </div>
+            <span class="ws-badge is-neutral">{{ unit.get_unit_type_display }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-shield"></use></svg></div>
+        <b>暂无学生组织</b>
+        <p>组织架构中尚未建立学生组织单元。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>我的归属</h2></div>
+      <div class="ws-card-body">
+        {% if overview.memberships %}
+          <div class="ws-timeline">
+            {% for membership in overview.memberships %}
+              <div class="ws-timeline-item">
+                <b>{{ membership.unit.name }}</b>
+                <span>
+                  {{ membership.unit.get_unit_type_display }}
+                  {% if membership.role %} · {{ membership.role }}{% endif %}
+                  {% if membership.started_at %} · 自 {{ membership.started_at|date:"Y-m-d" }}{% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
+            <b>暂未加入学生组织</b>
+            <p>班级归属来自学籍档案；团委、学生会等组织归属由管理端授权。</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>我的班级</h2></div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">学院</span><b>{{ chain.0|default:"—" }}</b></div>
+          <div><span class="is-label">专业</span><b>{{ chain.1|default:"—" }}</b></div>
+          <div><span class="is-label">班级</span><b>{{ chain.2|default:"—" }}</b></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "workspace/base.html" %}
+{% block title %}排课与课表{% endblock %}
+{% block topbar_title %}排课与课表{% endblock %}
+{% block topbar_sub %}排课计划、冲突与发布{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">排课与资源</div>
+    <h1>排课与课表</h1>
+    <p class="ws-sub">排课结果发布后，学生端与教师端课表同时更新。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn is-primary" href="/r11/plan/">排课规划</a>
+    <a class="ws-btn" href="/r16/rooms/">教室台账</a>
+  </div>
+</div>
+
+{% if latest %}
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">最新排课</div><div class="ws-stat-value" style="font-size:16px">{{ latest.term.year.code }} {{ latest.term.get_semester_display }}</div><div class="ws-stat-foot">{{ latest.get_status_display }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">已排节次</div><div class="ws-stat-value">{{ latest.placed_sessions }}<small>/ {{ latest.required_sessions }}</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">硬冲突</div><div class="ws-stat-value">{{ latest.hard_conflicts }}</div><div class="ws-stat-foot">{% if latest.hard_conflicts %}需要处理{% else %}无冲突{% endif %}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">课表条目</div><div class="ws-stat-value">{{ latest_entries }}</div></div>
+</div>
+{% endif %}
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>排课运行记录</h2><span class="ws-hint">{{ runs|length }} 次</span></div>
+  {% if runs %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学期</th><th>状态</th><th class="is-num">已排/所需</th><th class="is-num">硬冲突</th><th class="is-num">条目</th><th>算法</th><th>发布时间</th></tr></thead>
+        <tbody>
+          {% for run in runs %}
+            <tr>
+              <td class="is-strong">{{ run.term.year.code }} {{ run.term.get_semester_display }}</td>
+              <td><span class="ws-badge {% if run.status == 'published' %}is-success{% elif run.status == 'draft' %}is-warning{% else %}is-neutral{% endif %}">{{ run.get_status_display }}</span></td>
+              <td class="is-num">{{ run.placed_sessions }} / {{ run.required_sessions }}</td>
+              <td class="is-num">{% if run.hard_conflicts %}<span class="ws-badge is-danger">{{ run.hard_conflicts }}</span>{% else %}0{% endif %}</td>
+              <td class="is-num">{{ run.entry_count }}</td>
+              <td class="is-muted">{{ run.algorithm|default:"—" }}</td>
+              <td class="is-muted">{{ run.published_at|date:"Y-m-d H:i"|default:"未发布" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
+      <b>还没有排课运行</b>
+      <p>在排课规划中创建运行并求解。</p>
+      <a class="ws-btn is-primary" href="/r11/plan/">前往排课规划</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

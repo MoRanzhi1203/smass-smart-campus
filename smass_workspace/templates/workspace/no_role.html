@@ -1,0 +1,23 @@
+{% extends "workspace/base.html" %}
+{% block title %}账号未分配角色{% endblock %}
+{% block topbar_title %}账号待配置{% endblock %}
+{% block topbar_sub %}尚未分配角色{% endblock %}
+
+{% block content %}
+<div class="ws-card" style="max-width:640px;margin:48px auto">
+  <div class="ws-card-body" style="text-align:center;padding:44px 28px">
+    <div style="width:56px;height:56px;border-radius:18px;background:var(--ws-warning-soft);color:var(--ws-warning);display:grid;place-items:center;margin:0 auto 14px">
+      <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#ws-i-users"></use></svg>
+    </div>
+    <h1 style="font-size:20px;margin-bottom:6px">账号尚未分配角色</h1>
+    <p class="ws-sub">
+      登录成功，但该账号还没有学生、教师或管理员角色，因此无法进入任何工作台。
+      请联系系统管理员在「管理控制台 · 用户账号」中分配角色。
+    </p>
+    <div class="ws-page-actions" style="justify-content:center;margin-top:20px">
+      <a class="ws-btn" href="{% url 'workspace:logout' %}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">退出登录</a>
+    </div>
+    <form id="logout-form" method="post" action="{% url 'workspace:logout' %}" style="display:none">{% csrf_token %}</form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "workspace/base.html" %}
+{% block title %}场地预约{% endblock %}
+{% block topbar_title %}场地预约{% endblock %}
+{% block topbar_sub %}教室与活动场地{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">日常事务</div>
+    <h1>场地预约</h1>
+    <p class="ws-sub">提交后按场地规则自动进入待审批或直接生效；同一时段不会重复占用。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>我的预约</h2><span class="ws-hint">共 {{ bookings|length }} 条</span></div>
+    {% if bookings %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>场地</th><th>用途</th><th>时间</th><th>状态</th><th></th></tr></thead>
+          <tbody>
+            {% for booking in bookings %}
+              <tr>
+                <td class="is-strong">{{ booking.room.building.name }} {{ booking.room.name }}</td>
+                <td>{{ booking.purpose|truncatechars:16 }}</td>
+                <td>{{ booking.start_at|date:"m-d H:i" }} – {{ booking.end_at|date:"H:i" }}</td>
+                <td>
+                  <span class="ws-badge {% if booking.status == 'approved' %}is-success{% elif booking.status == 'pending' %}is-warning{% elif booking.status == 'rejected' or booking.status == 'cancelled' %}is-danger{% else %}is-neutral{% endif %}">{{ booking.get_status_display }}</span>
+                </td>
+                <td class="is-num">
+                  {% if booking.status == 'pending' or booking.status == 'approved' %}
+                    <form method="post" action="{% url 'workspace:student_booking_cancel' booking.pk %}" data-once>
+                      {% csrf_token %}
+                      <button class="ws-btn is-sm is-danger" type="submit">取消</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-door"></use></svg></div>
+        <b>暂无预约记录</b>
+        <p>可在右侧选择场地并提交预约申请。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>申请场地</h2></div>
+    <div class="ws-card-body">
+      {% if rooms %}
+      <form method="post" action="{% url 'workspace:student_booking_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="room">场地</label>
+          <select class="ws-select" name="room" id="room" required>
+            {% for room in rooms %}
+              <option value="{{ room.pk }}">{{ room.building.name }} {{ room.name }}（{{ room.get_room_type_display }}{% if room.capacity %} · {{ room.capacity }} 人{% endif %}）</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="start_at">开始时间</label>
+          <input class="ws-input" type="datetime-local" name="start_at" id="start_at" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="end_at">结束时间</label>
+          <input class="ws-input" type="datetime-local" name="end_at" id="end_at" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="purpose">用途</label>
+          <input class="ws-input" type="text" name="purpose" id="purpose" maxlength="200" required placeholder="如：小组讨论、社团例会">
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="attendees">人数</label>
+          <input class="ws-input" type="number" name="attendees" id="attendees" min="0" value="0">
+        </div>
+        <div class="ws-form-actions">
+          <button class="ws-btn is-primary" type="submit">提交预约</button>
+        </div>
+      </form>
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-door"></use></svg></div>
+          <b>暂无可预约场地</b>
+          <p>场地台账尚未开放预约。</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "workspace/base.html" %}
+{% block title %}我的课表{% endblock %}
+{% block topbar_title %}我的课表{% endblock %}
+{% block topbar_sub %}{{ term.name|default:"" }}{% if week %} · 第 {{ week }} 教学周{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学习</div>
+    <h1>我的课表</h1>
+    <p class="ws-sub">
+      {% if run %}依据已发布的排课计划生成{% if run.published_at %}，发布于 {{ run.published_at|date:"Y-m-d H:i" }}{% endif %}。
+      {% else %}本学期排课尚未发布。{% endif %}
+    </p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:student_courses' %}">查看课程列表</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head">
+    <h2>{{ term.year.code|default:"" }} 学年 {{ term.get_semester_display|default:"" }}</h2>
+    <span class="ws-hint">{{ entries|length }} 个上课时段</span>
+  </div>
+  {% if entries %}
+    <div class="ws-table-wrap ws-timetable-wrap">
+      <table class="ws-timetable">
+        <thead>
+          <tr>
+            <th class="is-period">节次</th>
+            <th{% if today == 0 %} style="color:var(--ws-accent-strong)"{% endif %}>周一</th>
+            <th{% if today == 1 %} style="color:var(--ws-accent-strong)"{% endif %}>周二</th>
+            <th{% if today == 2 %} style="color:var(--ws-accent-strong)"{% endif %}>周三</th>
+            <th{% if today == 3 %} style="color:var(--ws-accent-strong)"{% endif %}>周四</th>
+            <th{% if today == 4 %} style="color:var(--ws-accent-strong)"{% endif %}>周五</th>
+            <th{% if today == 5 %} style="color:var(--ws-accent-strong)"{% endif %}>周六</th>
+            <th{% if today == 6 %} style="color:var(--ws-accent-strong)"{% endif %}>周日</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for period, cells in rows %}
+            <tr>
+              <td class="ws-period"><b>第 {{ period }} 节</b><span>&nbsp;</span></td>
+              {% for entry in cells %}
+                <td>
+                  {% if entry %}
+                    <span class="ws-lesson" title="{{ entry.requirement.section.course.title }}">
+                      <b>{{ entry.requirement.section.course.title }}</b>
+                      <span>{% if entry.room %}{{ entry.room.name }}{% else %}待定{% endif %}</span>
+                      <span>{% if entry.teacher %}{{ entry.teacher.display_name }}{% endif %}</span>
+                    </span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
+      <b>暂无课表</b>
+      <p>{% if run %}你本学期没有已排课的教学班。{% else %}排课发布后，你的课表会自动显示在这里。{% endif %}</p>
+      <a class="ws-btn" href="{% url 'workspace:student_courses' %}">查看已选课程</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

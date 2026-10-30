@@ -1,0 +1,54 @@
+{% extends "workspace/base.html" %}
+{% block title %}角色与权限{% endblock %}
+{% block topbar_title %}角色与权限{% endblock %}
+{% block topbar_sub %}角色决定工作台与动作权限{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">身份与组织</div>
+    <h1>角色与权限</h1>
+    <p class="ws-sub">权限判定在服务端执行；菜单隐藏只是可见性，不是安全边界。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-2">
+  {% for role in matrix %}
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>{{ role.label }}</h2>
+        <span class="ws-badge is-accent">{{ role.count }} 个账号</span>
+      </div>
+      <div class="ws-card-body">
+        <p class="ws-sub">
+          {% if role.code == 'system_admin' %}
+            可进入管理控制台的全部页面，包括用户与角色、组织架构、系统配置、安全审计与运维监控；拥有全局数据范围。
+          {% elif role.code == 'college_admin' %}
+            可进入管理控制台，但数据范围限于本人 scope_college 对应的学院；系统配置、用户角色变更等系统级写操作返回 403。
+          {% elif role.code == 'teacher' %}
+            进入教师工作台：我的课程/教学班/课表、考勤、学生事务与审批。被授予辅导员组织关系后，额外获得负责班级/学生与请假审批。
+          {% else %}
+            进入学生工作台：课表、学籍、考勤请假、费用、场地、活动志愿与社团。只能访问本人数据。
+          {% endif %}
+        </p>
+        <div class="ws-meta" style="margin-top:12px">
+          <div><span class="is-label">角色编码</span><b class="ws-code">{{ role.code }}</b></div>
+          <div><span class="is-label">权限组</span><b>r21_{{ role.code }}</b></div>
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>我当前的角色</h2></div>
+  <div class="ws-card-body">
+    <div class="ws-tag-list">
+      {% for role in account_roles %}<span class="ws-chip">{{ role }}</span>{% empty %}<span class="is-muted">未分配角色</span>{% endfor %}
+    </div>
+    <p class="ws-sub" style="margin-top:12px">
+      角色变更请在<a href="{% url 'workspace:admin_users' %}">用户账号</a>页面操作，仅系统管理员可执行。
+    </p>
+  </div>
+</section>
+{% endblock %}

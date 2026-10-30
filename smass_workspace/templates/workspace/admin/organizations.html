@@ -1,0 +1,60 @@
+{% extends "workspace/base.html" %}
+{% block title %}组织架构{% endblock %}
+{% block topbar_title %}组织架构{% endblock %}
+{% block topbar_sub %}学院、专业、年级、班级与部门{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">身份与组织</div>
+    <h1>组织架构</h1>
+    <p class="ws-sub">共 {{ units|length }} 个组织单元{% if not is_super %}（本院范围）{% endif %}</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>组织单元</h2><span class="ws-hint">层级关系由上级字段维护</span></div>
+    {% if units %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>编码</th><th>名称</th><th>类型</th><th>上级</th><th class="is-num">成员数</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for unit in units %}
+              <tr>
+                <td class="is-strong">{{ unit.code }}</td>
+                <td>{{ unit.name }}</td>
+                <td><span class="ws-badge is-neutral">{{ unit.get_unit_type_display }}</span></td>
+                <td class="is-muted">{{ unit.parent.name|default:"—" }}</td>
+                <td class="is-num">{{ unit.member_count }}</td>
+                <td>{% if unit.status == 'active' %}<span class="ws-badge is-success">正常</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty"><b>暂无组织单元</b><p>可通过组织管理功能创建学院、专业与班级。</p></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>人员归属</h2><span class="ws-hint">{{ memberships|length }} 条</span></div>
+    {% if memberships %}
+      <div class="ws-list">
+        {% for item in memberships %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ item.account.display_name }}</b>
+              <span>{{ item.unit.name }}{% if item.role %} · {{ item.role }}{% endif %}</span>
+            </div>
+            <span class="ws-badge is-neutral">{{ item.unit.get_unit_type_display }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无人员归属</b><p>辅导员等职责通过组织关系授予。</p></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

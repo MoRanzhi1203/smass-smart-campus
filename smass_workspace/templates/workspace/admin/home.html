@@ -1,0 +1,100 @@
+{% extends "workspace/base.html" %}
+{% block title %}控制台总览{% endblock %}
+{% block topbar_title %}控制台总览{% endblock %}
+{% block topbar_sub %}统一身份、教学、资源与运维{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">管理控制台</div>
+    <h1>系统总览</h1>
+    <p class="ws-sub">
+      {% if is_super %}全局治理视图{% else %}按组织范围展示{% endif %} · 数据来自统一业务库，非静态演示值
+    </p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:admin_users' %}">用户账号</a>
+    <a class="ws-btn" href="{% url 'workspace:admin_scheduling' %}">排课</a>
+    <a class="ws-btn is-primary" href="{% url 'workspace:admin_approvals' %}">待办审批</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">用户账号</div><div class="ws-stat-value">{{ accounts_total }}</div><div class="ws-stat-foot">教师 {{ teachers_total }} 人</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">学籍档案</div><div class="ws-stat-value">{{ students_total }}</div><div class="ws-stat-foot">组织单元 {{ units_total }} 个</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">教学班</div><div class="ws-stat-value">{{ sections_total }}</div><div class="ws-stat-foot">课程 {{ courses_total }} 门</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">已发布排课</div><div class="ws-stat-value">{{ published_runs }}</div><div class="ws-stat-foot">流程定义 {{ workflows_total }} 个</div></div>
+</div>
+
+<div class="ws-grid ws-grid-4" style="margin-top:16px">
+  <div class="ws-stat"><div class="ws-stat-label">待办审批</div><div class="ws-stat-value">{{ pending_tasks }}</div><div class="ws-stat-foot">流程任务</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">待批预约</div><div class="ws-stat-value">{{ pending_bookings }}</div><div class="ws-stat-foot">场地 {{ rooms_total }} 间</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">活动 / 社团</div><div class="ws-stat-value">{{ activities_total }}<small>/ {{ clubs_total }}</small></div><div class="ws-stat-foot">校园业务</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">应收 / 已缴</div><div class="ws-stat-value" style="font-size:19px">{{ bills_total|floatformat:0 }}<small>/ {{ bills_paid|floatformat:0 }}</small></div><div class="ws-stat-foot">待缴 {{ bills_unpaid|floatformat:2 }} 元</div></div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>近 24 小时请求</h2><span class="ws-hint">{{ requests_24h }} 次 · 5xx {{ errors_24h }} 次</span></div>
+    {% if recent_requests %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>方法</th><th>路径</th><th class="is-num">状态</th><th class="is-num">耗时</th><th>时间</th></tr></thead>
+          <tbody>
+            {% for item in recent_requests %}
+              <tr>
+                <td>{{ item.method }}</td>
+                <td class="is-muted">{{ item.route|truncatechars:44 }}</td>
+                <td class="is-num"><span class="ws-badge {% if item.status_code >= 500 %}is-danger{% elif item.status_code >= 400 %}is-warning{% else %}is-success{% endif %}">{{ item.status_code }}</span></td>
+                <td class="is-num">{{ item.duration_ms }} ms</td>
+                <td class="is-muted">{{ item.created_at|date:"H:i:s" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-chart"></use></svg></div>
+        <b>暂无请求指标</b>
+        <p>运维中间件记录请求后会显示在这里。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>系统健康</h2></div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">最近探针</span><b>{% if probe_ok %}{% if probe_ok.ok %}<span class="ws-badge is-success">通过</span>{% else %}<span class="ws-badge is-danger">异常</span>{% endif %}{% else %}未执行{% endif %}</b></div>
+          <div><span class="is-label">24h 告警</span><b>{{ alerts_24h }} 条</b></div>
+          <div><span class="is-label">5xx 比例</span><b>{% if requests_24h %}{{ errors_24h }} / {{ requests_24h }}{% else %}—{% endif %}</b></div>
+        </div>
+        <div class="ws-page-actions" style="margin-top:14px">
+          <a class="ws-btn is-sm" href="{% url 'workspace:admin_monitoring' %}">运行监控</a>
+          <a class="ws-btn is-sm" href="{% url 'workspace:admin_audit' %}">安全审计</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>近期告警</h2></div>
+      <div class="ws-card-body">
+        {% if recent_alerts %}
+          <div class="ws-timeline">
+            {% for alert in recent_alerts %}
+              <div class="ws-timeline-item">
+                <b>{{ alert.rule.name|default:alert.rule.code }} · {{ alert.get_severity_display }}</b>
+                <span>观测 {{ alert.observed|floatformat:2 }} / 阈值 {{ alert.threshold|floatformat:2 }} · {{ alert.created_at|date:"m-d H:i" }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact"><b>暂无告警</b><p>告警规则触发后会显示在这里。</p></div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

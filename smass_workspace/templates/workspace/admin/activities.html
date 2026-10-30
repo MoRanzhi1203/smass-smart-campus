@@ -1,0 +1,58 @@
+{% extends "workspace/base.html" %}
+{% block title %}活动管理{% endblock %}
+{% block topbar_title %}活动管理{% endblock %}
+{% block topbar_sub %}活动发布、结束与学分认定{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园业务</div>
+    <h1>活动管理</h1>
+    <p class="ws-sub">共 {{ activities|length }} 个活动 · 待认定学分 {{ credits_pending }} 条</p>
+  </div>
+  {% if is_super %}<div class="ws-page-actions"><a class="ws-btn" href="/r14/activities/">活动详情管理</a></div>{% endif %}
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>活动列表</h2><span class="ws-hint">发布后学生端可见</span></div>
+  {% if activities %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>活动</th><th>类别</th><th>时间</th><th class="is-num">报名</th><th>状态</th><th></th></tr></thead>
+        <tbody>
+          {% for activity in activities %}
+            <tr>
+              <td class="is-strong">{{ activity.title }}</td>
+              <td>{{ activity.get_category_display }}</td>
+              <td class="is-muted">{{ activity.start_at|date:"m-d H:i" }}</td>
+              <td class="is-num">{{ activity.reg_count }}{% if activity.capacity %} / {{ activity.capacity }}{% endif %}</td>
+              <td><span class="ws-badge {% if activity.status == 'published' %}is-success{% elif activity.status == 'draft' %}is-warning{% else %}is-neutral{% endif %}">{{ activity.get_status_display }}</span></td>
+              <td class="is-num">
+                {% if is_super %}
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    {% if activity.status == 'draft' %}
+                      <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'publish' %}" data-once>
+                        {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">发布</button>
+                      </form>
+                    {% elif activity.status == 'published' %}
+                      <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'close' %}" data-once>
+                        {% csrf_token %}<button class="ws-btn is-sm" type="submit">结束</button>
+                      </form>
+                    {% endif %}
+                  </div>
+                {% else %}<span class="is-muted">只读</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-megaphone"></use></svg></div>
+      <b>暂无活动</b>
+      <p>活动创建后可在此发布。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

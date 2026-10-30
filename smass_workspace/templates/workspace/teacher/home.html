@@ -1,0 +1,172 @@
+{% extends "workspace/base.html" %}
+{% block title %}教学工作台{% endblock %}
+{% block topbar_title %}教学工作台{% endblock %}
+{% block topbar_sub %}{% if term %}{{ term.year.code }} 学年 · {{ term.get_semester_display }}{% else %}教师工作台{% endif %}{% endblock %}
+
+{% block content %}
+<section class="ws-hero">
+  <h1>{{ request.user.display_name|default:request.user.login_name }} 老师，欢迎回来</h1>
+  <p>这里汇总你的教学班、本周课表、学生考勤与待审批事项；审批结果会同步到学生端。</p>
+  <div class="ws-hero-meta">
+    <div><b>{{ section_count }}</b><span>我的教学班</span></div>
+    <div><b>{{ student_count }}</b><span>授课学生</span></div>
+    <div><b>{{ entries|length }}</b><span>本周课时</span></div>
+    <div><b>{{ pending_leave_count }}</b><span>待批请假</span></div>
+    {% if counselor %}<div><b>{{ counselor.class_count }}</b><span>负责班级</span></div>{% endif %}
+  </div>
+  <div class="ws-hero-actions">
+    <a class="ws-btn is-primary" href="{% url 'workspace:teacher_attendance' %}">发起考勤</a>
+    <a class="ws-btn" href="{% url 'workspace:teacher_approvals' %}">审批中心</a>
+    <a class="ws-btn" href="{% url 'workspace:teacher_students' %}">学生事务</a>
+  </div>
+</section>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat"><div class="ws-stat-label">今日课程</div><div class="ws-stat-value">{{ today|length }}<small>节</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">待批请假</div><div class="ws-stat-value">{{ pending_leave_count }}<small>条</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">待办任务</div><div class="ws-stat-value">{{ pending_task_count }}<small>条</small></div></div>
+  <div class="ws-stat is-accent"><div class="ws-stat-label">我的教学班</div><div class="ws-stat-value">{{ section_count }}<small>个</small></div></div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>今日课程</h2>
+        <a class="ws-more" href="{% url 'workspace:teacher_timetable' %}">完整课表 →</a>
+      </div>
+      <div class="ws-card-body is-flush">
+        {% if today %}
+          <div class="ws-list">
+            {% for entry in today %}
+              <div class="ws-list-item">
+                <div class="ws-list-side" style="min-width:60px;text-align:left">
+                  <b style="display:block;color:var(--ws-text)">第 {{ entry.period }} 节</b>
+                </div>
+                <div class="ws-list-main">
+                  <b>{{ entry.requirement.section.course.title }}</b>
+                  <span>
+                    {{ entry.requirement.section.code }} 班
+                    {% if entry.room %} · {{ entry.room.building.name }} {{ entry.room.name }}{% endif %}
+                  </span>
+                </div>
+                <a class="ws-btn is-sm" href="{% url 'workspace:teacher_attendance' %}">考勤</a>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
+            <b>今天没有授课安排</b>
+            <p>{% if run %}已发布课表中今日无课。{% else %}排课尚未发布。{% endif %}</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>我的教学班</h2>
+        <a class="ws-more" href="{% url 'workspace:teacher_sections' %}">全部教学班 →</a>
+      </div>
+      {% if sections %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>课程</th><th>教学班</th><th>学期</th><th class="is-num">选课人数</th><th></th></tr></thead>
+            <tbody>
+              {% for row in sections %}
+                <tr>
+                  <td class="is-strong">{{ row.section.course.title }}</td>
+                  <td>{{ row.section.code }}</td>
+                  <td>{{ row.section.term.name|default:row.section.term }}</td>
+                  <td class="is-num">{{ row.students }}</td>
+                  <td class="is-num"><a class="ws-btn is-sm" href="{% url 'workspace:teacher_sections' %}">查看</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-book"></use></svg></div>
+          <b>暂无教学班</b>
+          <p>教务分配教学班后会显示在这里。</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>待办审批</h2>
+        <a class="ws-more" href="{% url 'workspace:teacher_approvals' %}">全部 →</a>
+      </div>
+      <div class="ws-card-body is-flush">
+        {% if pending_leaves or pending_tasks %}
+          <div class="ws-list">
+            {% for leave in pending_leaves %}
+              <a class="ws-list-item" href="{% url 'workspace:teacher_approvals' %}">
+                <span class="ws-badge is-warning">请假</span>
+                <div class="ws-list-main">
+                  <b>{{ leave.record.name }} · {{ leave.get_leave_type_display }}</b>
+                  <span>{{ leave.start_date|date:"m-d" }} 至 {{ leave.end_date|date:"m-d" }} · {{ leave.reason|truncatechars:18 }}</span>
+                </div>
+              </a>
+            {% endfor %}
+            {% for task in pending_tasks %}
+              <a class="ws-list-item" href="{% url 'workspace:teacher_approvals' %}">
+                <span class="ws-badge is-info">流程</span>
+                <div class="ws-list-main">
+                  <b>{{ task.node.name }}</b>
+                  <span>{{ task.instance.subject_type }} #{{ task.instance.subject_id }}</span>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+            <b>没有待处理事项</b>
+            <p>学生请假与流程任务审批后会出现在这里。</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    {% if counselor %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>辅导员工作</h2></div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">负责班级</span><b>{{ counselor.class_count }} 个</b></div>
+          <div><span class="is-label">负责学生</span><b>{{ counselor.student_count }} 人</b></div>
+          <div><span class="is-label">待批请假</span><b>{{ counselor.pending_leaves|length }} 条</b></div>
+        </div>
+        <div class="ws-page-actions" style="margin-top:14px">
+          <a class="ws-btn is-sm" href="{% url 'workspace:teacher_classes' %}">负责班级</a>
+          <a class="ws-btn is-sm" href="{% url 'workspace:teacher_counselor_students' %}">负责学生</a>
+          <a class="ws-btn is-sm is-primary" href="{% url 'workspace:teacher_leave_review' %}">请假审批</a>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>通知公告</h2><a class="ws-more" href="{% url 'workspace:teacher_notices' %}">更多 →</a></div>
+      <div class="ws-card-body">
+        {% if notices %}
+          {% for note in notices %}
+            <div class="ws-notice">
+              <div style="flex:1;min-width:0"><b>{{ note.title }}</b><p>{{ note.body|truncatechars:46 }}</p></div>
+              <time>{{ note.published_at|date:"m-d"|default:"—" }}</time>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="ws-empty is-compact"><b>暂无公告</b><p>学校公告会显示在这里。</p></div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

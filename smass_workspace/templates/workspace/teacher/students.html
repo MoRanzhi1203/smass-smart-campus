@@ -1,0 +1,43 @@
+{% extends "workspace/base.html" %}
+{% block title %}学生事务{% endblock %}
+{% block topbar_title %}学生事务{% endblock %}
+{% block topbar_sub %}我的授课学生{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学生事务</div>
+    <h1>学生事务</h1>
+    <p class="ws-sub">共 {{ student_count }} 名学生 · 仅展示本人教学班内的学生</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">数据范围由教学班决定</span></div>
+  {% if rows %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>所在教学班</th><th>学籍状态</th><th></th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td class="is-strong">{{ row.student.student_no }}</td>
+              <td>{{ row.student.name }}</td>
+              <td>{{ row.student.unit.name|default:"—" }}</td>
+              <td class="is-muted">{{ row.sections|join:"、"|default:"—" }}</td>
+              <td><span class="ws-badge {% if row.student.status == 'enrolled' %}is-success{% else %}is-warning{% endif %}">{{ row.student.get_status_display }}</span></td>
+              <td class="is-num"><a class="ws-btn is-sm" href="{% url 'workspace:teacher_student_detail' row.student.pk %}">查看</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
+      <b>暂无学生</b>
+      <p>你的教学班还没有学生选课。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

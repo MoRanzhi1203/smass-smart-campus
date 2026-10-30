@@ -1,0 +1,73 @@
+{% extends "workspace/base.html" %}
+{% block title %}社团{% endblock %}
+{% block topbar_title %}社团{% endblock %}
+{% block topbar_sub %}社团名录与入社申请{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园生活</div>
+    <h1>社团</h1>
+    <p class="ws-sub">入社申请需社团负责人或指导老师审批。</p>
+  </div>
+</div>
+
+{% if overview.memberships %}
+<section class="ws-card" style="margin-bottom:16px">
+  <div class="ws-card-head"><h2>我加入的社团</h2></div>
+  <div class="ws-card-body">
+    <div class="ws-tag-list">
+      {% for club_id, membership in overview.memberships.items %}
+        <span class="ws-chip">
+          {{ membership.club.name }}
+          <span class="ws-badge {% if membership.status == 'active' %}is-success{% elif membership.status == 'pending' %}is-warning{% else %}is-neutral{% endif %}">{{ membership.get_status_display }}</span>
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>社团名录</h2><span class="ws-hint">共 {{ rows|length }} 个社团</span></div>
+  {% if rows %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>社团</th><th>类别</th><th>指导教师</th><th>简介</th><th>我的状态</th><th></th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td class="is-strong">{{ row.club.name }}<br><span class="is-muted">{{ row.club.code }}</span></td>
+              <td>{{ row.club.get_category_display }}</td>
+              <td>{% if row.club.advisor %}{{ row.club.advisor.display_name }}{% else %}—{% endif %}</td>
+              <td class="is-muted">{{ row.club.description|truncatechars:40|default:"—" }}</td>
+              <td>
+                {% if row.membership %}
+                  <span class="ws-badge {% if row.membership.status == 'active' %}is-success{% elif row.membership.status == 'pending' %}is-warning{% else %}is-neutral{% endif %}">{{ row.membership.get_status_display }}</span>
+                  {% if row.post %}<div class="is-muted" style="font-size:11.5px">{{ row.post.get_title_display }}</div>{% endif %}
+                {% else %}
+                  <span class="is-muted">未加入</span>
+                {% endif %}
+              </td>
+              <td class="is-num">
+                {% if row.club.status == 'active' and not row.membership %}
+                  <form method="post" action="{% url 'workspace:student_club_apply' row.club.pk %}" data-once>
+                    {% csrf_token %}
+                    <button class="ws-btn is-sm" type="submit">申请加入</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
+      <b>暂无社团</b>
+      <p>社团注册后会显示在这里。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

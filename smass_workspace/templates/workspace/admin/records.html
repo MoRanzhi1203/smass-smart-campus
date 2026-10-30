@@ -1,0 +1,55 @@
+{% extends "workspace/base.html" %}
+{% block title %}学籍管理{% endblock %}
+{% block topbar_title %}学籍管理{% endblock %}
+{% block topbar_sub %}学生档案与就读状态{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学籍与教学</div>
+    <h1>学籍管理</h1>
+    <p class="ws-sub">共 {{ total }} 条学籍{% if not is_super %}（仅本院范围）{% endif %}；编辑请进入档案详情页。</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head">
+    <h2>学籍档案</h2>
+    <form method="get" class="ws-inline-form">
+      <input class="ws-input" type="search" name="q" value="{{ keyword }}" placeholder="学号 / 姓名" style="width:170px">
+      <select class="ws-select" name="status" style="width:120px">
+        {% for value, label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+      <button class="ws-btn is-sm" type="submit">筛选</button>
+    </form>
+  </div>
+  {% if rows %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学号</th><th>姓名</th><th>学院</th><th>专业</th><th>班级</th><th>状态</th><th>入学日期</th><th></th></tr></thead>
+        <tbody>
+          {% for item in rows %}
+            <tr>
+              <td class="is-strong">{{ item.student_no }}</td>
+              <td>{{ item.name }}</td>
+              <td class="is-muted">{{ item.unit.parent.parent.name|default:"—" }}</td>
+              <td class="is-muted">{{ item.unit.parent.name|default:"—" }}</td>
+              <td>{{ item.unit.name|default:"—" }}</td>
+              <td><span class="ws-badge {% if item.status == 'enrolled' %}is-success{% elif item.status == 'suspended' %}is-warning{% else %}is-neutral{% endif %}">{{ item.get_status_display }}</span></td>
+              <td class="is-muted">{{ item.enrolled_at|date:"Y-m-d"|default:"—" }}</td>
+              <td class="is-num"><a class="ws-btn is-sm" href="/r4/students/{{ item.student_no }}/">档案</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-file"></use></svg></div>
+      <b>没有匹配的学籍</b>
+      <p>调整筛选条件，或通过数据导入建立学籍档案。</p>
+      <a class="ws-btn" href="{% url 'workspace:admin_data_exchange' %}">数据导入</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

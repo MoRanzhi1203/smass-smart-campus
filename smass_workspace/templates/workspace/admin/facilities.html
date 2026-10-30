@@ -1,0 +1,43 @@
+{% extends "workspace/base.html" %}
+{% block title %}教室与场地{% endblock %}
+{% block topbar_title %}教室与场地{% endblock %}
+{% block topbar_sub %}场地台账与预约{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">排课与资源</div>
+    <h1>教室与场地</h1>
+    <p class="ws-sub">共 {{ rooms|length }} 间场地 · 累计 {{ booking_total }} 条预约</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:admin_booking_approvals' %}">预约审批（{{ pending|length }}）</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>场地台账</h2><span class="ws-hint">容量与预约规则由场地管理维护</span></div>
+  {% if rooms %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>楼宇</th><th>房间</th><th>类型</th><th class="is-num">容量</th><th>是否需要审批</th><th class="is-num">预约数</th><th>状态</th></tr></thead>
+        <tbody>
+          {% for room in rooms %}
+            <tr>
+              <td class="is-strong">{{ room.building.name }}</td>
+              <td>{{ room.name }}<br><span class="is-muted">{{ room.code }}</span></td>
+              <td>{{ room.get_room_type_display }}</td>
+              <td class="is-num">{% if room.capacity %}{{ room.capacity }}{% else %}不限{% endif %}</td>
+              <td>{% if room.requires_approval %}<span class="ws-badge is-warning">需审批</span>{% else %}<span class="ws-badge is-neutral">直接预约</span>{% endif %}</td>
+              <td class="is-num">{{ room.booking_count }}</td>
+              <td>{% if room.is_active %}<span class="ws-badge is-success">启用</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty"><b>暂无场地</b><p>先在场地管理中建立楼宇与房间。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

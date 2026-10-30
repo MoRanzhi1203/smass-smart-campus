@@ -1,0 +1,48 @@
+{% extends "workspace/base.html" %}
+{% block title %}教学班与选课{% endblock %}
+{% block topbar_title %}教学班与选课{% endblock %}
+{% block topbar_sub %}教学班、容量与选课人数{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学籍与教学</div>
+    <h1>教学班与选课</h1>
+    <p class="ws-sub">共 {{ sections|length }} 个教学班 · {{ enrollment_total }} 条有效选课</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="/r5/sections/">教学班管理</a>
+    <a class="ws-btn" href="/r5/enroll/">选课管理</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>教学班列表</h2><span class="ws-hint">选课人数来自实时统计</span></div>
+  {% if sections %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>课程</th><th>教学班</th><th>学期</th><th class="is-num">容量</th><th class="is-num">已选</th><th>状态</th><th></th></tr></thead>
+        <tbody>
+          {% for section in sections %}
+            <tr>
+              <td class="is-strong">{{ section.course.title }}</td>
+              <td>{{ section.code }}</td>
+              <td class="is-muted">{{ section.term.year.code }} {{ section.term.get_semester_display }}</td>
+              <td class="is-num">{% if section.capacity %}{{ section.capacity }}{% else %}不限{% endif %}</td>
+              <td class="is-num">{{ section.enrolled }}</td>
+              <td><span class="ws-badge {% if section.status == 'open' %}is-success{% else %}is-neutral{% endif %}">{{ section.get_status_display }}</span></td>
+              <td class="is-num"><a class="ws-btn is-sm" href="/r5/sections/{{ section.pk }}/roster/">名单</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-clipboard"></use></svg></div>
+      <b>暂无教学班</b>
+      <p>在教务管理中创建学期与教学班。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

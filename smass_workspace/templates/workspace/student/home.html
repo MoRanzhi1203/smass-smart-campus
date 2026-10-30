@@ -1,0 +1,188 @@
+{% extends "workspace/base.html" %}
+{% block title %}学习工作台{% endblock %}
+{% block topbar_title %}学习工作台{% endblock %}
+{% block topbar_sub %}{{ chain.2|default:"学生" }}{% if term %} · {{ term.year.code }} 学年{% endif %}{% endblock %}
+
+{% block content %}
+{% if not record %}
+  <div class="ws-alert is-warning">
+    <span>当前账号尚未关联学籍档案，因此无法展示课表、考勤与费用数据。请联系学院管理员完成学籍绑定。</span>
+  </div>
+{% endif %}
+
+<section class="ws-hero">
+  <h1>{{ request.user.display_name|default:request.user.login_name }}，欢迎回来</h1>
+  <p>
+    {% if record %}
+      {{ chain.0|default:"学院" }} · {{ chain.1|default:"专业" }} · {{ chain.2|default:"班级" }} · 学号 {{ record.student_no }}
+    {% else %}
+      学生工作台汇集课表、考勤、费用与校园活动；学籍档案绑定后自动展示。
+    {% endif %}
+  </p>
+  <div class="ws-hero-meta">
+    <div><b>{{ course_count }}</b><span>本学期课程</span></div>
+    <div><b>{{ today|length }}</b><span>今日课程</span></div>
+    <div><b>{% if attendance.rate is not None %}{{ attendance.rate }}%{% else %}—{% endif %}</b><span>考勤达标率</span></div>
+    <div><b>{{ bill_summary.unpaid|floatformat:0 }}</b><span>待缴费用（元）</span></div>
+    <div><b>{{ volunteer.hours|floatformat:1 }}</b><span>志愿时长（小时）</span></div>
+  </div>
+  <div class="ws-hero-actions">
+    <a class="ws-btn is-primary" href="{% url 'workspace:student_timetable' %}">查看完整课表</a>
+    <a class="ws-btn" href="{% url 'workspace:student_attendance' %}">考勤与请假</a>
+    <a class="ws-btn" href="{% url 'workspace:student_activities' %}">活动报名</a>
+  </div>
+</section>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent">
+    <div class="ws-stat-label">当前学期</div>
+    <div class="ws-stat-value" style="font-size:17px">{{ term.name|default:term|default:"未配置" }}</div>
+    <div class="ws-stat-foot">{% if week %}第 {{ week }} 教学周{% else %}当前不在教学周内{% endif %}</div>
+  </div>
+  <div class="ws-stat">
+    <div class="ws-stat-label">今日课程</div>
+    <div class="ws-stat-value">{{ today|length }}<small>节</small></div>
+    <div class="ws-stat-foot">{% if run %}课表已发布{% else %}课表尚未发布{% endif %}</div>
+  </div>
+  <div class="ws-stat">
+    <div class="ws-stat-label">考勤达标率</div>
+    <div class="ws-stat-value">{% if attendance.rate is not None %}{{ attendance.rate }}<small>%</small>{% else %}—{% endif %}</div>
+    <div class="ws-stat-foot">累计 {{ attendance.recent|length }} 条考勤记录</div>
+  </div>
+  <div class="ws-stat">
+    <div class="ws-stat-label">待缴费用</div>
+    <div class="ws-stat-value">{{ bill_summary.unpaid|floatformat:2 }}<small>元</small></div>
+    <div class="ws-stat-foot">共 {{ bills|length }} 张账单</div>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>今日课表</h2>
+        <a class="ws-more" href="{% url 'workspace:student_timetable' %}">完整课表 →</a>
+      </div>
+      <div class="ws-card-body is-flush">
+        {% if today %}
+          <div class="ws-list">
+            {% for entry in today %}
+              <div class="ws-list-item">
+                <div class="ws-list-side" style="min-width:64px;text-align:left">
+                  <b style="display:block;color:var(--ws-text)">第 {{ entry.period }} 节</b>
+                  <span>{{ entry.requirement.section.course.title|truncatechars:8 }}</span>
+                </div>
+                <div class="ws-list-main">
+                  <b>{{ entry.requirement.section.course.title }}</b>
+                  <span>
+                    {% if entry.room %}{{ entry.room.building.name }} {{ entry.room.name }}{% else %}教室待定{% endif %}
+                    {% if entry.teacher %} · {{ entry.teacher.display_name }}{% endif %}
+                  </span>
+                </div>
+                <span class="ws-badge is-info">{{ entry.requirement.section.code }} 班</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
+            <b>今天没有课程安排</b>
+            <p>{% if run %}本学期课表中今日无课。{% else %}排课尚未发布，发布后课表会自动出现在这里。{% endif %}</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>近期活动</h2>
+        <a class="ws-more" href="{% url 'workspace:student_activities' %}">全部活动 →</a>
+      </div>
+      <div class="ws-card-body is-flush">
+        {% if upcoming %}
+          <div class="ws-list">
+            {% for activity in upcoming %}
+              <div class="ws-list-item">
+                <div class="ws-list-main">
+                  <b>{{ activity.title }}</b>
+                  <span>{{ activity.get_category_display }} · {{ activity.location|default:"地点待定" }} · 报名 {{ activity.registration_count|default:0 }} 人</span>
+                </div>
+                <div class="ws-list-side">
+                  {{ activity.start_at|date:"m-d H:i" }}<br>
+                  {% if activity.id in activities.registrations %}
+                    <span class="ws-badge is-success">已报名</span>
+                  {% elif activity.registration_deadline and activity.registration_deadline < now %}
+                    <span class="ws-badge is-neutral">报名截止</span>
+                  {% else %}
+                    <span class="ws-badge is-accent">可报名</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-megaphone"></use></svg></div>
+            <b>暂无近期活动</b>
+            <p>校园活动与志愿服务发布后会显示在这里。</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待办提醒</h2><span class="ws-hint">来自真实业务状态</span></div>
+      <div class="ws-card-body is-flush">
+        {% if deadlines %}
+          <div class="ws-list">
+            {% for item in deadlines %}
+              <a class="ws-list-item" href="{{ item.url }}">
+                <span class="ws-badge is-warning">{{ item.kind }}</span>
+                <div class="ws-list-main">
+                  <b>{{ item.title }}</b>
+                  <span>{{ item.detail }}</span>
+                </div>
+                <svg width="15" height="15" style="color:#94a3b8" aria-hidden="true"><use href="#ws-i-arrow"></use></svg>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+            <b>暂无待办</b>
+            <p>费用、请假与活动报名都已完成。</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>通知公告</h2>
+        <a class="ws-more" href="{% url 'workspace:student_notices' %}">更多 →</a>
+      </div>
+      <div class="ws-card-body">
+        {% if notices %}
+          {% for note in notices %}
+            <div class="ws-notice">
+              <div style="flex:1;min-width:0">
+                <b>{{ note.title }}</b>
+                <p>{{ note.body|truncatechars:52 }}</p>
+              </div>
+              <time>{{ note.published_at|date:"m-d"|default:"—" }}</time>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="ws-empty is-compact">
+            <div class="ws-empty-icon"><svg><use href="#ws-i-bell"></use></svg></div>
+            <b>暂无公告</b>
+            <p>学校发布的公告会显示在这里。</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

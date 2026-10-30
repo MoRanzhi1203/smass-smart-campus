@@ -1,0 +1,64 @@
+{% load static %}<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · SMASS 校园服务与管理系统</title>
+<link rel="stylesheet" href="{% static 'workspace/app.css' %}">
+</head>
+<body data-workspace="student">
+<div class="ws-login">
+  <section class="ws-login-brandside">
+    <div class="ws-login-logo"><i>S</i> SMASS</div>
+    <h1>一套系统，<br>服务学生、教师与管理者。</h1>
+    <p>统一身份认证，按角色进入对应工作台。课程、考勤、审批、场地与费用在同一份业务数据上流转。</p>
+    <div class="ws-login-points">
+      <div class="ws-login-point">
+        <i>学</i>
+        <div><b>学生工作台</b><span>课表、学籍、考勤请假、活动志愿、场地与费用</span></div>
+      </div>
+      <div class="ws-login-point">
+        <i>教</i>
+        <div><b>教师工作台</b><span>我的课程与教学班、考勤管理、学生事务与审批</span></div>
+      </div>
+      <div class="ws-login-point">
+        <i>管</i>
+        <div><b>管理控制台</b><span>身份组织、学籍教学、排课资源、审批运维与数据治理</span></div>
+      </div>
+    </div>
+    <div class="ws-login-foot">SMASS 校园服务与管理系统 · 统一登录入口</div>
+  </section>
+
+  <section class="ws-login-panel">
+    <div class="ws-login-card">
+      <h2>登录</h2>
+      <p class="ws-login-sub">使用学校分配的账号登录，系统会自动进入你的工作台。</p>
+
+      {% if error %}<div class="ws-login-error" role="alert">{{ error }}</div>{% endif %}
+
+      <form method="post" action="/login/" data-once>
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <div class="ws-field">
+          <label for="id_login_name">登录名</label>
+          <input class="ws-input" type="text" name="login_name" id="id_login_name"
+                 value="{{ login_name|default:'' }}" autocomplete="username" autofocus required>
+        </div>
+        <div class="ws-field">
+          <label for="id_password">密码</label>
+          <input class="ws-input" type="password" name="password" id="id_password"
+                 autocomplete="current-password" required>
+        </div>
+        <button class="ws-btn is-primary" type="submit" id="btnLogin">登 录</button>
+      </form>
+
+      <div class="ws-login-hint">
+        忘记密码请联系学院管理员重置；管理员会生成一次性口令，登录后需立即修改。<br>
+        登录失败次数过多时账号会临时锁定，请稍后再试。
+      </div>
+    </div>
+  </section>
+</div>
+<script src="{% static 'workspace/app.js' %}"></script>
+</body>
+</html>

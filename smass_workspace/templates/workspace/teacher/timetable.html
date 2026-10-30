@@ -1,0 +1,62 @@
+{% extends "workspace/base.html" %}
+{% block title %}我的课表{% endblock %}
+{% block topbar_title %}我的课表{% endblock %}
+{% block topbar_sub %}{% if term %}{{ term.name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">教学</div>
+    <h1>我的课表</h1>
+    <p class="ws-sub">
+      {% if run %}依据已发布的排课计划生成，共 {{ entries|length }} 个上课时段。{% else %}排课尚未发布。{% endif %}
+    </p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>周课表</h2><span class="ws-hint">教师视角</span></div>
+  {% if entries %}
+    <div class="ws-table-wrap ws-timetable-wrap">
+      <table class="ws-timetable">
+        <thead>
+          <tr>
+            <th class="is-period">节次</th>
+            <th{% if today == 0 %} style="color:var(--ws-accent-strong)"{% endif %}>周一</th>
+            <th{% if today == 1 %} style="color:var(--ws-accent-strong)"{% endif %}>周二</th>
+            <th{% if today == 2 %} style="color:var(--ws-accent-strong)"{% endif %}>周三</th>
+            <th{% if today == 3 %} style="color:var(--ws-accent-strong)"{% endif %}>周四</th>
+            <th{% if today == 4 %} style="color:var(--ws-accent-strong)"{% endif %}>周五</th>
+            <th{% if today == 5 %} style="color:var(--ws-accent-strong)"{% endif %}>周六</th>
+            <th{% if today == 6 %} style="color:var(--ws-accent-strong)"{% endif %}>周日</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for period, cells in rows %}
+            <tr>
+              <td class="ws-period"><b>第 {{ period }} 节</b></td>
+              {% for entry in cells %}
+                <td>
+                  {% if entry %}
+                    <span class="ws-lesson">
+                      <b>{{ entry.requirement.section.course.title }}</b>
+                      <span>{{ entry.requirement.section.code }} 班</span>
+                      <span>{% if entry.room %}{{ entry.room.name }}{% endif %}</span>
+                    </span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
+      <b>暂无课表</b>
+      <p>{% if run %}本学期你没有已排课的时段。{% else %}排课发布后会自动显示。{% endif %}</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

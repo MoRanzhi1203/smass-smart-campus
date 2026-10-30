@@ -1,0 +1,59 @@
+{% extends "workspace/base.html" %}
+{% block title %}社团与学生组织{% endblock %}
+{% block topbar_title %}社团与学生组织{% endblock %}
+{% block topbar_sub %}社团、任职与组织单元{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园业务</div>
+    <h1>社团与学生组织</h1>
+    <p class="ws-sub">共 {{ clubs|length }} 个社团 · {{ departments|length }} 个学生组织 · 待批入社 {{ pending_memberships }} 条</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>社团</h2></div>
+    {% if clubs %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>社团</th><th>类别</th><th>指导教师</th><th class="is-num">成员</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for club in clubs %}
+              <tr>
+                <td class="is-strong">{{ club.name }}<br><span class="is-muted">{{ club.code }}</span></td>
+                <td>{{ club.get_category_display }}</td>
+                <td>{{ club.advisor.display_name|default:"—" }}</td>
+                <td class="is-num">{{ club.member_count }}</td>
+                <td><span class="ws-badge {% if club.status == 'active' %}is-success{% else %}is-neutral{% endif %}">{{ club.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无社团</b><p>社团注册后显示在这里。</p></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>学生组织</h2></div>
+    {% if departments %}
+      <div class="ws-list">
+        {% for unit in departments %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ unit.name }}</b>
+              <span>{{ unit.code }}{% if unit.parent %} · 上级 {{ unit.parent.name }}{% endif %}</span>
+            </div>
+            <span class="ws-badge is-neutral">{{ unit.member_count }} 人</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无学生组织</b><p>组织架构中未建立部门类单元。</p></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

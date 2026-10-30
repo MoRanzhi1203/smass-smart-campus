@@ -1,0 +1,127 @@
+{% extends "workspace/base.html" %}
+{% block title %}待办与审批{% endblock %}
+{% block topbar_title %}待办与审批{% endblock %}
+{% block topbar_sub %}请假、流程任务与场地{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">审批与工作流</div>
+    <h1>待办与审批</h1>
+    <p class="ws-sub">所有审批均校验对象范围；越权请求返回 403。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-2">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>待批请假</h2><span class="ws-hint">{{ leaves|length }} 条</span></div>
+    {% if leaves %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>学生</th><th>类型</th><th>起止</th><th></th></tr></thead>
+          <tbody>
+            {% for leave in leaves %}
+              <tr>
+                <td class="is-strong">{{ leave.record.name }}<br><span class="is-muted">{{ leave.record.unit.name|default:"" }}</span></td>
+                <td>{{ leave.get_leave_type_display }}</td>
+                <td>{{ leave.start_date|date:"m-d" }} – {{ leave.end_date|date:"m-d" }}</td>
+                <td class="is-num">
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <form method="post" action="{% url 'workspace:admin_leave_action' leave.pk 'approve' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                    </form>
+                    <form method="post" action="{% url 'workspace:admin_leave_action' leave.pk 'reject' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>没有待批请假</b><p>范围内学生提交请假后会显示。</p></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>流程待办</h2><span class="ws-hint">{{ tasks|length }} 条</span></div>
+    {% if tasks %}
+      <div class="ws-list">
+        {% for task in tasks %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ task.node.name }}</b>
+              <span>{{ task.instance.subject_type }} #{{ task.instance.subject_id }} · {{ task.assignee|default:"未指派" }}</span>
+            </div>
+            <form method="post" action="{% url 'workspace:admin_task_complete' task.pk %}" data-once>
+              {% csrf_token %}<button class="ws-btn is-sm" type="submit">完成</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>没有流程待办</b><p>工作流任务会出现在这里。</p></div>
+    {% endif %}
+  </section>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>待批场地预约</h2><span class="ws-hint">{{ bookings|length }} 条</span></div>
+  {% if bookings %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>场地</th><th>申请人</th><th>时间</th><th>用途</th><th></th></tr></thead>
+        <tbody>
+          {% for booking in bookings %}
+            <tr>
+              <td class="is-strong">{{ booking.room.name }}</td>
+              <td>{{ booking.account.display_name }}</td>
+              <td>{{ booking.start_at|date:"m-d H:i" }} – {{ booking.end_at|date:"H:i" }}</td>
+              <td class="is-muted">{{ booking.purpose|truncatechars:16 }}</td>
+              <td class="is-num">
+                <div style="display:flex;gap:6px;justify-content:flex-end">
+                  <form method="post" action="{% url 'workspace:admin_booking_action' booking.pk 'approve' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                  </form>
+                  <form method="post" action="{% url 'workspace:admin_booking_action' booking.pk 'reject' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>没有待批预约</b></div>
+  {% endif %}
+</section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>请假状态（范围内最近 20 条）</h2><span class="ws-hint">与学生端、教师端同一份数据</span></div>
+  {% if leave_history %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>类型</th><th>起止</th><th>状态</th><th>审批人</th><th>审批时间</th></tr></thead>
+        <tbody>
+          {% for leave in leave_history %}
+            <tr>
+              <td class="is-strong">{{ leave.record.name }}<br><span class="is-muted">{{ leave.record.student_no }}</span></td>
+              <td>{{ leave.get_leave_type_display }}</td>
+              <td>{{ leave.start_date|date:"m-d" }} – {{ leave.end_date|date:"m-d" }}</td>
+              <td><span class="ws-badge {% if leave.status == 'approved' %}is-success{% elif leave.status == 'submitted' %}is-warning{% elif leave.status == 'rejected' %}is-danger{% else %}is-neutral{% endif %}">{{ leave.get_status_display }}</span></td>
+              <td class="is-muted">{{ leave.reviewed_by|default:"—" }}</td>
+              <td class="is-muted">{{ leave.reviewed_at|date:"Y-m-d H:i"|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无请假记录</b><p>范围内学生提交请假后会显示。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

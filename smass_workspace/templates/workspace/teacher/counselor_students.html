@@ -1,0 +1,43 @@
+{% extends "workspace/base.html" %}
+{% block title %}负责学生{% endblock %}
+{% block topbar_title %}负责学生{% endblock %}
+{% block topbar_sub %}辅导员负责范围内的学生{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">辅导员工作</div>
+    <h1>负责学生</h1>
+    <p class="ws-sub">共 {{ student_count }} 名学生 · 越权访问将返回 403</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">按班级与学号排序</span></div>
+  {% if students %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>学籍状态</th><th>入学日期</th><th></th></tr></thead>
+        <tbody>
+          {% for student in students %}
+            <tr>
+              <td class="is-strong">{{ student.student_no }}</td>
+              <td>{{ student.name }}</td>
+              <td>{{ student.unit.name|default:"—" }}</td>
+              <td><span class="ws-badge {% if student.status == 'enrolled' %}is-success{% else %}is-warning{% endif %}">{{ student.get_status_display }}</span></td>
+              <td class="is-muted">{{ student.enrolled_at|date:"Y-m-d"|default:"—" }}</td>
+              <td class="is-num"><a class="ws-btn is-sm" href="{% url 'workspace:teacher_student_detail' student.pk %}">档案</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
+      <b>暂无负责学生</b>
+      <p>辅导员职责绑定到班级后，学生名单会自动出现。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

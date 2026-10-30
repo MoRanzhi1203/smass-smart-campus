@@ -1,0 +1,55 @@
+{% extends "workspace/base.html" %}
+{% block title %}预约审批{% endblock %}
+{% block topbar_title %}预约审批{% endblock %}
+{% block topbar_sub %}场地预约的集中审批{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">排课与资源</div>
+    <h1>预约审批</h1>
+    <p class="ws-sub">待批 {{ pending|length }} 条；批准后申请人端状态同步更新。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:admin_facilities' %}">场地台账</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>待审批预约</h2></div>
+  {% if pending %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>场地</th><th>申请人</th><th>用途</th><th>时间</th><th class="is-num">人数</th><th></th></tr></thead>
+        <tbody>
+          {% for booking in pending %}
+            <tr>
+              <td class="is-strong">{{ booking.room.building.name }} {{ booking.room.name }}</td>
+              <td>{{ booking.account.display_name }}</td>
+              <td class="is-muted">{{ booking.purpose|truncatechars:18 }}</td>
+              <td>{{ booking.start_at|date:"m-d H:i" }} – {{ booking.end_at|date:"H:i" }}</td>
+              <td class="is-num">{{ booking.attendees|default:"—" }}</td>
+              <td class="is-num">
+                <div style="display:flex;gap:6px;justify-content:flex-end">
+                  <form method="post" action="{% url 'workspace:admin_booking_action' booking.pk 'approve' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                  </form>
+                  <form method="post" action="{% url 'workspace:admin_booking_action' booking.pk 'reject' %}" data-once>
+                    {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+      <b>没有待审批预约</b>
+      <p>需要审批的场地预约会出现在这里。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

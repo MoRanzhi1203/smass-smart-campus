@@ -1,0 +1,88 @@
+{% extends "workspace/base.html" %}
+{% block title %}学籍异动{% endblock %}
+{% block topbar_title %}学籍异动{% endblock %}
+{% block topbar_sub %}转专业与学籍状态变更{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">学籍与教学</div>
+    <h1>学籍异动</h1>
+    <p class="ws-sub">审批动作调用学籍服务：批准后学生端与学籍档案同步更新。</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>转专业申请</h2><span class="ws-hint">{{ transfers|length }} 条</span></div>
+  {% if transfers %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>原专业</th><th>目标专业</th><th>理由</th><th>状态</th><th>提交时间</th><th></th></tr></thead>
+        <tbody>
+          {% for item in transfers %}
+            <tr>
+              <td class="is-strong">{{ item.record.name }}<br><span class="is-muted">{{ item.record.student_no }}</span></td>
+              <td class="is-muted">{{ item.from_unit.name|default:"—" }}</td>
+              <td>{{ item.to_major.name|default:"—" }}</td>
+              <td class="is-muted">{{ item.reason|truncatechars:16 }}</td>
+              <td><span class="ws-badge {% if item.status == 'approved' %}is-success{% elif item.status == 'submitted' %}is-warning{% elif item.status == 'rejected' %}is-danger{% else %}is-neutral{% endif %}">{{ item.get_status_display }}</span></td>
+              <td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td>
+              <td class="is-num">
+                {% if item.status == 'submitted' %}
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <form method="post" action="{% url 'workspace:admin_transfer_action' item.pk 'approve' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                    </form>
+                    <form method="post" action="{% url 'workspace:admin_transfer_action' item.pk 'reject' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无转专业申请</b><p>学生提交后出现在这里。</p></div>
+  {% endif %}
+</section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>学籍状态变更</h2><span class="ws-hint">{{ changes|length }} 条</span></div>
+  {% if changes %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>类型</th><th>原状态</th><th>目标状态</th><th>生效日期</th><th>状态</th><th></th></tr></thead>
+        <tbody>
+          {% for item in changes %}
+            <tr>
+              <td class="is-strong">{{ item.record.name }}</td>
+              <td>{{ item.get_change_type_display }}</td>
+              <td class="is-muted">{{ item.from_status|default:"—" }}</td>
+              <td>{{ item.to_status|default:"—" }}</td>
+              <td class="is-muted">{{ item.effective_date|date:"Y-m-d"|default:"—" }}</td>
+              <td><span class="ws-badge {% if item.status == 'approved' %}is-success{% elif item.status == 'submitted' %}is-warning{% elif item.status == 'rejected' %}is-danger{% else %}is-neutral{% endif %}">{{ item.get_status_display }}</span></td>
+              <td class="is-num">
+                {% if item.status == 'submitted' %}
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <form method="post" action="{% url 'workspace:admin_status_change_action' item.pk 'approve' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                    </form>
+                    <form method="post" action="{% url 'workspace:admin_status_change_action' item.pk 'reject' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无学籍状态变更</b><p>休学、复学、退学等异动会出现在这里。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

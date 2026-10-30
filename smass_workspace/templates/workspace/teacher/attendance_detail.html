@@ -1,0 +1,72 @@
+{% extends "workspace/base.html" %}
+{% block title %}考勤登记{% endblock %}
+{% block topbar_title %}考勤登记{% endblock %}
+{% block topbar_sub %}{{ session.unit.name }} · {{ session.session_date|date:"Y-m-d" }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:teacher_attendance' %}">考勤管理</a><span class="sep">/</span><span>考勤登记</span></div>
+    <h1>{{ session.unit.name }} · {{ session.period }}</h1>
+    <p class="ws-sub">
+      {{ session.session_date|date:"Y-m-d" }}
+      {% if session.topic %} · {{ session.topic }}{% endif %}
+      · 状态：{{ session.get_status_display }}
+      {% if session.status == 'open' %} · 签到码 <span class="ws-code">{{ session.code }}</span>{% endif %}
+    </p>
+  </div>
+  <div class="ws-page-actions">
+    {% if session.status == 'open' %}
+      <form method="post" action="{% url 'workspace:teacher_attendance_close' session.pk %}" data-once>
+        {% csrf_token %}
+        <button class="ws-btn is-danger" type="submit">结束考勤</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">共 {{ rows|length }} 人</span></div>
+  {% if rows %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学号</th><th>姓名</th><th>当前状态</th><th>登记</th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td class="is-strong">{{ row.student.student_no }}</td>
+              <td>{{ row.student.name }}</td>
+              <td>
+                {% if row.record %}
+                  <span class="ws-badge {% if row.record.status == 'present' %}is-success{% elif row.record.status == 'late' %}is-warning{% elif row.record.status == 'absent' %}is-danger{% else %}is-info{% endif %}">{{ row.record.get_status_display }}</span>
+                {% else %}
+                  <span class="is-muted">未登记</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if session.status == 'open' %}
+                  <form method="post" action="{% url 'workspace:teacher_attendance_mark' session.pk %}" class="ws-inline-form" data-once>
+                    {% csrf_token %}
+                    <input type="hidden" name="record" value="{{ row.student.pk }}">
+                    <select class="ws-select" name="status" style="width:110px;height:30px;font-size:12px">
+                      <option value="present">出勤</option>
+                      <option value="late">迟到</option>
+                      <option value="absent">缺勤</option>
+                      <option value="leave">请假</option>
+                    </select>
+                    <button class="ws-btn is-sm" type="submit">登记</button>
+                  </form>
+                {% else %}
+                  <span class="is-muted">场次已结束</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty"><b>该班级暂无学生</b><p>学籍档案中尚未有学生归属此班级。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

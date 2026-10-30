@@ -1,0 +1,46 @@
+{% extends "workspace/base.html" %}
+{% block title %}数据导入导出{% endblock %}
+{% block topbar_title %}数据导入导出{% endblock %}
+{% block topbar_sub %}统一模板、预检与提交{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">数据治理</div>
+    <h1>数据导入导出</h1>
+    <p class="ws-sub">导入先预检、再提交；文件名、大小与行数均受限制。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn is-primary" href="/r4/import/">进入导入中心</a>
+    <a class="ws-btn" href="/r5/enroll/">教务数据</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>可用数据集</h2><span class="ws-hint">{{ datasets|length }} 个</span></div>
+  {% if datasets %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>数据集</th><th>名称</th><th>版本</th><th class="is-num">字段数</th></tr></thead>
+        <tbody>
+          {% for dataset in datasets %}
+            <tr>
+              <td class="is-strong">{{ dataset.code }}</td>
+              <td>{{ dataset.title }}</td>
+              <td class="ws-code">{{ dataset.version }}</td>
+              <td class="is-num">{{ dataset.fields }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-file"></use></svg></div>
+      <b>暂无可用数据集</b>
+      <p>数据交换适配器未注册。</p>
+    </div>
+  {% endif %}
+  <div class="ws-card-foot">导入流程：下载模板 → 填写 → 预检（零写入）→ 提交（重新校验）。有错误的行默认整体拒绝。</div>
+</section>
+{% endblock %}

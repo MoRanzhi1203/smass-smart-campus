@@ -1,0 +1,50 @@
+{% extends "workspace/base.html" %}
+{% block title %}志愿服务{% endblock %}
+{% block topbar_title %}志愿服务{% endblock %}
+{% block topbar_sub %}志愿时长与第二课堂学分{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园生活</div>
+    <h1>志愿服务</h1>
+    <p class="ws-sub">仅统计已认定的志愿时长与学分；待认定记录不计入合计。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-3">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">已认定志愿时长</div><div class="ws-stat-value">{{ summary.hours|floatformat:1 }}<small>小时</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">已认定学分</div><div class="ws-stat-value">{{ summary.points|floatformat:2 }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">参与记录</div><div class="ws-stat-value">{{ summary.participated }}<small>条</small></div></div>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>认定记录</h2><span class="ws-hint">按认定时间倒序</span></div>
+  {% if summary.credits %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>活动</th><th>类别</th><th class="is-num">学分</th><th class="is-num">志愿时长</th><th>认定状态</th><th>认定时间</th></tr></thead>
+        <tbody>
+          {% for credit in summary.credits %}
+            <tr>
+              <td class="is-strong">{{ credit.activity.title }}</td>
+              <td>{{ credit.get_category_display }}</td>
+              <td class="is-num">{{ credit.points }}</td>
+              <td class="is-num">{{ credit.hours }}</td>
+              <td><span class="ws-badge {% if credit.status == 'approved' %}is-success{% elif credit.status == 'pending' %}is-warning{% else %}is-danger{% endif %}">{{ credit.get_status_display }}</span></td>
+              <td class="is-muted">{{ credit.reviewed_at|date:"Y-m-d"|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-heart"></use></svg></div>
+      <b>暂无志愿记录</b>
+      <p>参加志愿活动并由组织方认定后，时长会累计到这里。</p>
+      <a class="ws-btn" href="{% url 'workspace:student_activities' %}">去看看活动</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

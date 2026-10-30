@@ -1,11 +1,40 @@
 # SMASS — 校园服务与管理系统
 
-基于 **Django + MySQL** 的校园基础信息管理系统，提供管理员后台（人员/组织/职务 CRUD、Excel 批量导入）、
-学生个人主页与本班通讯录、教师信息页。
+**一套系统，三个角色化界面**：学生工作台、教师工作台、管理控制台。
+
+统一身份认证、统一业务数据（课程/考勤/请假/场地/活动/费用/审批），
+按角色进入对应工作台；同一业务对象在三端状态一致。
 
 > 本项目由早期 Django 3.2 模板起步，现运行于 **Django 5.2 / Python 3.12 / MySQL 8**。
-> 认证、密码、权限、CSRF 与数据导入链路已于 2026-10 完成一轮集中修复，详见
-> [`docs/SMASS_Change_Log.md`](docs/SMASS_Change_Log.md) 与 [`docs/SMASS_Security_Report.md`](docs/SMASS_Security_Report.md)。
+> 认证、密码、权限、CSRF 与数据导入链路已于 2026-10 完成集中修复；
+> 产品级三端融合见 [`docs/SMASS_Product_Fusion_Report.md`](docs/SMASS_Product_Fusion_Report.md)。
+
+---
+
+## 0. 产品形态（推荐入口）
+
+```powershell
+$py = "C:\Users\MSIPC\.conda\envs\smass\python.exe"
+cd E:\PythonWeb\smass\.local\clean-dev
+
+# 首次或重建：隔离库 smass_product_dev + 合成数据
+& $py scripts\product_bootstrap.py
+
+# 启动产品
+& $py manage.py runserver 127.0.0.1:8050 --settings=smass.settings_product
+```
+
+| 入口 | 说明 |
+|---|---|
+| <http://127.0.0.1:8050/login/> | 统一登录（按角色自动落地） |
+| `/student/` | 学生工作台 |
+| `/teacher/` | 教师工作台（辅导员含扩展分组） |
+| `/admin/` | 管理控制台（超管全局 / 学院管理员受限） |
+| `/notifications/`、`/profile/` | 三端共用的通知中心与个人中心 |
+
+- 三端页面清单与操作手册：[`docs/SMASS_Product_Workspaces.md`](docs/SMASS_Product_Workspaces.md)
+- 历史数据迁移与回滚：[`docs/SMASS_Legacy_Migration_Report.md`](docs/SMASS_Legacy_Migration_Report.md)
+- 正式库 `smass` **只读**；产品使用独立隔离库。
 
 ---
 
@@ -15,9 +44,9 @@
 |---|---|---|
 | Python | 3.12 | 推荐用 Conda 独立环境 |
 | Django | 5.2.13 | 单体架构，无前后端分离 |
-| MySQL | 8.0 | 默认库名 `smass` |
+| MySQL | 8.0 | 正式库 `smass`；产品隔离库 `smass_product_dev` |
 | 驱动 | PyMySQL（默认）/ mysqlclient | 见 `smass/__init__.py` 的适配逻辑 |
-| 前端 | Bootstrap 3（后台）+ Bootstrap 5 / NiceAdmin（学生端） | UI 统一留待 R2 |
+| 前端 | 产品层自建统一设计系统（`static/workspace/app.css`）；历史功能页保留 Bootstrap | 三端同一 shell，仅切换强调色 |
 | Excel | openpyxl | 批量导入 / 模版下载 |
 
 ---
@@ -29,14 +58,17 @@ smass/
 ├── manage.py
 ├── requirements.txt / environment.yml / .env.example
 ├── smass/                     # 项目配置
-│   ├── settings.py            # 全部配置走环境变量
+│   ├── settings.py            # 旧系统配置（app01）
+│   ├── settings_product.py    # ★ 产品配置（三端 + 隔离库）
+│   ├── urls_product.py        # ★ 产品 URLConf
 │   ├── env_loader.py          # 极简 .env 读取（无第三方依赖）
-│   ├── urls.py                # URL 总入口
-│   ├── urls_account.py        # 登录/登出
-│   ├── urls_admin.py          # 后台（命名路由）
+│   ├── urls.py                # 旧系统 URL 总入口
+│   ├── urls_account.py        # 登录/登出（旧）
+│   ├── urls_admin.py          # 后台（旧，命名路由）
 │   ├── urls_student.py / urls_teacher.py
+├── smass_workspace/           # ★ 产品层：导航、角色守卫、聚合服务、三端视图与模板
 ├── app01/
-│   ├── models.py              # 领域模型（不含任何密码哈希逻辑）
+│   ├── models.py              # 历史领域模型（升级迁移的起点）
 │   ├── form/                  # 登录表单 / 后台 ModelForm
 │   ├── views/                 # account / admin(9 模块) / student / teacher
 │   ├── services/              # 账户、CRUD、导入服务层
@@ -44,10 +76,12 @@ smass/
 │   ├── utils/                 # 权限装饰器、分页、bootstrap 样式、加密兼容
 │   ├── management/commands/seed_dev.py
 │   └── tests/                 # 79 个自动化测试
-├── templates/                 # layout / admin / login / student / teacher
-├── static/                    # 第三方前端资源
-├── scripts/                   # check.ps1（质量门禁）、db_inspect.py
-└── docs/                      # 审计、变更、测试、迁移、安全、R2 设计
+├── smass_organization/ …      # R4–R20 业务模块（统一身份、学籍、教务、排课、
+│   smass_portal/              #   考勤、活动、社团、场地、财务、公告、流程、监控）
+├── templates/                 # layout / admin / login / student / teacher / workspace
+├── static/                    # 第三方前端资源 + workspace/app.css
+├── scripts/                   # 质量门禁、产品初始化、三端验收、历史迁移
+└── docs/                      # 审计、变更、产品融合、三端手册、迁移报告
 ```
 
 ---

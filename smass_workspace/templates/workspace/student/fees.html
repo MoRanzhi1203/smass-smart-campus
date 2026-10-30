@@ -1,0 +1,64 @@
+{% extends "workspace/base.html" %}
+{% block title %}费用与账单{% endblock %}
+{% block topbar_title %}费用与账单{% endblock %}
+{% block topbar_sub %}学费、住宿费与缴费记录{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">日常事务</div>
+    <h1>费用与账单</h1>
+    <p class="ws-sub">账单由财务系统生成；缴费登记后状态实时更新。</p>
+  </div>
+</div>
+
+{% if not record %}
+  <div class="ws-alert is-warning"><span>当前账号未关联学籍档案，无法查询账单。</span></div>
+{% else %}
+<div class="ws-grid ws-grid-3">
+  <div class="ws-stat"><div class="ws-stat-label">应缴总额</div><div class="ws-stat-value">{{ summary.total|floatformat:2 }}<small>元</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">已缴金额</div><div class="ws-stat-value">{{ summary.paid|floatformat:2 }}<small>元</small></div></div>
+  <div class="ws-stat is-accent"><div class="ws-stat-label">待缴金额</div><div class="ws-stat-value">{{ summary.unpaid|floatformat:2 }}<small>元</small></div></div>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>我的账单</h2><span class="ws-hint">共 {{ bills|length }} 张</span></div>
+  {% if bills %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>账单号</th><th>学年学期</th><th class="is-num">应缴</th><th class="is-num">已缴</th><th>截止日期</th><th>状态</th><th></th></tr></thead>
+        <tbody>
+          {% for bill in bills %}
+            <tr>
+              <td class="is-strong">{{ bill.bill_no }}</td>
+              <td>{{ bill.term|default:"—" }}</td>
+              <td class="is-num">{{ bill.total|floatformat:2 }}</td>
+              <td class="is-num">{{ bill.paid|floatformat:2 }}</td>
+              <td>{{ bill.due_date|date:"Y-m-d"|default:"—" }}</td>
+              <td>
+                <span class="ws-badge {% if bill.status == 'paid' %}is-success{% elif bill.status == 'partial' %}is-warning{% elif bill.status == 'overdue' %}is-danger{% else %}is-neutral{% endif %}">{{ bill.get_status_display }}</span>
+              </td>
+              <td class="is-num">
+                {% if bill.status != 'paid' and bill.status != 'cancelled' %}
+                  <form method="post" action="{% url 'workspace:student_fee_pay' bill.pk %}" data-once>
+                    {% csrf_token %}
+                    <button class="ws-btn is-sm is-primary" type="submit">缴纳 {{ bill.total|floatformat:2 }}</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-wallet"></use></svg></div>
+      <b>暂无账单</b>
+      <p>财务系统生成账单后会显示在这里。</p>
+    </div>
+  {% endif %}
+  <div class="ws-card-foot">缴费为校内台账登记，不接入真实支付渠道；如需退费请向财务处提交申请。</div>
+</section>
+{% endif %}
+{% endblock %}

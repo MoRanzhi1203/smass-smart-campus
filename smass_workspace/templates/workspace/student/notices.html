@@ -1,0 +1,40 @@
+{% extends "workspace/base.html" %}
+{% block title %}通知公告{% endblock %}
+{% block topbar_title %}通知公告{% endblock %}
+{% block topbar_sub %}面向学生的校园公告{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">消息</div>
+    <h1>通知公告</h1>
+    <p class="ws-sub">共 {{ total }} 条已发布公告；更细的站内通知请在<a href="{% url 'workspace:notifications' %}">通知中心</a>查看。</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  {% if notices %}
+    <div class="ws-list">
+      {% for note in notices %}
+        <div class="ws-list-item" style="align-items:flex-start">
+          <div class="ws-list-main">
+            <b>{{ note.title }}</b>
+            <p class="ws-sub" style="margin-top:2px">{{ note.body|truncatechars:160 }}</p>
+            <span>
+              {{ note.get_audience_display }}
+              {% if note.published_at %} · 发布于 {{ note.published_at|date:"Y-m-d H:i" }}{% endif %}
+            </span>
+          </div>
+          <span class="ws-badge is-info">公告</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-bell"></use></svg></div>
+      <b>暂无公告</b>
+      <p>学校发布面向学生的公告后会显示在这里。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

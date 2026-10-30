@@ -1,0 +1,81 @@
+{% extends "workspace/base.html" %}
+{% block title %}学生档案{% endblock %}
+{% block topbar_title %}学生档案{% endblock %}
+{% block topbar_sub %}{{ student.name }} · {{ student.student_no }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:teacher_students' %}">学生事务</a><span class="sep">/</span><span>{{ student.name }}</span></div>
+    <h1>{{ student.name }}</h1>
+    <p class="ws-sub">{{ student.student_no }} · {{ student.unit.name|default:"—" }} · {{ student.get_status_display }}</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>选课情况</h2></div>
+      {% if enrollments %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>课程</th><th>教学班</th><th>状态</th></tr></thead>
+            <tbody>
+              {% for item in enrollments %}
+                <tr>
+                  <td class="is-strong">{{ item.section.course.title }}</td>
+                  <td>{{ item.section.code }}</td>
+                  <td><span class="ws-badge is-success">{{ item.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无选课记录</b></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>考勤记录</h2><span class="ws-hint">最近 15 条</span></div>
+      {% if attendance %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>日期</th><th>节次</th><th>状态</th><th>来源</th></tr></thead>
+            <tbody>
+              {% for item in attendance %}
+                <tr>
+                  <td>{{ item.session.session_date|date:"Y-m-d" }}</td>
+                  <td>{{ item.session.period }}</td>
+                  <td><span class="ws-badge {% if item.status == 'present' %}is-success{% elif item.status == 'late' %}is-warning{% elif item.status == 'absent' %}is-danger{% else %}is-info{% endif %}">{{ item.get_status_display }}</span></td>
+                  <td class="is-muted">{{ item.get_source_display }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无考勤记录</b></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>请假记录</h2></div>
+    <div class="ws-card-body">
+      {% if leaves %}
+        <div class="ws-timeline">
+          {% for leave in leaves %}
+            <div class="ws-timeline-item">
+              <b>{{ leave.get_leave_type_display }} · {{ leave.get_status_display }}</b>
+              <span>{{ leave.start_date|date:"m-d" }} 至 {{ leave.end_date|date:"m-d" }} · {{ leave.reason|truncatechars:24 }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无请假记录</b><p>学生提交请假后会显示在这里。</p></div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

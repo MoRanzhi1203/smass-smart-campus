@@ -1,0 +1,31 @@
+{% extends "workspace/base.html" %}
+{% block title %}无权访问{% endblock %}
+{% block topbar_title %}访问受限{% endblock %}
+{% block topbar_sub %}权限校验未通过{% endblock %}
+
+{% block content %}
+<div class="ws-card" style="max-width:640px;margin:48px auto">
+  <div class="ws-card-body" style="text-align:center;padding:44px 28px">
+    <div style="width:56px;height:56px;border-radius:18px;background:var(--ws-danger-soft);color:var(--ws-danger);display:grid;place-items:center;margin:0 auto 14px">
+      <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#ws-i-shield"></use></svg>
+    </div>
+    <h1 style="font-size:20px;margin-bottom:6px">没有访问该页面的权限</h1>
+    <p class="ws-sub">
+      {% if detail %}{{ detail }}{% else %}
+        当前账号的角色不能进入{% if attempted_label %}「{{ attempted_label }}」{% else %}该页面{% endif %}。
+        权限范围由系统管理员按角色与组织范围配置；如确需访问，请通过管理员申请授权。
+      {% endif %}
+    </p>
+    <p class="ws-sub" style="margin-top:8px">
+      当前角色：{% if roles %}{{ roles|join:"、" }}{% else %}未分配角色{% endif %}
+    </p>
+    <div class="ws-page-actions" style="justify-content:center;margin-top:20px">
+      <a class="ws-btn is-primary" href="{{ landing_url|default:'/' }}">返回我的工作台</a>
+      <a class="ws-btn" href="{% url 'workspace:notifications' %}">通知中心</a>
+    </div>
+    <p class="ws-sub" style="margin-top:16px;font-size:12px">
+      该页面的权限校验发生在服务端：即使手工输入地址，也会返回 HTTP 403。
+    </p>
+  </div>
+</div>
+{% endblock %}

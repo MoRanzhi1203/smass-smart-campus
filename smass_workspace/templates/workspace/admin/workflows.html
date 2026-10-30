@@ -1,0 +1,64 @@
+{% extends "workspace/base.html" %}
+{% block title %}流程定义{% endblock %}
+{% block topbar_title %}流程定义{% endblock %}
+{% block topbar_sub %}审批流程与实例{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">审批与工作流</div>
+    <h1>流程定义</h1>
+    <p class="ws-sub">流程版本发布后生效；实例状态可在审批中心处理。</p>
+  </div>
+  <div class="ws-page-actions"><a class="ws-btn" href="/r6/definitions/">流程管理</a></div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>流程定义</h2><span class="ws-hint">{{ definitions|length }} 个</span></div>
+  {% if definitions %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>编码</th><th>名称</th><th>说明</th><th>启用</th><th class="is-num">版本数</th></tr></thead>
+        <tbody>
+          {% for item in definitions %}
+            <tr>
+              <td class="is-strong">{{ item.code }}</td>
+              <td>{{ item.name }}</td>
+              <td class="is-muted">{{ item.description|default:"—"|truncatechars:30 }}</td>
+              <td>{% if item.is_active %}<span class="ws-badge is-success">已启用</span>{% else %}<span class="ws-badge is-neutral">草稿</span>{% endif %}</td>
+              <td class="is-num">{{ item.instance_count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty"><b>暂无流程定义</b><p>可通过流程管理创建并发布审批流程。</p></div>
+  {% endif %}
+</section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>流程实例</h2><span class="ws-hint">最近 40 条</span></div>
+  {% if instances %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>流程</th><th>业务对象</th><th>状态</th><th>当前节点</th><th>发起人</th><th>创建时间</th></tr></thead>
+        <tbody>
+          {% for item in instances %}
+            <tr>
+              <td class="is-strong">{{ item.version.definition.name }}</td>
+              <td class="is-muted">{{ item.subject_type }} #{{ item.subject_id }}</td>
+              <td><span class="ws-badge {% if item.status == 'completed' %}is-success{% elif item.status == 'running' %}is-warning{% else %}is-neutral{% endif %}">{{ item.get_status_display }}</span></td>
+              <td>{{ item.current_node.name|default:"—" }}</td>
+              <td class="is-muted">{{ item.created_by|default:"—" }}</td>
+              <td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无流程实例</b><p>业务提交审批后会生成实例。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

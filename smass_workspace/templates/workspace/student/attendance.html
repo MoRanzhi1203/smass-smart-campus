@@ -1,0 +1,134 @@
+{% extends "workspace/base.html" %}
+{% block title %}考勤与请假{% endblock %}
+{% block topbar_title %}考勤与请假{% endblock %}
+{% block topbar_sub %}出勤记录与请假申请{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">日常事务</div>
+    <h1>考勤与请假</h1>
+    <p class="ws-sub">请假提交后由教师审批；审批结果会实时同步到本页。</p>
+  </div>
+</div>
+
+{% if not record %}
+  <div class="ws-alert is-warning"><span>当前账号未关联学籍档案，无法查询考勤或提交请假。</span></div>
+{% else %}
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat"><div class="ws-stat-label">出勤</div><div class="ws-stat-value">{{ overview.counts.present|default:0 }}<small>次</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">迟到</div><div class="ws-stat-value">{{ overview.counts.late|default:0 }}<small>次</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">缺勤</div><div class="ws-stat-value">{{ overview.counts.absent|default:0 }}<small>次</small></div></div>
+  <div class="ws-stat is-accent"><div class="ws-stat-label">达标率</div><div class="ws-stat-value">{% if overview.rate is not None %}{{ overview.rate }}<small>%</small>{% else %}—{% endif %}</div><div class="ws-stat-foot">出勤 + 迟到 / 全部记录</div></div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>最近考勤</h2><span class="ws-hint">按考勤场次倒序</span></div>
+      {% if overview.recent %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>日期</th><th>节次</th><th>考勤说明</th><th>状态</th><th>来源</th></tr></thead>
+            <tbody>
+              {% for item in overview.recent %}
+                <tr>
+                  <td>{{ item.session.session_date|date:"Y-m-d" }}</td>
+                  <td>{{ item.session.period }}</td>
+                  <td>{{ item.session.topic|default:"—" }}</td>
+                  <td>
+                    <span class="ws-badge {% if item.status == 'present' %}is-success{% elif item.status == 'late' %}is-warning{% elif item.status == 'absent' %}is-danger{% else %}is-info{% endif %}">{{ item.get_status_display }}</span>
+                  </td>
+                  <td class="is-muted">{{ item.get_source_display }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+          <b>暂无考勤记录</b>
+          <p>教师发起考勤后，记录会显示在这里。</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>我的请假申请</h2>
+        <div class="ws-tabs" style="margin:0;border:0">
+          <a class="ws-tab {% if scope == 'all' %}is-active{% endif %}" href="?scope=all">全部</a>
+          <a class="ws-tab {% if scope == 'pending' %}is-active{% endif %}" href="?scope=pending">待审批</a>
+        </div>
+      </div>
+      {% if leaves %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>类型</th><th>起止</th><th>事由</th><th>状态</th><th>审批人</th><th></th></tr></thead>
+            <tbody>
+              {% for leave in leaves %}
+                <tr>
+                  <td>{{ leave.get_leave_type_display }}</td>
+                  <td>{{ leave.start_date|date:"m-d" }} 至 {{ leave.end_date|date:"m-d" }}</td>
+                  <td class="is-muted">{{ leave.reason|truncatechars:24 }}</td>
+                  <td>
+                    <span class="ws-badge {% if leave.status == 'approved' %}is-success{% elif leave.status == 'submitted' %}is-warning{% elif leave.status == 'rejected' %}is-danger{% else %}is-neutral{% endif %}">{{ leave.get_status_display }}</span>
+                    {% if leave.reject_reason %}<div class="is-muted" style="font-size:11.5px">{{ leave.reject_reason }}</div>{% endif %}
+                  </td>
+                  <td class="is-muted">{{ leave.reviewed_by|default:"—" }}</td>
+                  <td class="is-num">
+                    {% if leave.status == 'submitted' %}
+                      <form method="post" action="{% url 'workspace:student_leave_cancel' leave.pk %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm is-danger" type="submit">撤销</button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-inbox"></use></svg></div>
+          <b>{% if scope == 'pending' %}没有待审批的请假{% else %}暂无请假记录{% endif %}</b>
+          <p>可在右侧提交新的请假申请。</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>提交请假申请</h2></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:student_leave_submit' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="leave_type">请假类型</label>
+          <select class="ws-select" name="leave_type" id="leave_type" required>
+            {% for value, label in leave_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="start_date">开始日期</label>
+          <input class="ws-input" type="date" name="start_date" id="start_date" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="end_date">结束日期</label>
+          <input class="ws-input" type="date" name="end_date" id="end_date" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:12px">
+          <label for="reason">请假事由</label>
+          <textarea class="ws-textarea" name="reason" id="reason" required maxlength="500" placeholder="请说明请假原因"></textarea>
+        </div>
+        <div class="ws-form-actions">
+          <button class="ws-btn is-primary" type="submit">提交申请</button>
+        </div>
+      </form>
+      <p class="ws-sub" style="margin-top:12px">同一天不可重复提交重叠时段的申请；已批准的请假在教师端同步可见。</p>
+    </div>
+  </section>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "workspace/base.html" %}
+{% block title %}个人中心{% endblock %}
+{% block topbar_title %}个人中心{% endblock %}
+{% block topbar_sub %}账号、角色与安全{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">账号</div>
+    <h1>个人中心</h1>
+    <p class="ws-sub">三端共用同一份账号与组织关系。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head">
+        <h2>账号信息</h2>
+        <span class="ws-badge is-info">{{ kinds|join:" / "|default:"未分配工作台" }}</span>
+      </div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">登录名</span><b>{{ account.login_name }}</b></div>
+          <div><span class="is-label">显示名</span><b>{{ account.display_name }}</b></div>
+          <div><span class="is-label">人员类型</span><b>{{ account.get_person_type_display }}</b></div>
+          <div><span class="is-label">角色</span><b>{{ roles|join:"、"|default:"未分配" }}</b></div>
+          {% if account.scope_college %}<div><span class="is-label">组织范围</span><b>{{ account.scope_college }}</b></div>{% endif %}
+          <div><span class="is-label">上次登录</span><b>{{ account.last_login|date:"Y-m-d H:i"|default:"—" }}</b></div>
+        </div>
+      </div>
+    </section>
+
+    {% if record %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>学籍档案</h2></div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">学号</span><b>{{ record.student_no }}</b></div>
+          <div><span class="is-label">姓名</span><b>{{ record.name }}</b></div>
+          <div><span class="is-label">学籍状态</span><b>{{ record.get_status_display }}</b></div>
+          <div><span class="is-label">所在组织</span><b>{{ record.unit.name|default:"—" }}</b></div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>组织关系</h2></div>
+      <div class="ws-card-body">
+        {% if memberships %}
+          <div class="ws-timeline">
+            {% for membership in memberships %}
+              <div class="ws-timeline-item">
+                <b>{{ membership.unit.name }}</b>
+                <span>{{ membership.unit.get_unit_type_display }}{% if membership.role %} · {{ membership.role }}{% endif %}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="ws-sub">暂无有效组织关系。</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>安全</h2></div>
+      <div class="ws-card-body">
+        <p class="ws-sub">密码修改与登录设备管理由统一认证模块提供。</p>
+        <div class="ws-stack" style="margin-top:12px;gap:8px">
+          <a class="ws-btn" href="/account/password/">修改密码</a>
+          <a class="ws-btn" href="{% url 'workspace:notifications' %}">通知中心</a>
+        </div>
+      </div>
+      <div class="ws-card-foot">
+        {% if account.must_change_password %}
+          <span class="ws-badge is-warning">需要修改初始密码</span>
+        {% else %}
+          <span class="ws-badge is-success">账号状态正常</span>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>可用工作台</h2></div>
+      <div class="ws-card-body">
+        <div class="ws-stack" style="gap:8px">
+          {% for option in available_workspaces %}
+            <a class="ws-btn {% if option.kind == workspace_kind %}is-primary{% endif %}" href="{{ option.url }}">{{ option.label }}</a>
+          {% empty %}
+            <p class="ws-sub">未分配任何工作台角色。</p>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

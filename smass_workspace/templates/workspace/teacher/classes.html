@@ -1,0 +1,51 @@
+{% extends "workspace/base.html" %}
+{% block title %}负责班级{% endblock %}
+{% block topbar_title %}负责班级{% endblock %}
+{% block topbar_sub %}辅导员工作范围{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">辅导员工作</div>
+    <h1>负责班级</h1>
+    <p class="ws-sub">共 {{ class_count }} 个班级 · 范围来自组织关系中的辅导员授权</p>
+  </div>
+</div>
+
+{% if rows %}
+  <div class="ws-grid ws-grid-2">
+    {% for row in rows %}
+      <section class="ws-card">
+        <div class="ws-card-head">
+          <div>
+            <h2>{{ row.unit.name }}</h2>
+            <span class="ws-hint">{{ row.unit.code }} · {{ row.unit.get_unit_type_display }}</span>
+          </div>
+          <span class="ws-badge is-accent">{{ row.students|length }} 人</span>
+        </div>
+        {% if row.students %}
+          <div class="ws-list">
+            {% for student in row.students %}
+              <div class="ws-list-item">
+                <div class="ws-list-main">
+                  <b>{{ student.name }}</b>
+                  <span>{{ student.student_no }} · {{ student.get_status_display }}</span>
+                </div>
+                <a class="ws-btn is-sm" href="{% url 'workspace:teacher_student_detail' student.pk %}">档案</a>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ws-empty is-compact"><b>班里暂无学生</b><p>学籍档案中还没有该班级的学生。</p></div>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="ws-empty" style="background:#fff;border:1px solid var(--ws-border);border-radius:var(--ws-radius)">
+    <div class="ws-empty-icon"><svg><use href="#ws-i-building"></use></svg></div>
+    <b>尚未分配负责班级</b>
+    <p>请联系学院管理员在组织关系中授予辅导员职责。</p>
+  </div>
+{% endif %}
+{% endblock %}

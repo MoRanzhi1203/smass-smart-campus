@@ -1,0 +1,46 @@
+{% extends "workspace/base.html" %}
+{% block title %}我的课程{% endblock %}
+{% block topbar_title %}我的课程{% endblock %}
+{% block topbar_sub %}本学期授课课程与教学班{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">教学</div>
+    <h1>我的课程</h1>
+    <p class="ws-sub">共 {{ section_count }} 个教学班 · {{ term.name|default:"" }}</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:teacher_timetable' %}">我的课表</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>授课列表</h2><span class="ws-hint">选课人数来自教务系统</span></div>
+  {% if rows %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>课程</th><th>课程编码</th><th>教学班</th><th>学期</th><th class="is-num">学分</th><th class="is-num">选课人数</th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td class="is-strong">{{ row.section.course.title }}</td>
+              <td class="is-muted">{{ row.section.course.code }}</td>
+              <td>{{ row.section.code }}</td>
+              <td>{{ row.section.term.name|default:row.section.term }}</td>
+              <td class="is-num">{{ row.section.course.credit }}</td>
+              <td class="is-num">{{ row.students }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-book"></use></svg></div>
+      <b>暂无授课任务</b>
+      <p>教务完成教学班分配后会显示在这里。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "workspace/base.html" %}
+{% block title %}安全审计{% endblock %}
+{% block topbar_title %}安全审计{% endblock %}
+{% block topbar_sub %}账号操作与登录审计{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">运维与安全</div>
+    <h1>安全审计</h1>
+    <p class="ws-sub">审计日志只记录操作者、动作与对象标识，不记录密码或完整敏感字段。</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>账号操作日志</h2><span class="ws-hint">最近 {{ logs|length }} 条</span></div>
+    {% if logs %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>时间</th><th>动作</th><th>操作者</th><th>目标</th><th>说明</th><th>IP</th></tr></thead>
+          <tbody>
+            {% for log in logs %}
+              <tr>
+                <td class="is-muted">{{ log.created_at|date:"m-d H:i:s" }}</td>
+                <td class="is-strong">{{ log.get_action_display }}</td>
+                <td>{{ log.actor|default:"—" }}</td>
+                <td>{{ log.target|default:"—" }}</td>
+                <td class="is-muted">{{ log.detail|truncatechars:28|default:"—" }}</td>
+                <td class="is-muted">{{ log.ip|default:"—" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-shield"></use></svg></div>
+        <b>暂无审计日志</b>
+        <p>账号与权限操作会写入审计日志。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>登录尝试</h2><span class="ws-hint">最近 40 条</span></div>
+    {% if attempts %}
+      <div class="ws-list">
+        {% for attempt in attempts %}
+          <div class="ws-list-item">
+            <div class="ws-list-main">
+              <b>{{ attempt.login_name }}</b>
+              <span>{{ attempt.created_at|date:"m-d H:i:s" }} · {{ attempt.ip|default:"—" }}</span>
+            </div>
+            <span class="ws-badge {% if attempt.success %}is-success{% else %}is-danger{% endif %}">{% if attempt.success %}成功{% else %}失败{% endif %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无登录记录</b></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
