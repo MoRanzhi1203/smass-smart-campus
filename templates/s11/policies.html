@@ -1,0 +1,81 @@
+{% extends "s11/base.html" %}
+{% block title %}策略配置{% endblock %}
+{% block content %}
+<h1>字段策略配置</h1>
+<p class="lead">同一资源同一字段只有一条策略；保存即覆盖（含启停）。</p>
+
+<section class="card">
+  <h2>新增 / 更新策略</h2>
+  <form method="post" action="{% url 's11:policy_save' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="resource">资源</label><input id="resource" name="resource" value="student_record" required maxlength="64"></div>
+      <div><label for="field">字段</label><input id="field" name="field" required maxlength="64" placeholder="phone / id_card / name"></div>
+      <div><label for="read_roles">可读角色</label><input id="read_roles" name="read_roles" placeholder="system_admin,college_admin" maxlength="200"></div>
+      <div><label for="write_roles">可写角色</label><input id="write_roles" name="write_roles" placeholder="system_admin" maxlength="200"></div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="mask">脱敏</label>
+        <select id="mask" name="mask">
+          {% for code, label in masks %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="condition_status">状态条件（逗号分隔，留空不限制）</label><input id="condition_status" name="condition_status" placeholder="active,suspended" maxlength="120"></div>
+      <div><label for="note">说明</label><input id="note" name="note" maxlength="200"></div>
+      <div><button type="submit">保存策略</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>现有策略（{{ policies|length }}）</h2>
+  <table>
+    <thead><tr><th>资源#字段</th><th>可读</th><th>可写</th><th>脱敏</th><th>条件</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for p in policies %}
+        <tr>
+          <td class="mono">{{ p.resource }}#{{ p.field }}</td>
+          <td>{{ p.read_roles|default:"（无）" }}</td>
+          <td>{{ p.write_roles|default:"（无）" }}</td>
+          <td>{{ p.get_mask_display }}</td>
+          <td class="mono">{{ p.condition|default:"{}" }}</td>
+          <td>{% if p.enabled %}<span class="tag ok">启用</span>{% else %}<span class="tag danger">停用</span>{% endif %}</td>
+          <td>
+            {% if p.enabled %}
+              <form class="inline-form" method="post" action="{% url 's11:policy_disable' p.pk %}">
+                {% csrf_token %}<button class="btn small danger" type="submit">停用</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty">尚未配置任何字段策略。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>最近决策</h2>
+  <table>
+    <thead><tr><th>时间</th><th>账号</th><th>资源#字段</th><th>动作</th><th>结果</th><th>原因</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at|date:"H:i:s" }}</td>
+          <td>{{ log.account_id_text|default:"—" }}</td>
+          <td class="mono">{{ log.resource }}#{{ log.field }}</td>
+          <td>{{ log.action }}</td>
+          <td>{% if log.allowed %}<span class="tag ok">允许</span>{% else %}<span class="tag danger">拒绝</span>{% endif %}</td>
+          <td class="muted">{{ log.reason }}{% if log.masked %} · 已脱敏{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无决策记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

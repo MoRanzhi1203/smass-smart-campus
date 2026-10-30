@@ -1,0 +1,31 @@
+{% extends "s11/base.html" %}
+{% block title %}策略预览{% endblock %}
+{% block content %}
+<h1>策略预览</h1>
+<p class="lead">
+  以当前登录账号查看示例学籍档案的字段可见性。
+  {% if record %}对象：<span class="mono">{{ record.student_no }}</span>{% endif %}
+</p>
+
+<section class="card">
+  <h2>字段能力</h2>
+  <table>
+    <thead><tr><th>字段</th><th>可读</th><th>可写</th><th>脱敏</th><th>预览值</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td class="mono">{{ row.field }}</td>
+          <td>{% if row.info.read %}<span class="tag ok">是</span>{% else %}<span class="tag danger">否</span>{% endif %}</td>
+          <td>{% if row.info.write %}<span class="tag ok">是</span>{% else %}<span class="tag danger">否</span>{% endif %}</td>
+          <td>{{ row.info.mask }}</td>
+          <td class="mono">
+            {% if row.info.read %}{{ row.value }}{% if row.masked %} <span class="tag warn">已脱敏</span>{% endif %}{% else %}—{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">尚未配置任何字段策略（默认全部拒绝）。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
