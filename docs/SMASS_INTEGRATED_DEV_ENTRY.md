@@ -102,6 +102,10 @@ cd E:\PythonWeb\smass\.local\clean-dev
 | `dev_student` | `Smass#2026` | 学生 |
 | `dev_counselor` | `Smass#2026` | 教师（辅导员身份） |
 
+> 密码**不写在仓库代码里**：脚本优先读取环境变量 `INTEGRATED_DEV_PASSWORD`，
+> 其次读项目根目录 `.env`（本机已设为 `Smass#2026`，该文件不入库）；
+> 两者都没有时脚本生成随机密码并在输出 JSON 的 `password` 字段打印。
+
 ## 5. 验收证据
 
 ### 5.1 页面矩阵（管理员登录后，全部 200）

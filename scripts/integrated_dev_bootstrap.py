@@ -25,7 +25,9 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PASSWORD = 'Smass#2026'
+
+#: 演示账号密码：优先取 .env / 环境变量，未配置时生成随机值并在输出中打印
+PASSWORD = os.environ.get('INTEGRATED_DEV_PASSWORD', '')
 
 ACCOUNTS = (
     ('dev_admin', '系统管理员', 'admin', ['system_admin']),
@@ -47,6 +49,27 @@ TARGETS = {
         'academic': False, 'workflow': False, 'analytics': False,
     },
 }
+
+
+def demo_password():
+    """返回演示密码。
+
+    优先级：环境变量 `INTEGRATED_DEV_PASSWORD` → 项目 `.env` → 随机生成。
+    仓库内不保存明文密码（由 .env 或环境变量提供）。
+    """
+    global PASSWORD
+    if PASSWORD:
+        return PASSWORD
+    try:
+        from smass.env_loader import load_env  # noqa: PLC0415
+        load_env()
+    except Exception:  # noqa: BLE001 - 无 .env 时忽略
+        pass
+    PASSWORD = os.environ.get('INTEGRATED_DEV_PASSWORD', '')
+    if not PASSWORD:
+        import secrets
+        PASSWORD = 'Dev-' + secrets.token_urlsafe(9)
+    return PASSWORD
 
 
 def setup_django(settings_module):
@@ -115,7 +138,7 @@ def seed_accounts():
         account = Account.objects.filter(login_name=login_name).first()
         if account is None:
             account = Account.objects.create_user(
-                login_name, PASSWORD, display_name=display,
+                login_name, demo_password(), display_name=display,
                 person_type=person_type)
         account.must_change_password = False
         account.display_name = display
@@ -242,7 +265,7 @@ def main():
         report['workflow'] = seed_workflow()
     if target['analytics']:
         report['analytics'] = seed_analytics()
-    report['password'] = PASSWORD
+    report['password'] = demo_password()
     report['ok'] = True
 
     text = json.dumps(report, ensure_ascii=False, indent=2)
