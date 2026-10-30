@@ -1,0 +1,80 @@
+# SMASS 文件与换行规范（GS2）
+#
+# 原则：
+# - 仓库内的文本统一为 LF（索引规范）；checkout 时按下面的属性决定工作区换行。
+# - Windows 专用脚本保留 CRLF，避免 cmd.exe / Windows PowerShell 5.1 兼容问题。
+# - 二进制与办公文档禁止任何换行转换与文本 diff。
+# - 不对历史文件做无差别 renormalize；本文件只约束后续 checkout 与新提交。
+
+* text=auto eol=lf
+
+# ---- 源码与文档：LF ----
+*.py       text eol=lf
+*.pyi      text eol=lf
+*.html     text eol=lf
+*.htm      text eol=lf
+*.jinja    text eol=lf
+*.css      text eol=lf
+*.scss     text eol=lf
+*.js       text eol=lf
+*.mjs      text eol=lf
+*.json     text eol=lf
+*.md       text eol=lf
+*.txt      text eol=lf
+*.rst      text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.toml     text eol=lf
+*.ini      text eol=lf
+*.cfg      text eol=lf
+*.conf     text eol=lf
+*.xml      text eol=lf
+*.svg      text eol=lf
+*.sql      text eol=lf
+*.sh       text eol=lf
+
+# ---- Windows 脚本：CRLF ----
+*.ps1      text eol=crlf
+*.psm1     text eol=crlf
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+*.vbs      text eol=crlf
+
+# ---- 图片与字体：二进制 ----
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.gif      binary
+*.bmp      binary
+*.ico      binary
+*.webp     binary
+*.tif      binary
+*.tiff     binary
+*.psd      binary
+*.ttf      binary
+*.otf      binary
+*.woff     binary
+*.woff2    binary
+*.eot      binary
+
+# ---- 办公文档 / 压缩包 / 数据库：二进制 ----
+*.pdf      binary
+*.doc      binary
+*.docx     binary
+*.xls      binary
+*.xlsx     binary
+*.xlsm     binary
+*.ppt      binary
+*.pptx     binary
+*.zip      binary
+*.gz       binary
+*.tgz      binary
+*.7z       binary
+*.rar      binary
+*.bundle   binary
+*.sqlite3  binary
+*.pyc      binary
+*.pyo      binary
+
+# ---- CSV：文本，但避免自动换行纳入版本库时被误判 ----
+*.csv      text eol=lf

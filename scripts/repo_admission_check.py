@@ -62,8 +62,9 @@ ALLOW = {
 MAX_FILE_BYTES = 5 * 1024 * 1024
 
 
-def git(*args: str) -> tuple[int, str]:
-    p = subprocess.run(['git', *args], cwd=str(BASE),
+def git(*args: str, repo: Path | None = None) -> tuple[int, str]:
+    """在 ``repo``（默认项目根）执行 git，返回 (returncode, stdout)。"""
+    p = subprocess.run(['git', *args], cwd=str(repo or BASE),
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return p.returncode, p.stdout.decode('utf-8', 'replace')
 
@@ -89,10 +90,10 @@ def check_paths(paths, rules=None):
     return problems
 
 
-def huge_files(paths):
+def huge_files(paths, repo: Path | None = None):
     problems = []
     for path in paths:
-        p = BASE / path
+        p = (repo or BASE) / path
         try:
             if p.is_file() and p.stat().st_size > MAX_FILE_BYTES:
                 problems.append({
@@ -106,30 +107,32 @@ def huge_files(paths):
     return problems
 
 
-def collect(include_head: bool = False):
+def collect(include_head: bool = False, repo: Path | None = None):
     """收集待检查路径。
 
     默认只查 ``index``（当前跟踪）与 ``staged``（即将提交）——这是提交前的
     实际风险面。``--head`` 额外检查 HEAD 树，用于确认"已提交内容"干净。
     """
-    _, index = git('ls-files')
-    _, staged = git('diff', '--cached', '--name-only', '--diff-filter=ACMR')
+    _, index = git('ls-files', repo=repo)
+    _, staged = git('diff', '--cached', '--name-only', '--diff-filter=ACMR',
+                    repo=repo)
     sources = {
         'index': [l for l in index.splitlines() if l.strip()],
         'staged': [l for l in staged.splitlines() if l.strip()],
     }
     if include_head:
-        rc, head = git('ls-tree', '-r', '--name-only', 'HEAD')
+        rc, head = git('ls-tree', '-r', '--name-only', 'HEAD', repo=repo)
         sources['head'] = [l for l in head.splitlines() if l.strip()] if rc == 0 else []
     return sources
 
 
-def report(as_json: bool, include_head: bool = False) -> int:
-    sources = collect(include_head=include_head)
+def report(as_json: bool, include_head: bool = False,
+           repo: Path | None = None) -> int:
+    sources = collect(include_head=include_head, repo=repo)
     findings = {}
     total = 0
     for name, paths in sources.items():
-        probs = check_paths(paths) + huge_files(paths)
+        probs = check_paths(paths) + huge_files(paths, repo=repo)
         findings[name] = probs
         total += len(probs)
 
@@ -210,10 +213,13 @@ def main() -> int:
     ap.add_argument('--selftest', action='store_true')
     ap.add_argument('--head', action='store_true',
                     help='额外检查 HEAD 树（确认已提交内容干净）')
+    ap.add_argument('--repo', default='',
+                    help='检查指定仓库路径（默认本脚本所属项目根）')
     args = ap.parse_args()
     if args.selftest:
         return selftest()
-    return report(args.json, include_head=args.head)
+    repo = Path(args.repo).resolve() if args.repo else None
+    return report(args.json, include_head=args.head, repo=repo)
 
 
 if __name__ == '__main__':
