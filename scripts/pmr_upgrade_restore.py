@@ -352,6 +352,12 @@ def run_case(source, fail_at=None, keep=True):
     report['steps'].append({'step': 'h2_indexes_after_restore', 'ok': idx > 0,
                             'rows': idx})
 
+    # --- 账号状态、迁移记录与权限关系的恢复一致性 ---
+    account_state = _verify_account_state(source, upg, restore)
+    report['account_state'] = account_state
+    report['steps'].append({'step': 'account_state_restore',
+                            'ok': account_state['ok']})
+
     # --- 抽样登录验证 ---
     login_check = _verify_login(restore, source)
     report['login_verification'] = login_check
@@ -388,11 +394,12 @@ def _verify_login(db, source):
     若库里恰好有 `Account` 行（例如已跑过 PM3），也一并验证。
     """
     os.environ['PMR_DB'] = db
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smass.settings_pmr')
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'smass.settings_pmr'
     import django
     django.setup()
 
-    from app01.services.accounts import verify_password, is_legacy_hash
+    from app01.services.accounts import (
+        verify_password, is_legacy_hash, legacy_md5_secret)
 
     # 用生成器的确定性规则重建明文（PM2 的 synth_password 规则）。
     # 关键：index 必须从 **id** 反推，不能用查询结果的位置——
@@ -453,16 +460,88 @@ def _verify_login(db, source):
     legacy_ok = sum(1 for s in samples if s['correct_ok'])
     wrong_ok = sum(1 for s in samples if s['wrong_rejected'])
     upgraded = sum(1 for s in samples if s['upgraded'])
+    secret_injected = bool(legacy_md5_secret())
+
+    # 安全默认：未注入历史 MD5 密钥时，正确密码也必须被拒绝（这正是 S01 的遏制效果）。
+    # 注入密钥的演练环境才要求 correct_ok 全通过。
+    if secret_injected:
+        ok = len(samples) >= 2 and legacy_ok == len(samples) and wrong_ok == len(samples)
+        note = '已注入历史密钥：正确密码通过、错误密码拒绝'
+    else:
+        ok = len(samples) >= 2 and wrong_ok == len(samples) and legacy_ok == 0
+        note = '未注入历史密钥：旧 MD5 校验按安全默认拒绝（S01 遏制生效）'
 
     return {
         'samples': samples,
         'account_rows': len(account_samples),
+        'secret_injected': secret_injected,
         'legacy_correct_accepted': legacy_ok,
         'legacy_wrong_rejected': wrong_ok,
         'legacy_upgraded_on_success': upgraded,
-        'note': 'PM5 不跑行迁移，Account 表为空是预期；验证的是 legacy 侧校验路径',
-        'ok': len(samples) >= 2 and legacy_ok == len(samples) and wrong_ok == len(samples),
+        'note': note,
+        'ok': ok,
     }
+
+
+def _row_count(db, table):
+    c = conn(db)
+    try:
+        with c.cursor() as cur:
+            cur.execute('SELECT COUNT(*) FROM `{}`'.format(table))
+            return cur.fetchone()[0]
+    except Exception:  # noqa: BLE001 - 表不存在视为 0
+        return 0
+    finally:
+        c.close()
+
+
+def _table_digest(db, table, columns):
+    c = conn(db)
+    try:
+        with c.cursor() as cur:
+            cur.execute('SELECT {} FROM `{}` ORDER BY 1'.format(
+                ','.join('`{}`'.format(col) for col in columns), table))
+            rows = cur.fetchall()
+    finally:
+        c.close()
+    blob = '\n'.join(
+        '|'.join('' if value is None else str(value) for value in row)
+        for row in rows)
+    return hashlib.sha256(blob.encode('utf-8')).hexdigest(), len(rows)
+
+
+def _verify_account_state(source, upg, restore):
+    """恢复后：账号内容、迁移记录与权限关系必须与升级库一致。"""
+    checks = []
+    for table, columns in (
+        ('app01_admin', ('id', 'name', 'password')),
+        ('app01_teacher', ('id', 'name', 'password', 'college_id')),
+        ('app01_student', ('id', 'name', 'password', 'classes_id')),
+    ):
+        src_digest, src_n = _table_digest(source, table, columns)
+        rst_digest, rst_n = _table_digest(restore, table, columns)
+        checks.append({
+            'check': 'account_rows_{}'.format(table),
+            'source_rows': src_n, 'restore_rows': rst_n,
+            'ok': src_n == rst_n and src_digest == rst_digest,
+        })
+
+    src_m, _ = _table_digest(upg, 'django_migrations', ('app', 'name'))
+    rst_m, rst_mn = _table_digest(restore, 'django_migrations', ('app', 'name'))
+    checks.append({'check': 'migration_records', 'rows': rst_mn,
+                   'ok': src_m == rst_m})
+
+    for table in ('auth_group', 'auth_permission', 'auth_user_groups',
+                  'r21_account_account', 'r21_account_accountrole'):
+        upg_n = _row_count(upg, table)
+        rst_n = _row_count(restore, table)
+        checks.append({
+            'check': 'relation_rows_{}'.format(table),
+            'upgrade_rows': upg_n, 'restore_rows': rst_n,
+            'ok': upg_n == rst_n,
+        })
+
+    return {'checks': checks, 'ok': all(c['ok'] for c in checks)}
 
 
 def _verify_source_intact(source, counts, fp, data_fp):

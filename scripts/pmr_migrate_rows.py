@@ -107,6 +107,23 @@ CREATE TABLE IF NOT EXISTS pmr_legacy_map (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 """
 
+QUEUE_TABLE_DDL = """
+CREATE TABLE IF NOT EXISTS pmr_rejected_queue (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  batch_id VARCHAR(32) NOT NULL,
+  source_table VARCHAR(64) NOT NULL,
+  source_id VARCHAR(64) NOT NULL,
+  reason VARCHAR(255) NOT NULL,
+  payload VARCHAR(512) NOT NULL DEFAULT '',
+  status VARCHAR(24) NOT NULL DEFAULT 'isolated',
+  attempts INT NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL,
+  resolved_at DATETIME NULL,
+  UNIQUE KEY uq_rejected_source (batch_id, source_table, source_id, status),
+  KEY idx_rejected_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+"""
+
 
 def ensure_target(target):
     """创建目标库并跑 R10 迁移。"""
@@ -182,11 +199,32 @@ class Migrator:
     def close(self):
         self.conn.close()
 
-    # ---- 映射表 ----
+    # ---- 映射表 / 隔离队列 ----
     def ensure_map_table(self):
         with self.conn.cursor() as cur:
             cur.execute(MAP_TABLE_DDL)
         self.conn.commit()
+
+    def ensure_queue_table(self):
+        with self.conn.cursor() as cur:
+            cur.execute(QUEUE_TABLE_DDL)
+        self.conn.commit()
+
+    def isolate(self, source_table, source_id, reason, payload='', status='isolated'):
+        """把无法自动处理的行持久化到隔离队列（可审计、可重放）。"""
+        with self.conn.cursor() as cur:
+            cur.execute(
+                'INSERT INTO pmr_rejected_queue '
+                '(batch_id, source_table, source_id, reason, payload, status, '
+                ' attempts, created_at) VALUES (%s,%s,%s,%s,%s,%s,0,%s) '
+                'ON DUPLICATE KEY UPDATE reason=VALUES(reason), '
+                ' payload=VALUES(payload), status=VALUES(status)',
+                (self.batch_id, source_table, str(source_id), reason[:255],
+                 payload[:512], status, self.now))
+        self.conn.commit()
+        if status in ('isolated', 'conflict'):
+            self.bump('rejected' if status == 'isolated' else 'conflict',
+                      source_table, source_id, reason)
 
     def lookup(self, source_table, source_id):
         with self.conn.cursor(pymysql.cursors.DictCursor) as cur:
@@ -244,8 +282,13 @@ class Migrator:
                 self.bump('created', 'app01_college', source_id, 'dry-run')
                 continue
 
+            raw_name = str(row['name'])
+            if len(raw_name) > 100:
+                self.isolate('app01_college', source_id,
+                             'name 长度 {} 超过 100，已截断'.format(len(raw_name)),
+                             raw_name[:100], status='truncated')
             unit = OrganizationUnit.objects.create(
-                code=code, name=str(row['name'])[:100], unit_type='college')
+                code=code, name=raw_name[:100], unit_type='college')
             self.record('app01_college', source_id, 'organization_unit',
                         unit.pk, 'created')
             mapping[row['id']] = unit.pk
@@ -270,8 +313,9 @@ class Migrator:
             parent_pk = college_map.get(row.get('college_id'))
             parent = OrganizationUnit.objects.filter(pk=parent_pk).first() if parent_pk else None
             if parent is None:
-                self.bump('rejected', 'app01_major', source_id,
-                          'college_id={} 无对应学院'.format(row.get('college_id')))
+                self.isolate('app01_major', source_id,
+                             'college_id={} 无对应学院'.format(row.get('college_id')),
+                             'major:{}'.format(row.get('name', '')))
                 continue
 
             code = 'PMR-M{}'.format(source_id)
@@ -288,8 +332,13 @@ class Migrator:
                 self.bump('created', 'app01_major', source_id, 'dry-run')
                 continue
 
+            raw_name = str(row['name'])
+            if len(raw_name) > 100:
+                self.isolate('app01_major', source_id,
+                             'name 长度 {} 超过 100，已截断'.format(len(raw_name)),
+                             raw_name[:100], status='truncated')
             unit = OrganizationUnit.objects.create(
-                code=code, name=str(row['name'])[:100], unit_type='major',
+                code=code, name=raw_name[:100], unit_type='major',
                 parent=parent)
             self.record('app01_major', source_id, 'organization_unit', unit.pk, 'created')
             mapping[row['id']] = unit.pk
@@ -316,8 +365,9 @@ class Migrator:
 
             if parent is None:
                 # 孤儿班级：拒绝猜测父级（不静默挂到别的学院）
-                self.bump('rejected', 'app01_classes', source_id,
-                          'major_id={} 无对应专业'.format(row.get('major_id')))
+                self.isolate('app01_classes', source_id,
+                             'major_id={} 无对应专业'.format(row.get('major_id')),
+                             'class:{}'.format(row.get('name', '')))
                 continue
 
             code = 'PMR-K{}'.format(source_id)
@@ -334,8 +384,13 @@ class Migrator:
                 self.bump('created', 'app01_classes', source_id, 'dry-run')
                 continue
 
+            raw_name = str(row['name'])
+            if len(raw_name) > 100:
+                self.isolate('app01_classes', source_id,
+                             'name 长度 {} 超过 100，已截断'.format(len(raw_name)),
+                             raw_name[:100], status='truncated')
             unit = OrganizationUnit.objects.create(
-                code=code, name=str(row['name'])[:100], unit_type='class',
+                code=code, name=raw_name[:100], unit_type='class',
                 parent=parent)
             self.record('app01_classes', source_id, 'organization_unit',
                         unit.pk, 'created')
@@ -372,13 +427,19 @@ class Migrator:
             encoded = '!' + secrets.token_hex(16)
             used_placeholder = True
 
+        raw_name = str(row.get('name') or source_id)
+        if len(raw_name) > 32:
+            self.isolate(source_table, source_id,
+                         'name 长度 {} 超过 32，已截断'.format(len(raw_name)),
+                         raw_name[:32], status='truncated')
+
         if self.dry_run:
             self.bump('created', source_table, source_id, 'dry-run')
             return -1, 'dry-run'
 
         account = Account(
             login_name=login_name,
-            display_name=str(row.get('name') or source_id)[:32],
+            display_name=raw_name[:32],
             person_type=person_type,
             must_change_password=True,
         )
@@ -390,6 +451,10 @@ class Migrator:
 
         status = 'rejected' if used_placeholder else 'created'
         note = '密码哈希不可用，已置占位并要求重置' if used_placeholder else ''
+        if used_placeholder:
+            # 账号已建，但必须进入隔离队列等待强制重置处置（不计入 rejected 分区）
+            self.isolate(source_table, source_id, note,
+                         'password_reset_required', status='password_reset_required')
         self.record(source_table, source_id, 'r21_account_account',
                     account.pk, status, note)
         self.bump(status, source_table, source_id, note)
@@ -441,13 +506,19 @@ class Migrator:
 
             if row.get('classes_id') and class_pk is None:
                 # 孤儿班级引用：拒绝，不猜
-                self.bump('rejected', 'app01_student_record', source_id,
-                          'classes_id={} 无对应组织'.format(row.get('classes_id')))
+                self.isolate('app01_student_record', source_id,
+                             'classes_id={} 无对应组织'.format(row.get('classes_id')),
+                             'record:{}'.format(row.get('name', '')))
                 continue
 
             unit = OrganizationUnit.objects.filter(pk=class_pk).first() if class_pk else None
 
             student_no = str(row['id'])[:20]
+            raw_name = str(row.get('name') or student_no)
+            if len(raw_name) > 32:
+                self.isolate('app01_student_record', source_id,
+                             'name 长度 {} 超过 32，已截断'.format(len(raw_name)),
+                             raw_name[:32], status='truncated')
             if StudentRecord.objects.filter(student_no=student_no).exists():
                 record = StudentRecord.objects.get(student_no=student_no)
                 self.record('app01_student_record', source_id,
@@ -461,7 +532,7 @@ class Migrator:
 
             record = StudentRecord.objects.create(
                 student_no=student_no,
-                name=str(row.get('name') or student_no)[:32],
+                name=raw_name[:32],
                 account_id=account_pk if account_pk and account_pk > 0 else None,
                 unit=unit,
                 status='enrolled',
@@ -485,7 +556,61 @@ def _units_with_type(target, unit_type):
         c.close()
 
 
-def reconcile(source, target, counters, details=None):
+def replay_isolated(source, target, batch_id):
+    """受控重放：重跑幂等迁移，把已能处理的行从隔离队列解除。
+
+    只对 ``status='isolated'`` 的行生效；仍缺父级的行保留并累加 attempts。
+    不修改源库，不猜测业务父级。
+    """
+    rows = read_source_rows(source)
+    m = Migrator(target, batch_id)
+    resolved, remaining = [], []
+    try:
+        m.ensure_map_table()
+        m.ensure_queue_table()
+
+        college_map = m.migrate_colleges(rows['college'])
+        major_map = m.migrate_majors(rows['major'], college_map)
+        class_map = m.migrate_classes(rows['classes'], major_map)
+        m.migrate_admins(rows['admin'])
+        m.migrate_teachers(rows['teacher'], college_map)
+        account_map = m.migrate_students(rows['student'], class_map)
+        m.migrate_records(rows['student'], account_map, class_map)
+
+        with m.conn.cursor(pymysql.cursors.DictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM pmr_rejected_queue "
+                "WHERE batch_id=%s AND status='isolated'", [batch_id])
+            items = cur.fetchall()
+
+        for item in items:
+            mapping = m.lookup(item['source_table'], item['source_id'])
+            if mapping:
+                with m.conn.cursor() as cur:
+                    cur.execute(
+                        "UPDATE pmr_rejected_queue SET status='resolved', "
+                        'resolved_at=%s WHERE id=%s', (m.now, item['id']))
+                m.conn.commit()
+                resolved.append('{}.{}'.format(
+                    item['source_table'], item['source_id']))
+            else:
+                with m.conn.cursor() as cur:
+                    cur.execute(
+                        'UPDATE pmr_rejected_queue SET attempts=attempts+1 '
+                        'WHERE id=%s', [item['id']])
+                m.conn.commit()
+                remaining.append('{}.{}'.format(
+                    item['source_table'], item['source_id']))
+    finally:
+        m.close()
+
+    return {'batch_id': batch_id, 'resolved': resolved,
+            'remaining': remaining,
+            'resolved_count': len(resolved),
+            'remaining_count': len(remaining)}
+
+
+def reconcile(source, target, counters, details=None, batch_id=None):
     """严格对账：源行数 vs 映射数 vs 目标行数。"""
     src = conn(source)
     tgt = conn(target)
@@ -594,6 +719,44 @@ def reconcile(source, target, counters, details=None):
 
         report['checks'] = checks
         report['strict_ok'] = all(c['ok'] for c in checks)
+
+        # ---- 无损分区：每个源行必须 mapped 或进入隔离队列，不允许静默遗漏 ----
+        partition_checks = []
+        isolated = {}
+        if batch_id:
+            with tgt.cursor() as cur:
+                cur.execute(
+                    "SELECT source_table, COUNT(DISTINCT source_id) "
+                    "FROM pmr_rejected_queue WHERE batch_id=%s "
+                    "AND status IN ('isolated','conflict') "
+                    'GROUP BY source_table', [batch_id])
+                isolated = {row[0]: row[1] for row in cur.fetchall()}
+
+        partitions = [
+            ('app01_college', src_college, map_college),
+            ('app01_major', src_major, map_major),
+            ('app01_classes', src_classes, map_classes),
+            ('app01_admin', src_admin, map_admin),
+            ('app01_teacher', src_teacher, map_teacher),
+            ('app01_student', src_student, map_student),
+            ('app01_student_record', src_student, map_records),
+        ]
+        for table, source_n, mapped_n in partitions:
+            queued_n = isolated.get(table, 0)
+            partition_checks.append({
+                'check': 'partition_complete_{}'.format(table),
+                'source': source_n,
+                'mapped': mapped_n,
+                'isolated': queued_n,
+                'ok': mapped_n + queued_n == source_n,
+            })
+
+        report['partition'] = {
+            'batch_id': batch_id, 'isolated': isolated,
+            'checks': partition_checks,
+        }
+        report['lossless_ok'] = all(c['ok'] for c in partition_checks)
+        report['overall_ok'] = report['strict_ok'] and report['lossless_ok']
     finally:
         src.close()
         tgt.close()
@@ -606,6 +769,8 @@ def main():
     parser.add_argument('--target', default=None)
     parser.add_argument('--batch-id', default=None)
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--replay', action='store_true',
+                        help='受控重放：重跑迁移并解除已可处理的隔离行')
     parser.add_argument('--json', action='store_true')
     args = parser.parse_args()
 
@@ -624,11 +789,20 @@ def main():
 
     # 必须在 django.setup() 之前把目标库名注入环境，
     # 否则 settings_pmr 会拿到默认库名并拒绝/连错库。
+    # 必须**强制**覆盖 DJANGO_SETTINGS_MODULE：调用方（测试/CI）可能已设置
+    # settings_r10，setdefault 会让 ORM 连到错误的库。
     os.environ['PMR_DB'] = target
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smass.settings_pmr')
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'smass.settings_pmr'
     django.setup()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    if args.replay:
+        result = replay_isolated(args.source, target, batch_id)
+        result['ok'] = result['remaining_count'] == 0
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result['ok'] else 1
+
     report = {'source': args.source, 'target': target, 'batch_id': batch_id,
               'dry_run': args.dry_run, 'steps': []}
 
@@ -644,6 +818,7 @@ def main():
     migrator = Migrator(target, batch_id, dry_run=args.dry_run)
     try:
         migrator.ensure_map_table()
+        migrator.ensure_queue_table()
 
         college_map = migrator.migrate_colleges(rows['college'])
         major_map = migrator.migrate_majors(rows['major'], college_map)
@@ -665,10 +840,11 @@ def main():
                             'skipped': counters['skipped']})
 
     if not args.dry_run:
-        recon = reconcile(args.source, target, counters, details)
+        recon = reconcile(args.source, target, counters, details,
+                          batch_id=batch_id)
         report['reconciliation'] = recon
         report['steps'].append({'step': 'reconcile',
-                                'ok': recon['strict_ok']})
+                                'ok': recon['overall_ok']})
 
     report['ok'] = all(step.get('ok') for step in report['steps'])
     manifest = OUT_DIR / 'migration_{}_{}.json'.format(batch_id[:8], stamp)
