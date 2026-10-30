@@ -41,6 +41,10 @@ class ConflictError(WorkflowError):
     """并发冲突或重复操作。"""
 
 
+#: 发起人本人可执行的动作；审批类动作必须由他人执行（S12 职责分离）
+SELF_SERVICE_ACTIONS = frozenset({'submit', 'withdraw', 'cancel', 'resubmit'})
+
+
 # ---------------------------------------------------------------------------
 # R6-01 定义与版本
 # ---------------------------------------------------------------------------
@@ -204,12 +208,20 @@ def _sync_task(instance):
 
 
 def transition(instance, action, *, actor='', reason=''):
-    """执行状态转移（唯一合法入口）。"""
+    """执行状态转移（唯一合法入口）。
+
+    **职责分离（S12）**：发起人可以 ``submit`` / ``withdraw`` / ``cancel``，
+    但不能审批自己提交的实例；审批动作必须由其他 actor 执行。
+    """
     if instance.status in (
         WorkflowInstance.STATUS_APPROVED, WorkflowInstance.STATUS_REJECTED,
         WorkflowInstance.STATUS_WITHDRAWN,
     ):
         raise TransitionError('流程已结束，不能继续转移')
+
+    if (actor and instance.created_by and actor == instance.created_by
+            and action not in SELF_SERVICE_ACTIONS):
+        raise TransitionError('职责分离：不能审批自己提交的流程')
 
     current = instance.current_node
     if current is None:
@@ -251,12 +263,13 @@ def transition(instance, action, *, actor='', reason=''):
 
 
 def _status_for(instance, target, action):
+    # 撤回优先于目标节点类型：撤回即使指向 end 也应标记 withdrawn
+    if action == 'withdraw':
+        return WorkflowInstance.STATUS_WITHDRAWN
     if target.node_type == WorkflowNode.NODE_END:
         if action in ('reject', 'refuse'):
             return WorkflowInstance.STATUS_REJECTED
         return WorkflowInstance.STATUS_APPROVED
-    if action == 'withdraw':
-        return WorkflowInstance.STATUS_WITHDRAWN
     return WorkflowInstance.STATUS_PENDING
 
 

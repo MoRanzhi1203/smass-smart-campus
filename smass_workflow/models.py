@@ -192,6 +192,18 @@ class WorkflowEvent(models.Model):
         verbose_name = '流程事件'
         indexes = [models.Index(fields=['instance', 'created_at'])]
 
+    def save(self, *args, **kwargs):
+        from django.core.exceptions import ValidationError
+
+        if not self._state.adding:
+            raise ValidationError('审批事件为追加式记录，不允许修改')
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        from django.core.exceptions import ValidationError
+
+        raise ValidationError('审批事件为追加式记录，不允许删除')
+
 
 class ApprovalTask(models.Model):
     """待办任务。"""
