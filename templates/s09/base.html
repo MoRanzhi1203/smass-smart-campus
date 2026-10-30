@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}多因素认证{% endblock %} · SMASS</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#1f2430; --muted:#667085; --line:#e4e7ec;
+            --brand:#2456a6; --brand-soft:#e8effb; --ok:#0f7b4f; --ok-soft:#e7f6ef;
+            --err:#b42318; --err-soft:#fdecea; --warn:#8a5a00; --warn-soft:#fff4d6; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+           font:15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+    main { max-width:720px; margin:0 auto; padding:36px 20px; }
+    h1 { font-size:22px; margin:0 0 8px; }
+    .lead { color:var(--muted); font-size:14px; margin:0 0 18px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
+    .flash { padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:14px; }
+    .flash.ok { background:var(--ok-soft); color:var(--ok); }
+    .flash.error { background:var(--err-soft); color:var(--err); }
+    .banner { background:var(--warn-soft); color:var(--warn); padding:10px 14px;
+              border-radius:8px; margin-bottom:14px; font-size:13px; }
+    label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+    input { width:100%; padding:10px 12px; border:1px solid var(--line);
+            border-radius:8px; font:inherit; background:#fff; letter-spacing:2px; }
+    button, .btn { display:inline-block; padding:10px 16px; border-radius:8px; border:1px solid transparent;
+                   background:var(--brand); color:#fff; font:inherit; cursor:pointer; text-decoration:none; font-size:14px; }
+    .btn.ghost { background:#fff; color:var(--brand); border-color:var(--line); }
+    .btn.danger { background:var(--err); }
+    .btn.small { padding:6px 10px; font-size:13px; }
+    .muted { color:var(--muted); font-size:13px; }
+    .mono { font-family:ui-monospace, Consolas, monospace; font-size:13px; word-break:break-all; }
+    .secret { background:#f2f4f7; border:1px dashed var(--line); border-radius:8px;
+              padding:12px; margin:10px 0; }
+    .codes { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; }
+    .codes span { background:#f2f4f7; border-radius:6px; padding:8px; text-align:center;
+                  font-family:ui-monospace, Consolas, monospace; letter-spacing:2px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+    th { color:var(--muted); font-weight:600; background:#fafbfc; }
+    .inline-form { display:inline; }
+    @media (max-width:640px) { main { padding:20px 14px; } }
+  </style>
+</head>
+<body>
+<main>
+  {% if ok_message %}<div class="flash ok">{{ ok_message }}</div>{% endif %}
+  {% if error_message %}<div class="flash error">{{ error_message }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

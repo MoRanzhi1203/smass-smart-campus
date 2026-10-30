@@ -1,0 +1,12 @@
+{% extends "s09/base.html" %}
+{% block title %}恢复码{% endblock %}
+{% block content %}
+<h1>一次性恢复码</h1>
+<p class="lead">这些码只会显示这一次，请离线保存。每个码只能使用一次。</p>
+<section class="card">
+  <div class="codes">
+    {% for code in codes %}<span>{{ code }}</span>{% endfor %}
+  </div>
+</section>
+<p><a class="btn" href="{{ next }}">我已保存，继续</a></p>
+{% endblock %}

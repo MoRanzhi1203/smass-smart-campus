@@ -1,0 +1,16 @@
+{% extends "s09/base.html" %}
+{% block title %}二次验证{% endblock %}
+{% block content %}
+<h1>二次验证</h1>
+<p class="lead">请输入认证器中的 6 位验证码，或使用一次性恢复码。</p>
+<section class="card">
+  <form method="post" action="{% url 's09:verify' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="code">验证码 / 恢复码</label>
+    <input id="code" name="code" required autocomplete="one-time-code" maxlength="16">
+    <p style="margin-top:14px;"><button type="submit">验证</button></p>
+  </form>
+  <p class="muted">验证状态在当前会话内有效 12 小时。</p>
+</section>
+{% endblock %}

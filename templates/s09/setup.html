@@ -1,0 +1,29 @@
+{% extends "s09/base.html" %}
+{% block title %}绑定 MFA{% endblock %}
+{% block content %}
+<h1>绑定多因素认证</h1>
+<p class="lead">特权角色（系统管理员/学院管理员）必须先绑定 TOTP 才能继续使用系统。</p>
+
+<section class="card">
+  <h2>1. 在认证器中添加</h2>
+  <p class="muted">用 Google Authenticator / Microsoft Authenticator / 1Password 等扫描或手动输入：</p>
+  <div class="secret">
+    <div class="muted">密钥（Base32）</div>
+    <div class="mono">{{ secret }}</div>
+    <div class="muted" style="margin-top:8px;">otpauth URI</div>
+    <div class="mono">{{ uri }}</div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>2. 输入 6 位验证码完成绑定</h2>
+  <form method="post" action="{% url 's09:setup' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="code">验证码</label>
+    <input id="code" name="code" inputmode="numeric" maxlength="6" required autocomplete="one-time-code">
+    <p style="margin-top:14px;"><button type="submit">确认绑定</button></p>
+  </form>
+  <p class="muted">绑定成功后会展示 8 个一次性恢复码，请离线保存。</p>
+</section>
+{% endblock %}

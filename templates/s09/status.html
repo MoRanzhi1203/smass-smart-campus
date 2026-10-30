@@ -1,0 +1,41 @@
+{% extends "s09/base.html" %}
+{% block title %}MFA 状态{% endblock %}
+{% block content %}
+<h1>多因素认证状态</h1>
+
+<section class="card">
+  <table>
+    <tr><th>策略开关</th><td>{% if enabled %}已启用{% else %}未启用{% endif %}</td></tr>
+    <tr><th>是否特权角色</th><td>{% if privileged %}是{% else %}否{% endif %}</td></tr>
+    <tr><th>设备状态</th><td>{{ state.status|default:"未绑定" }}</td></tr>
+    <tr><th>剩余恢复码</th><td>{{ state.recovery_remaining|default:0 }}</td></tr>
+    <tr><th>本次会话已验证</th><td>{% if verified %}是{% else %}否{% endif %}</td></tr>
+    <tr><th>最近使用</th><td>{{ state.last_used_at|date:"Y-m-d H:i"|default:"—" }}</td></tr>
+  </table>
+</section>
+
+{% if state.active %}
+<section class="card">
+  <h2>重新生成恢复码</h2>
+  <form method="post" action="{% url 's09:regenerate' %}">
+    {% csrf_token %}
+    <label for="regen_code">当前验证码</label>
+    <input id="regen_code" name="code" inputmode="numeric" maxlength="6" required>
+    <p style="margin-top:14px;"><button type="submit">重新生成</button></p>
+  </form>
+</section>
+
+<section class="card">
+  <h2>停用 MFA</h2>
+  <p class="muted">停用后特权角色将无法访问业务系统，直到重新绑定。</p>
+  <form method="post" action="{% url 's09:disable' %}">
+    {% csrf_token %}
+    <label for="disable_code">当前验证码</label>
+    <input id="disable_code" name="code" inputmode="numeric" maxlength="6" required>
+    <p style="margin-top:14px;"><button class="btn danger" type="submit">停用</button></p>
+  </form>
+</section>
+{% else %}
+<p><a class="btn" href="{% url 's09:setup' %}">开始绑定</a></p>
+{% endif %}
+{% endblock %}
