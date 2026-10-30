@@ -1,0 +1,115 @@
+{% extends "r20/base.html" %}
+{% block title %}门户配置{% endblock %}
+{% block content %}
+<h1>门户配置</h1>
+<p class="lead">区块 {{ stats.sections }} · 链接 {{ stats.links }} · 公告 {{ stats.notices }}</p>
+
+<section class="card" style="margin-bottom:16px;">
+  <h2>初始化默认门户</h2>
+  <p class="muted">幂等创建学生、教师/辅导员、管理人员三套默认入口与欢迎公告。</p>
+  <form method="post" action="{% url 'r20:admin_bootstrap' %}">
+    {% csrf_token %}<button type="submit">初始化默认门户</button>
+  </form>
+</section>
+
+<section class="card" style="margin-bottom:16px;">
+  <h2>创建区块</h2>
+  <form method="post" action="{% url 'r20:section_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="code">编码</label><input id="code" name="code" required maxlength="64"></div>
+      <div><label for="title">标题</label><input id="title" name="title" required maxlength="64"></div>
+      <div><label for="subtitle">副标题</label><input id="subtitle" name="subtitle" maxlength="120"></div>
+      <div><label for="roles">可见角色</label><input id="roles" name="roles" value="{{ all_roles }}" maxlength="120"></div>
+      <div><label for="sort_order">排序</label><input id="sort_order" name="sort_order" type="number" value="0"></div>
+      <div><button type="submit">创建</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card" style="margin-bottom:16px;">
+  <h2>创建链接</h2>
+  <form method="post" action="{% url 'r20:link_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="section">区块</label>
+        <select id="section" name="section" required>
+          {% for block in sections %}<option value="{{ block.section.pk }}">{{ block.section.title }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="label">链接文字</label><input id="label" name="label" required maxlength="64"></div>
+      <div><label for="url_name">URL 名</label><input id="url_name" name="url_name" maxlength="120" placeholder="如 r13:sessions"></div>
+      <div><label for="fallback_url">备用地址</label><input id="fallback_url" name="fallback_url" maxlength="200" placeholder="/r13/sessions/"></div>
+      <div><label for="link_roles">可见角色</label><input id="link_roles" name="roles" value="{{ all_roles }}" maxlength="120"></div>
+      <div><button type="submit">创建</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card" style="margin-bottom:16px;">
+  <h2>创建公告</h2>
+  <form method="post" action="{% url 'r20:notice_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="notice_title">标题</label><input id="notice_title" name="title" required maxlength="120"></div>
+      <div><label for="notice_body">内容</label><input id="notice_body" name="body" required maxlength="1000"></div>
+      <div><label for="notice_roles">可见角色</label><input id="notice_roles" name="roles" value="{{ all_roles }}" maxlength="120"></div>
+      <div><button type="submit">创建（草稿）</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card" style="margin-bottom:16px;">
+  <h2>区块与链接</h2>
+  <table>
+    <thead><tr><th>区块</th><th>可见角色</th><th>链接</th></tr></thead>
+    <tbody>
+      {% for block in sections %}
+        <tr>
+          <td>{{ block.section.title }}（{{ block.section.code }}）</td>
+          <td>{{ block.section.roles }}</td>
+          <td>
+            {% for link in block.links %}
+              <div>{{ link.label }} → {{ link.url_name|default:link.fallback_url }}
+                {% if not link.enabled %}<span class="tag draft">已停用</span>{% endif %}
+              </div>
+            {% empty %}
+              <span class="muted">—</span>
+            {% endfor %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" class="empty">暂无区块，请先初始化或创建。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>公告</h2>
+  <table>
+    <thead><tr><th>标题</th><th>角色</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for n in notices %}
+        <tr>
+          <td>{{ n.title }}</td>
+          <td>{{ n.roles }}</td>
+          <td><span class="tag {{ n.status }}">{{ n.get_status_display }}</span></td>
+          <td>
+            {% if n.status == 'draft' %}
+              <form class="inline-form" method="post" action="{% url 'r20:notice_publish' n.pk %}">
+                {% csrf_token %}<button class="btn small" type="submit">发布</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty">暂无公告。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

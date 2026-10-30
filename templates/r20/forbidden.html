@@ -1,0 +1,9 @@
+{% extends "r20/base.html" %}
+{% block title %}无权访问{% endblock %}
+{% block content %}
+<h1>403 · 无权访问</h1>
+<section class="card">
+  <p>{{ message }}</p>
+  <p><a class="btn ghost" href="{% url 'r20:home' %}">返回门户</a></p>
+</section>
+{% endblock %}

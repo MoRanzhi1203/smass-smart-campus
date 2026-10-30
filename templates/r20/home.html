@@ -1,0 +1,38 @@
+{% extends "r20/base.html" %}
+{% block title %}门户首页{% endblock %}
+{% block content %}
+<h1>欢迎回来</h1>
+<p class="lead">
+  当前角色：{% for r in roles %}<span class="tag">{{ r }}</span> {% endfor %}
+  {% if not roles %}<span class="muted">（无角色）</span>{% endif %}
+</p>
+
+{% if notices %}
+<section class="card" style="margin-bottom:16px;">
+  <h2>通知公告</h2>
+  {% for n in notices %}
+    <div class="notice">
+      <strong>{{ n.title }}</strong>
+      <span class="muted">{{ n.published_at|date:"Y-m-d H:i"|default:"未发布" }} · {{ n.get_status_display }}</span>
+      <div>{{ n.body }}</div>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<div class="grid">
+  {% for block in sections %}
+    <section class="card">
+      <h2>{{ block.section.title }}</h2>
+      <p class="sub">{{ block.section.subtitle|default:"" }}</p>
+      <div class="links">
+        {% for item in block.links %}
+          <a href="{{ item.href }}">{{ item.link.label }}</a>
+        {% endfor %}
+      </div>
+    </section>
+  {% empty %}
+    <div class="card empty">当前角色没有可用的门户入口。管理员可在“门户配置”中初始化或调整。</div>
+  {% endfor %}
+</div>
+{% endblock %}

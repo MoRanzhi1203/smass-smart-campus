@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}智慧校园门户{% endblock %} · SMASS</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#1f2430; --muted:#667085; --line:#e4e7ec;
+            --brand:#2456a6; --brand-soft:#e8effb; --ok:#0f7b4f; --ok-soft:#e7f6ef;
+            --err:#b42318; --err-soft:#fdecea; --warn:#8a5a00; --warn-soft:#fff4d6; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+           font:15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+    header { background:var(--card); border-bottom:1px solid var(--line); padding:14px 24px;
+             display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+    .brand { font-weight:700; color:var(--brand); font-size:18px; }
+    nav { display:flex; flex-wrap:wrap; gap:6px; }
+    nav a { color:var(--muted); text-decoration:none; padding:6px 10px; border-radius:8px; font-size:14px; }
+    nav a:hover { background:var(--brand-soft); color:var(--brand); }
+    main { max-width:1120px; margin:0 auto; padding:20px; }
+    h1 { font-size:22px; margin:0 0 6px; }
+    .lead { color:var(--muted); font-size:14px; margin:0 0 18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+    .card h2 { font-size:17px; margin:0 0 4px; }
+    .card .sub { color:var(--muted); font-size:13px; margin:0 0 12px; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; }
+    .links a { display:inline-block; padding:8px 12px; border-radius:8px; text-decoration:none;
+               background:var(--brand-soft); color:var(--brand); font-size:14px; }
+    .links a:hover { background:#d8e6fb; }
+    .flash { padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:14px; }
+    .flash.ok { background:var(--ok-soft); color:var(--ok); }
+    .flash.error { background:var(--err-soft); color:var(--err); }
+    .notice { border-left:3px solid var(--brand); padding:6px 0 6px 12px; margin:0 0 12px; }
+    .notice strong { display:block; }
+    .muted { color:var(--muted); font-size:13px; }
+    .empty { color:var(--muted); padding:18px 4px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+    th { color:var(--muted); font-weight:600; background:#fafbfc; }
+    label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+    input, select, textarea { width:100%; padding:8px 10px; border:1px solid var(--line);
+                              border-radius:8px; font:inherit; background:#fff; }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; }
+    .row > div { flex:1 1 150px; }
+    button, .btn { display:inline-block; padding:8px 14px; border-radius:8px; border:1px solid transparent;
+                   background:var(--brand); color:#fff; font:inherit; cursor:pointer; text-decoration:none; font-size:14px; }
+    .btn.ghost { background:#fff; color:var(--brand); border-color:var(--line); }
+    .btn.small { padding:5px 9px; font-size:13px; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px;
+           background:var(--brand-soft); color:var(--brand); }
+    .tag.published { background:var(--ok-soft); color:var(--ok); }
+    .tag.draft { background:var(--warn-soft); color:var(--warn); }
+    @media (max-width:640px) { main { padding:14px; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">SMASS 智慧校园门户</div>
+  <nav>
+    <a href="{% url 'r20:home' %}">门户首页</a>
+    {% if can_admin %}<a href="{% url 'r20:admin' %}">门户配置</a>{% endif %}
+  </nav>
+</header>
+<main>
+  {% if ok_message %}<div class="flash ok">{{ ok_message }}</div>{% endif %}
+  {% if error_message %}<div class="flash error">{{ error_message }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
