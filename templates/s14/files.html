@@ -1,0 +1,56 @@
+{% extends "s14/base.html" %}
+{% block title %}文件列表{% endblock %}
+{% block content %}
+<h1>我的文件</h1>
+<p class="muted">共 {{ stats.count }} 个文件，合计 {{ stats.bytes }} 字节{% if can_manage %}（管理员可见全部）{% endif %}</p>
+
+<section class="card">
+  <h2>上传文件</h2>
+  <form method="post" action="{% url 's14:upload' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="purpose">用途</label>
+        <select id="purpose" name="purpose">
+          {% for code, label in purposes %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="file">文件</label>
+        <input id="file" name="file" type="file" required>
+      </div>
+      <div><button type="submit">上传</button></div>
+    </div>
+  </form>
+  <p class="muted">
+    头像：png/jpg；附件：pdf/png/jpg/docx/xlsx/zip；导入：csv/xlsx；报告：pdf/csv。
+    单文件 ≤ 10 MB，ZIP 解压 ≤ 50 MB 且条目 ≤ 200。
+  </p>
+</section>
+
+<section class="card">
+  <h2>文件（{{ files|length }}）</h2>
+  <table>
+    <thead><tr><th>文件名</th><th>用途</th><th>大小</th><th>SHA-256</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for f in files %}
+        <tr>
+          <td>{{ f.original_name }}</td>
+          <td>{{ f.get_purpose_display }}</td>
+          <td>{{ f.size }}</td>
+          <td class="mono">{{ f.sha256|slice:":12" }}…</td>
+          <td>{{ f.get_status_display }}</td>
+          <td>
+            <a class="btn small ghost" href="{% url 's14:download' f.pk %}">下载</a>
+            <form class="inline-form" method="post" action="{% url 's14:delete' f.pk %}">
+              {% csrf_token %}<button class="btn small danger" type="submit">删除</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">还没有上传文件。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
