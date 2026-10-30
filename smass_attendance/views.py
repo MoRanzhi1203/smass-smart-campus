@@ -165,7 +165,8 @@ def session_mark(request, pk):
     if not services.can_manage(request.user):
         return _forbidden(request)
     session = get_object_or_404(AttendanceSession, pk=pk)
-    student = StudentRecord.objects.filter(pk=request.POST.get('record') or 0).first()
+    student = StudentRecord.objects.filter(
+        pk=_parse_pk(request.POST.get('record'))).first()
     try:
         services.teacher_mark(
             session, student, request.POST.get('status', ''), request.user,
@@ -263,7 +264,8 @@ def makeup_submit(request):
         record = StudentRecord.objects.filter(pk=record_id).first()
     else:
         record = services.record_for_account(request.user)
-    session = AttendanceSession.objects.filter(pk=request.POST.get('session') or 0).first()
+    session = AttendanceSession.objects.filter(
+        pk=_parse_pk(request.POST.get('session'))).first()
     try:
         services.submit_makeup(record, session, request.POST.get('reason', ''), request.user)
     except services.AttendanceError as exc:
@@ -298,7 +300,7 @@ def stats_view(request):
     if not services.can_manage(request.user):
         return _forbidden(request)
     from smass_organization.models import OrganizationUnit
-    unit_id = request.GET.get('unit') or ''
+    unit_id = _parse_pk(request.GET.get('unit'))
     unit = OrganizationUnit.objects.filter(
         pk=unit_id, unit_type='class').first() if unit_id else _classes().first()
     rows = services.unit_stats(unit) if unit else []
@@ -308,3 +310,9 @@ def stats_view(request):
         'classes': list(_classes()),
         **_flash(request),
     })
+
+
+def _parse_pk(raw):
+    """把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。"""
+    text = str(raw or '').strip()
+    return int(text) if text.isdigit() else None

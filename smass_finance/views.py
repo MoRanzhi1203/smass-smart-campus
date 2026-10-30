@@ -108,8 +108,10 @@ def fee_item_create(request):
 def bill_create(request):
     if not services.can_finance(request.user):
         return _forbidden(request)
-    record = StudentRecord.objects.filter(pk=request.POST.get('record') or 0).first()
-    item = FeeItem.objects.filter(pk=request.POST.get('fee_item') or 0).first()
+    record = StudentRecord.objects.filter(
+        pk=_parse_pk(request.POST.get('record'))).first()
+    item = FeeItem.objects.filter(
+        pk=_parse_pk(request.POST.get('fee_item'))).first()
     try:
         services.create_bill(
             record, request.POST.get('term', ''), [item] if item else [],
@@ -215,3 +217,9 @@ def ledger_list(request):
         'totals': services.finance_totals(),
         **_flash(request),
     })
+
+
+def _parse_pk(raw):
+    """把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。"""
+    text = str(raw or '').strip()
+    return int(text) if text.isdigit() else None

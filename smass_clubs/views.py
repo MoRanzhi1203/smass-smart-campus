@@ -171,7 +171,8 @@ def membership_action(request, pk, action):
 def post_appoint(request, pk):
     club = get_object_or_404(Club, pk=pk)
     from smass_organization.models import StudentRecord
-    record = StudentRecord.objects.filter(pk=request.POST.get('record') or 0).first()
+    record = StudentRecord.objects.filter(
+        pk=_parse_pk(request.POST.get('record'))).first()
     try:
         services.appoint_post(
             club, record, (request.POST.get('title') or '').strip(),
@@ -207,3 +208,9 @@ def post_list(request):
         'can_manage': services.can_manage(request.user),
         **_flash(request),
     })
+
+
+def _parse_pk(raw):
+    """把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。"""
+    text = str(raw or '').strip()
+    return int(text) if text.isdigit() else None

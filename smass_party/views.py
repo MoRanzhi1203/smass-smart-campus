@@ -130,7 +130,8 @@ def member_add(request, pk):
     if not services.can_manage_party(request.user):
         return _forbidden(request)
     org = get_object_or_404(PartyOrg, pk=pk)
-    record = StudentRecord.objects.filter(pk=request.POST.get('record') or 0).first()
+    record = StudentRecord.objects.filter(
+        pk=_parse_pk(request.POST.get('record'))).first()
     try:
         services.add_member(
             org, record, (request.POST.get('political_status') or '').strip(),
@@ -258,3 +259,9 @@ def audit_list(request):
         'logs': logs,
         **_flash(request),
     })
+
+
+def _parse_pk(raw):
+    """把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。"""
+    text = str(raw or '').strip()
+    return int(text) if text.isdigit() else None

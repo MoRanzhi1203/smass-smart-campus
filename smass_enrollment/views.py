@@ -170,7 +170,8 @@ def transfer_submit(request):
     if record is None:
         return redirect('/r12/transfers/?error={}'.format(
             quote('未找到可申请转专业的学籍档案')))
-    to_major = _majors().filter(pk=request.POST.get('to_major') or 0).first()
+    to_major = _majors().filter(
+        pk=_parse_pk(request.POST.get('to_major'))).first()
     try:
         services.submit_transfer(
             record, to_major, request.POST.get('reason', ''), request.user)
@@ -190,7 +191,7 @@ def transfer_action(request, pk, action):
             services.reject_transfer(transfer, request.user, request.POST.get('reason', ''))
         elif action == 'apply':
             target = _classes_of(transfer.to_major).filter(
-                pk=request.POST.get('target_class') or 0).first()
+                pk=_parse_pk(request.POST.get('target_class'))).first()
             services.apply_transfer(transfer, request.user, target)
         elif action == 'cancel':
             if transfer.record.account_id != getattr(request.user, 'pk', None):
@@ -271,3 +272,9 @@ def status_action(request, pk, action):
     except services.EnrollmentError as exc:
         return redirect('/r12/status/?error={}'.format(quote(str(exc))))
     return redirect('/r12/status/?ok={}'.format(quote('操作成功')))
+
+
+def _parse_pk(raw):
+    """把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。"""
+    text = str(raw or '').strip()
+    return int(text) if text.isdigit() else None

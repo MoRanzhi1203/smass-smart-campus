@@ -186,6 +186,8 @@ def close_session(session, actor):
 def teacher_mark(session, student, status, actor, *, note=''):
     """教师手动标记某个学生的考勤状态（upsert）。"""
     _require_manage(actor)
+    if student is None:
+        raise AttendanceError('学生不存在', code='NO_RECORD')
     if status not in dict(RECORD_STATUS):
         raise AttendanceError('未知的考勤状态', code='BAD_STATUS')
     if student.unit_id != session.unit_id:
