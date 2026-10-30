@@ -333,6 +333,22 @@ python scripts/r10_full_regression.py --json
 产品层测试覆盖：登录落地、7 种越权 403、辅导员与教师对象范围、
 学生请假写入、教师审批跨端同步、学院管理员范围、超管建课/建场地/授权/公告。
 
+### 7.3 角色端到端验收对照
+
+| 要求 | 证据 |
+|---|---|
+| 同一登录入口 | 仅 `/login/`；`/r21/login/` 302 到该入口；`test_login_*` 4 例 |
+| 登录后自动进入正确工作台 | 管理 → `/admin/`、教师 → `/teacher/`、学生 → `/student/`、无角色 → `/no-role/` |
+| 不同角色独立首页、菜单与流程 | 三端各自导航（`navigation.py`），E2E 分别截图；辅导员菜单动态出现 |
+| 一个业务对象在不同角色端状态一致 | `product_consistency.py` 8/8：同一条请假在三端显示同一状态 |
+| 教师审批后学生端同步更新 | `test_teacher_approves_leave_and_student_sees_it` + E2E「学生端同步看到已批准」 |
+| 管理员配置后授权用户可见正确结果 | `test_grant_role_changes_landing`、`test_admin_publishes_announcement_visible_to_student`、`product_grant_check.py` |
+| 越权不仅隐藏菜单且后端拒绝 | 9 个 403 测试（学生↔管理、教师↔学生/管理、辅导员↔管理、学院管理员↔系统配置、超管无学生角色） |
+| 个人中心与通知三端一致 | 同一 `common.profile` / `common.notifications` 视图，`test_profile_and_notifications_for_all_roles` 覆盖三角色 |
+| 原有功能不丢失 | `/r4/`–`/r9/`、`/r11/`–`/r20/` 原路径保留；全量回归 32 套件覆盖 |
+| 原有数据迁移可验证 | 迁移/回滚/再迁移三态通过，正式库指纹不变 |
+| 完整回归通过 | 见 §7.2 |
+
 ---
 
 ## 8. 复现命令
