@@ -1,0 +1,57 @@
+{% extends "r13/base.html" %}
+{% block title %}考勤会话{% endblock %}
+{% block content %}
+<h1>考勤会话</h1>
+
+{% if can_manage %}
+<section class="card">
+  <h2>创建考勤</h2>
+  <form method="post" action="{% url 'r13:session_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="unit">班级</label>
+        <select id="unit" name="unit" required>
+          {% for c in classes %}<option value="{{ c.pk }}">{{ c.code }} {{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="session_date">日期</label>
+        <input id="session_date" name="session_date" type="date" value="{{ today }}" required>
+      </div>
+      <div>
+        <label for="period">节次</label>
+        <input id="period" name="period" value="第1-2节" required maxlength="16">
+      </div>
+      <div>
+        <label for="topic">说明</label>
+        <input id="topic" name="topic" maxlength="100" placeholder="如：数据结构">
+      </div>
+      <div><button type="submit">创建并生成签到码</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>会话列表</h2>
+  <table>
+    <thead>
+      <tr><th>班级</th><th>日期 / 节次</th><th>状态</th><th>出勤</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.session.unit.code }}</td>
+          <td>{{ row.session.session_date }} · {{ row.session.period }}</td>
+          <td><span class="tag {{ row.session.status }}">{{ row.session.get_status_display }}</span></td>
+          <td>{{ row.stats.present }} 出勤 / {{ row.stats.late }} 迟到 / {{ row.stats.absent }} 缺勤 / {{ row.stats.leave }} 请假（{{ row.stats.rate }}%）</td>
+          <td><a class="btn small ghost" href="{% url 'r13:session_detail' row.session.pk %}">进入</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无考勤会话。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

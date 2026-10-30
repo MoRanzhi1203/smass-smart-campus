@@ -1,0 +1,69 @@
+{% extends "r13/base.html" %}
+{% block title %}补签{% endblock %}
+{% block content %}
+<h1>补签</h1>
+
+<section class="card">
+  <h2>提交补签</h2>
+  {% if my_record %}
+    <form method="post" action="{% url 'r13:makeup_submit' %}">
+      {% csrf_token %}
+      <div class="row">
+        <div>
+          <label for="session">已关闭的考勤会话</label>
+          <select id="session" name="session" required>
+            {% for s in closed_sessions %}
+              <option value="{{ s.pk }}">{{ s.session_date }} {{ s.period }}</option>
+            {% empty %}
+              <option value="">暂无可补签的会话</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="reason">补签理由</label>
+          <input id="reason" name="reason" maxlength="500" required
+                 placeholder="如：签到码输入错误 / 网络问题">
+        </div>
+        <div><button type="submit">提交补签</button></div>
+      </div>
+    </form>
+  {% else %}
+    <p class="muted">当前账号没有学籍档案。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>补签记录</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>会话</th><th>理由</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for m in makeups %}
+        <tr>
+          <td>{{ m.record.student_no }}</td>
+          <td>{{ m.session.session_date }} {{ m.session.period }}</td>
+          <td>{{ m.reason|truncatechars:28 }}</td>
+          <td><span class="tag {{ m.status }}">{{ m.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and m.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r13:makeup_action' m.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r13:makeup_action' m.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无补签记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "r13/base.html" %}
+{% block title %}考勤详情{% endblock %}
+{% block content %}
+<h1>{{ session.unit.code }} · {{ session.session_date }} · {{ session.period }}
+  <span class="tag {{ session.status }}">{{ session.get_status_display }}</span>
+</h1>
+
+<section class="card">
+  <h2>签到</h2>
+  {% if session.status == 'open' %}
+    {% if can_manage %}
+      <p>签到码：<span class="code">{{ session.code }}</span></p>
+      <p class="muted">过期时间：{{ session.code_expires_at|date:"Y-m-d H:i:s" }}（{{ session.late_after_minutes }} 分钟后签到记为迟到）</p>
+      <form class="inline-form" method="post" action="{% url 'r13:session_close' session.pk %}">
+        {% csrf_token %}<button type="submit" class="btn danger">关闭考勤并补记缺勤</button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'r13:session_sign' session.pk %}">
+        {% csrf_token %}
+        <div class="row">
+          <div>
+            <label for="code">签到码（6 位数字）</label>
+            <input id="code" name="code" inputmode="numeric" maxlength="8" required>
+          </div>
+          <div><button type="submit">签到</button></div>
+        </div>
+      </form>
+    {% endif %}
+  {% else %}
+    <p class="muted">本次考勤已关闭，缺勤学生可在“补签”页提交补签申请。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>考勤统计</h2>
+  <p>共 {{ stats.total }} 人：出勤 {{ stats.present }} / 迟到 {{ stats.late }} / 缺勤 {{ stats.absent }} / 请假 {{ stats.leave }}，出勤率 <strong>{{ stats.rate }}%</strong></p>
+</section>
+
+<section class="card">
+  <h2>名单</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>姓名</th><th>状态</th><th>来源</th><th>签到时间</th>
+        {% if can_manage %}<th>教师标记</th>{% endif %}</tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+        <tr>
+          <td>{{ r.record.student_no }}</td>
+          <td>{{ r.record.name }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>{{ r.get_source_display }}</td>
+          <td>{{ r.checked_at|date:"Y-m-d H:i"|default:"—" }}</td>
+          {% if can_manage %}
+            <td>
+              <form class="inline-form" method="post" action="{% url 'r13:session_mark' session.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="record" value="{{ r.record_id }}">
+                <select name="status">
+                  {% for code, label in statuses %}
+                    <option value="{{ code }}" {% if r.status == code %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn small" type="submit">保存</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr><td colspan="{% if can_manage %}6{% else %}5{% endif %}" class="empty">暂无考勤记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<p><a class="btn ghost" href="{% url 'r13:sessions' %}">返回会话列表</a></p>
+{% endblock %}

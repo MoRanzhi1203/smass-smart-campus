@@ -1,0 +1,81 @@
+{% extends "r13/base.html" %}
+{% block title %}请假销假{% endblock %}
+{% block content %}
+<h1>请假销假</h1>
+
+<section class="card">
+  <h2>提交请假</h2>
+  {% if my_record or can_manage %}
+    <form method="post" action="{% url 'r13:leave_submit' %}">
+      {% csrf_token %}
+      <div class="row">
+        <div>
+          <label for="leave_type">类型</label>
+          <select id="leave_type" name="leave_type" required>
+            {% for code, label in leave_types %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="start_date">开始日期</label>
+          <input id="start_date" name="start_date" type="date" required>
+        </div>
+        <div>
+          <label for="end_date">结束日期</label>
+          <input id="end_date" name="end_date" type="date" required>
+        </div>
+        <div>
+          <label for="reason">事由</label>
+          <input id="reason" name="reason" maxlength="500" required>
+        </div>
+        <div><button type="submit">提交</button></div>
+      </div>
+    </form>
+  {% else %}
+    <p class="muted">当前账号没有学籍档案，无法请假。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>请假记录</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>类型</th><th>起止</th><th>事由</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for l in leaves %}
+        <tr>
+          <td>{{ l.record.student_no }}</td>
+          <td>{{ l.get_leave_type_display }}</td>
+          <td>{{ l.start_date }} ~ {{ l.end_date }}</td>
+          <td>{{ l.reason|truncatechars:28 }}</td>
+          <td><span class="tag {{ l.status }}">{{ l.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and l.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r13:leave_action' l.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r13:leave_action' l.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif l.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r13:leave_action' l.pk 'cancel' %}">
+                {% csrf_token %}<button class="btn small muted" type="submit">撤销</button>
+              </form>
+            {% elif l.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 'r13:leave_action' l.pk 'close' %}">
+                {% csrf_token %}<button class="btn small ghost" type="submit">销假</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无请假记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
