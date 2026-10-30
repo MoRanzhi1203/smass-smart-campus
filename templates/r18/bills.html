@@ -1,0 +1,81 @@
+{% extends "r18/base.html" %}
+{% block title %}账单{% endblock %}
+{% block content %}
+<h1>学费账单</h1>
+
+{% if summary %}
+<section class="card">
+  <h2>我的应缴汇总</h2>
+  <p>应缴 <span class="amount">{{ summary.total }}</span> ·
+     已缴 <span class="amount">{{ summary.paid }}</span> ·
+     欠费 <span class="amount">{{ summary.outstanding }}</span>（{{ summary.count }} 张账单）</p>
+</section>
+{% endif %}
+
+{% if can_finance %}
+<section class="card">
+  <h2>收费项目</h2>
+  <form method="post" action="{% url 'r18:fee_item_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="code">编码</label><input id="code" name="code" required maxlength="64"></div>
+      <div><label for="name">名称</label><input id="name" name="name" required maxlength="100"></div>
+      <div>
+        <label for="category">类别</label>
+        <select id="category" name="category">
+          {% for code, label in fee_categories %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="amount">金额</label><input id="amount" name="amount" type="number" step="0.01" min="0.01" required></div>
+      <div><label for="term">学年学期</label><input id="term" name="term" maxlength="32" placeholder="2026-2027-1"></div>
+      <div><button type="submit">创建项目</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>生成账单</h2>
+  <form method="post" action="{% url 'r18:bill_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="record">学生</label>
+        <select id="record" name="record" required>
+          {% for r in records %}<option value="{{ r.pk }}">{{ r.student_no }} {{ r.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="fee_item">收费项目</label>
+        <select id="fee_item" name="fee_item" required>
+          {% for f in fee_items %}<option value="{{ f.pk }}">{{ f.code }} {{ f.name }}（{{ f.amount }}）</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="term2">学年学期</label><input id="term2" name="term" maxlength="32" placeholder="2026-2027-1"></div>
+      <div><label for="due_date">缴费截止</label><input id="due_date" name="due_date" type="date"></div>
+      <div><button type="submit">生成账单</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>账单列表（{{ bills|length }}）</h2>
+  <table>
+    <thead><tr><th>账单号</th><th>学生</th><th>应缴</th><th>已缴</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for b in bills %}
+        <tr>
+          <td>{{ b.bill_no }}</td>
+          <td>{{ b.record.student_no }}</td>
+          <td class="amount">{{ b.total }}</td>
+          <td class="amount">{{ b.paid }}</td>
+          <td><span class="tag {{ b.status }}">{{ b.get_status_display }}</span></td>
+          <td><a class="btn small ghost" href="{% url 'r18:bill_detail' b.pk %}">详情</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无账单。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

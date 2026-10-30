@@ -1,0 +1,31 @@
+{% extends "r18/base.html" %}
+{% block title %}财务台账{% endblock %}
+{% block content %}
+<h1>财务台账</h1>
+<section class="card">
+  <p>应收合计 <span class="amount">{{ totals.total }}</span> ·
+     已收 <span class="amount">{{ totals.paid }}</span> ·
+     欠费 <span class="amount">{{ totals.outstanding }}</span> ·
+     已退 <span class="amount">{{ totals.refunded }}</span></p>
+</section>
+<section class="card">
+  <table>
+    <thead><tr><th>流水号</th><th>类型</th><th>账单</th><th>金额</th><th>方向</th><th>经办</th><th>时间</th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+        <tr>
+          <td>{{ e.entry_no }}</td>
+          <td>{{ e.get_entry_type_display }}</td>
+          <td>{% if e.bill %}{{ e.bill.bill_no }}{% else %}—{% endif %}</td>
+          <td class="amount">{{ e.amount }}</td>
+          <td>{% if e.direction > 0 %}+{% else %}−{% endif %}</td>
+          <td>{{ e.operator|default:"—" }}</td>
+          <td>{{ e.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty">暂无台账记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

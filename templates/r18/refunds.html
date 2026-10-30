@@ -1,0 +1,41 @@
+{% extends "r18/base.html" %}
+{% block title %}退费{% endblock %}
+{% block content %}
+<h1>退费申请</h1>
+<section class="card">
+  <table>
+    <thead><tr><th>账单</th><th>学生</th><th>金额</th><th>事由</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for r in refunds %}
+        <tr>
+          <td>{{ r.bill.bill_no }}</td>
+          <td>{{ r.bill.record.student_no }}</td>
+          <td class="amount">{{ r.amount }}</td>
+          <td>{{ r.reason|truncatechars:24 }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>
+            {% if can_finance and r.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r18:refund_action' r.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r18:refund_action' r.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif can_finance and r.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 'r18:refund_action' r.pk 'execute' %}">
+                {% csrf_token %}<button class="btn small" type="submit">出纳执行</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无退费申请。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

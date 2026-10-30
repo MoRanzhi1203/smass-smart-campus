@@ -1,0 +1,107 @@
+{% extends "r18/base.html" %}
+{% block title %}账单 {{ bill.bill_no }}{% endblock %}
+{% block content %}
+<h1>账单 {{ bill.bill_no }}
+  <span class="tag {{ bill.status }}">{{ bill.get_status_display }}</span>
+</h1>
+<p class="muted">
+  {{ bill.record.student_no }} {{ bill.record.name }} · {{ bill.term|default:"未指定学期" }} ·
+  应缴 <span class="amount">{{ bill.total }}</span> · 已缴 <span class="amount">{{ bill.paid }}</span> ·
+  欠费 <span class="amount">{{ bill.outstanding }}</span>
+  {% if bill.due_date %}· 截止 {{ bill.due_date }}{% endif %}
+</p>
+
+<section class="card">
+  <h2>账单明细</h2>
+  <table>
+    <thead><tr><th>收费项目</th><th>类别</th><th>金额</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.fee_item.code }} {{ item.fee_item.name }}</td>
+          <td>{{ item.fee_item.get_category_display }}</td>
+          <td class="amount">{{ item.amount }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" class="empty">无明细。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if can_finance and bill.status != 'paid' and bill.status != 'void' %}
+<section class="card">
+  <h2>登记合成缴费</h2>
+  <form method="post" action="{% url 'r18:bill_pay' bill.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="amount">金额</label><input id="amount" name="amount" type="number" step="0.01" min="0.01" required></div>
+      <div>
+        <label for="method">方式</label>
+        <select id="method" name="method">
+          {% for code, label in payment_methods %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="reference">幂等键（可选）</label><input id="reference" name="reference" maxlength="64"></div>
+      <div><label for="note">备注</label><input id="note" name="note" maxlength="200"></div>
+      <div><button type="submit">登记缴费</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+{% if is_owner and bill.paid > 0 %}
+<section class="card">
+  <h2>申请退费</h2>
+  <form method="post" action="{% url 'r18:refund_request' bill.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="refund_amount">金额</label><input id="refund_amount" name="amount" type="number" step="0.01" min="0.01" required></div>
+      <div><label for="reason">事由</label><input id="reason" name="reason" required maxlength="500"></div>
+      <div><button class="btn muted" type="submit">提交退费申请</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>缴费记录（{{ payments|length }}）</h2>
+  <table>
+    <thead><tr><th>幂等键</th><th>金额</th><th>方式</th><th>状态</th><th>时间</th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+        <tr>
+          <td>{{ p.reference }}</td>
+          <td class="amount">{{ p.amount }}</td>
+          <td>{{ p.get_method_display }}</td>
+          <td><span class="tag {{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td>{{ p.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无缴费记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>退费记录（{{ refunds|length }}）</h2>
+  <table>
+    <thead><tr><th>金额</th><th>事由</th><th>状态</th><th>申请时间</th></tr></thead>
+    <tbody>
+      {% for r in refunds %}
+        <tr>
+          <td class="amount">{{ r.amount }}</td>
+          <td>{{ r.reason|truncatechars:30 }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty">暂无退费记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<p><a class="btn ghost" href="{% url 'r18:bills' %}">返回账单列表</a></p>
+{% endblock %}
