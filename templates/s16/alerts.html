@@ -1,0 +1,42 @@
+{% extends "s16/base.html" %}
+{% block title %}安全告警{% endblock %}
+{% block content %}
+<h1>安全告警</h1>
+
+<section class="card">
+  <p>窗口内 denied 次数超过阈值会生成告警；同一主体在同一窗口只保留一条待处理告警。</p>
+  <form class="inline-form" method="post" action="{% url 's16:alert_scan' %}">
+    {% csrf_token %}<button type="submit">立即扫描</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>告警列表（{{ alerts|length }}）</h2>
+  <table>
+    <thead><tr><th>时间</th><th>类型</th><th>主体</th><th>严重度</th><th>状态</th><th>详情</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for a in alerts %}
+        <tr>
+          <td>{{ a.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td>{{ a.get_alert_type_display }}</td>
+          <td>{{ a.subject }}</td>
+          <td><span class="tag {{ a.severity }}">{{ a.get_severity_display }}</span></td>
+          <td><span class="tag {{ a.status }}">{{ a.get_status_display }}</span></td>
+          <td class="mono">{{ a.detail }}</td>
+          <td>
+            {% if a.status == 'open' %}
+              <form class="inline-form" method="post" action="{% url 's16:alert_ack' a.pk %}">
+                {% csrf_token %}<button class="btn small" type="submit">确认</button>
+              </form>
+            {% else %}
+              <span class="muted">{{ a.acknowledged_by }} · {{ a.acknowledged_at|date:"m-d H:i" }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty">暂无告警。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
