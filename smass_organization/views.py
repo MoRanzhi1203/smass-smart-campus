@@ -211,17 +211,41 @@ def import_commit_view(request):
 @require_http_methods(['GET'])
 @roles_required(*TEACHER_ROLES)
 def student_export(request):
-    """受限 CSV 导出（对象/字段 scope 与列表一致）。"""
-    from django.http import HttpResponse
+    """受限 CSV 导出（对象/字段 scope 与列表一致）。
+
+    ``?stream=1`` 使用 StreamingHttpResponse + 分批迭代，避免 10k 行
+    一次性物化；默认仍返回完整响应以兼容既有调用方。
+    """
+    from django.http import HttpResponse, StreamingHttpResponse
 
     from smass_organization import export
 
+    account = getattr(request, 'user', None)
+    unit_code = request.GET.get('unit')
+    keyword = request.GET.get('q')
+    limit = int(request.GET.get('limit', export.MAX_ROWS))
+    offset = int(request.GET.get('offset', 0))
+
+    if request.GET.get('stream') == '1':
+        total = export.count_students(
+            account, unit_code=unit_code, keyword=keyword)
+        chunks = export.iter_students_csv(
+            account, unit_code=unit_code, keyword=keyword,
+            limit=limit, offset=offset)
+        response = StreamingHttpResponse(
+            chunks, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="students.csv"'
+        response['X-Streamed'] = '1'
+        response['X-Total-Rows'] = str(total)
+        response['X-Exported-Rows'] = str(max(min(total - offset, limit), 0))
+        return response
+
     text, meta = export.export_students_csv(
-        getattr(request, 'user', None),
-        unit_code=request.GET.get('unit'),
-        keyword=request.GET.get('q'),
-        limit=int(request.GET.get('limit', export.MAX_ROWS)),
-        offset=int(request.GET.get('offset', 0)),
+        account,
+        unit_code=unit_code,
+        keyword=keyword,
+        limit=limit,
+        offset=offset,
     )
 
     response = HttpResponse(text, content_type='text/csv; charset=utf-8')

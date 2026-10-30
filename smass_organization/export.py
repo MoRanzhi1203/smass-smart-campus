@@ -14,7 +14,9 @@ import io
 from smass_organization import services
 from smass_organization.models import StudentRecord
 
-MAX_ROWS = 5000
+#: 单次导出的上限（行）。流式导出下内存不随行数线性增长；
+#: 上限用于防止误触发超大导出，10k 规模的日常导出在范围内。
+MAX_ROWS = 50000
 
 #: 可能触发电子表格公式的前缀
 FORMULA_PREFIXES = ('=', '+', '-', '@', '\t', '\r')
@@ -36,28 +38,50 @@ def _base_columns(account):
     return columns, extra_codes
 
 
-def export_students_csv(account, *, unit_code=None, keyword=None,
-                        limit=MAX_ROWS, offset=0):
-    """生成受限 CSV。返回 ``(text, meta)``。"""
+def _scoped_students(account, *, unit_code=None, keyword=None):
     queryset = services.scoped_students(account).select_related('unit')
-
     if unit_code:
         queryset = queryset.filter(unit__code=unit_code)
     if keyword:
         queryset = queryset.filter(name__icontains=keyword)
+    return queryset.order_by('student_no')
 
-    total = queryset.count()
-    rows = list(queryset.order_by('student_no')[offset:offset + limit])
+
+def count_students(account, *, unit_code=None, keyword=None):
+    """导出前的总数（用于响应头与截断提示，不物化行）。"""
+    return _scoped_students(account, unit_code=unit_code,
+                            keyword=keyword).count()
+
+
+def iter_students_csv(account, *, unit_code=None, keyword=None,
+                      limit=MAX_ROWS, offset=0, chunk_size=2000):
+    """**流式**生成 CSV 文本块（含表头）。
+
+    使用 ``queryset.iterator()`` 分批取数，避免 10k 行一次性物化为模型列表；
+    每个 yield 是一个完整的 CSV 片段，可直接写入 ``StreamingHttpResponse``。
+    """
+    queryset = _scoped_students(
+        account, unit_code=unit_code, keyword=keyword)[offset:offset + limit]
 
     columns, extra_codes = _base_columns(account)
-    headers = columns + extra_codes
-
+    # 一次性计算可见字段集合，避免逐行调用 filtered_extra 造成的 N+1 查询。
+    allowed_codes = {field.code for field in services.visible_fields(account)}
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator='\n')
-    writer.writerow(headers)
 
-    for record in rows:
-        visible_extra = services.filtered_extra(record, account)
+    def _flush():
+        value = buffer.getvalue()
+        buffer.seek(0)
+        buffer.truncate(0)
+        return value
+
+    writer.writerow(columns + extra_codes)
+    yield _flush()
+
+    for record in queryset.iterator(chunk_size=chunk_size):
+        extra = record.extra or {}
+        visible_extra = {key: value for key, value in extra.items()
+                         if key in allowed_codes}
         values = [
             record.student_no,
             record.name,
@@ -66,18 +90,35 @@ def export_students_csv(account, *, unit_code=None, keyword=None,
         ]
         values += [visible_extra.get(code, '') for code in extra_codes]
         writer.writerow([sanitize_cell(value) for value in values])
+        yield _flush()
+
+
+def export_students_csv(account, *, unit_code=None, keyword=None,
+                        limit=MAX_ROWS, offset=0):
+    """生成受限 CSV。返回 ``(text, meta)``。
+
+    为兼容既有调用方保留"返回完整文本"的接口；大数据量下载应使用
+    ``iter_students_csv`` + ``StreamingHttpResponse``，避免整串驻留内存。
+    """
+    total = count_students(account, unit_code=unit_code, keyword=keyword)
+    chunks = list(iter_students_csv(
+        account, unit_code=unit_code, keyword=keyword,
+        limit=limit, offset=offset))
+    text = ''.join(chunks)
+    exported = max(len(chunks) - 1, 0)
+    headers = _base_columns(account)[0] + _base_columns(account)[1]
 
     meta = {
         'total': total,
-        'exported': len(rows),
+        'exported': exported,
         'offset': offset,
         'limit': limit,
         'columns': headers,
-        'truncated': total > offset + len(rows),
+        'truncated': total > offset + exported,
     }
 
     _audit_export(account, meta)
-    return buffer.getvalue(), meta
+    return text, meta
 
 
 def _audit_export(account, meta):
