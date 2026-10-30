@@ -297,11 +297,20 @@ def run_apply(data):
                      'app01_admin', row['id'], 'system_admin')
 
     # 学生
+    grade_year = {}
+    for row in data['grades']:
+        digits = ''.join(ch for ch in str(row['name'])[:4] if ch.isdigit())
+        if len(digits) == 4:
+            grade_year[row['id']] = int(digits)
     for row in data['students']:
         account, _ = link_account(
             row['id'], row['name'], 'student', row['password'],
             'app01_student', row['id'], 'student')
         class_unit = classes.get(row['classes_id'])
+        class_row = next((item for item in data['classes']
+                          if item['id'] == row['classes_id']), None)
+        year = grade_year.get(class_row['grade_id']) if class_row else None
+        enrolled_at = date(year, 9, 1) if year else date.today()
         StudentProfile.objects.update_or_create(
             account=account,
             defaults={'student_no': row['id'], 'name': row['name'],
@@ -327,12 +336,10 @@ def run_apply(data):
             student_no=row['id'],
             defaults={'name': row['name'], 'account': account,
                       'unit': class_unit, 'status': 'enrolled',
-                      'enrolled_at': date.today(), 'extra': extra})
+                      'enrolled_at': enrolled_at, 'extra': extra})
         if created:
             manifest['created_records'].append(record.pk)
         # 班级辅导员
-        class_row = next((item for item in data['classes']
-                          if item['id'] == row['classes_id']), None)
         if class_row and class_row.get('counsellor_id'):
             counselor = teachers.get(class_row['counsellor_id'])
             if counselor is not None and class_unit is not None:

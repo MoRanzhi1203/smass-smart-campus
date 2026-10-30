@@ -76,6 +76,8 @@
 - `StudentProfile`：学号、姓名、学院名、班级名、掩码手机号。
 - `StudentRecord`：`student_no`、姓名、`account`、`unit=班级`、
   `status=enrolled`、`extra`（性别/民族/政治面貌/寝室）。
+  入学日期由班级所属年级推断（如「2021级」→ `2021-09-01`），
+  源库没有入学日期字段时不使用迁移当天冒充。
 - `TeacherProfile`：工号、姓名、掩码手机号。
 - `OrganizationMembership`：
   - 教师 → 学院（`role=teacher`）
