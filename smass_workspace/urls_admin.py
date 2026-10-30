@@ -32,6 +32,8 @@ urlpatterns = [
          name='admin_section_roster'),
     path('scheduling/', views.scheduling, name='admin_scheduling'),
     path('facilities/', views.facilities, name='admin_facilities'),
+    path('facilities/rooms/create/', views.room_create,
+         name='admin_room_create'),
     path('booking-approvals/', views.booking_approvals,
          name='admin_booking_approvals'),
     path('bookings/<int:pk>/<str:action>/', views.booking_action,

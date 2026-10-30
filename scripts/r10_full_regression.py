@@ -50,6 +50,8 @@ SUITES = [
     ('smass_privacy', 'smass.settings_s13'),
     ('smass_api_security', 'smass.settings_s15'),
     ('smass_a11y', 'smass.settings_s19'),
+    # ---- 产品层：三端落地、越权拒绝、对象范围、跨端同步 ----
+    ('smass_workspace', 'smass.settings_product'),
 ]
 
 RAN_RE = re.compile(r'^Ran (\d+) tests? in ([\d.]+)s', re.M)

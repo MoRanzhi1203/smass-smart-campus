@@ -36,6 +36,16 @@ cd E:\PythonWeb\smass\.local\clean-dev
 - 历史数据迁移与回滚：[`docs/SMASS_Legacy_Migration_Report.md`](docs/SMASS_Legacy_Migration_Report.md)
 - 正式库 `smass` **只读**；产品使用独立隔离库。
 
+### 验收命令
+
+```powershell
+& $py manage.py test smass_workspace --settings=smass.settings_product   # 产品层 40 例
+& $py scripts\product_smoke.py                                           # 三端页面冒烟
+& $py scripts\product_e2e.py --base http://127.0.0.1:8050                # Chromium 27 项
+& $py scripts\product_grant_check.py                                     # 角色授予生效
+& $py scripts\product_consistency.py                                     # 跨端状态一致
+```
+
 ---
 
 ## 1. 技术栈

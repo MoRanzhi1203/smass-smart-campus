@@ -218,7 +218,7 @@ def scheduling(account):
 
 
 def facilities(account):
-    from smass_facilities.models import Room, RoomBooking
+    from smass_facilities.models import Building, Room, RoomBooking
 
     rooms = list(
         Room.objects.select_related('building')
@@ -229,7 +229,9 @@ def facilities(account):
         .select_related('room', 'room__building', 'account')
         .order_by('start_at')[:40])
     return {'rooms': rooms, 'pending': pending,
-            'booking_total': RoomBooking.objects.count()}
+            'booking_total': RoomBooking.objects.count(),
+            'buildings': list(Building.objects.filter(is_active=True)
+                              .order_by('name'))}
 
 
 # ---------------------------------------------------------------------------

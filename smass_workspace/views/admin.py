@@ -540,6 +540,39 @@ def facilities(request):
         request, **svc.facilities(request.user)))
 
 
+@require_POST
+@admin_only
+@perms.require_system_admin
+def room_create(request):
+    from smass_facilities.models import Building, Room
+
+    building = Building.objects.filter(
+        pk=request.POST.get('building') or 0).first()
+    code = (request.POST.get('code') or '').strip()
+    name = (request.POST.get('name') or '').strip()
+    if building is None or not code or not name:
+        messages.error(request, '请选择楼宇并填写房间编码与名称。')
+        return redirect('/admin/facilities/')
+    if Room.objects.filter(code=code).exists():
+        messages.error(request, '房间编码 {} 已存在。'.format(code))
+        return redirect('/admin/facilities/')
+    try:
+        Room.objects.create(
+            code=code, name=name, building=building,
+            floor=request.POST.get('floor', ''),
+            room_type=request.POST.get('room_type') or 'classroom',
+            capacity=int(request.POST.get('capacity') or 0),
+            status='open',
+            requires_approval=request.POST.get('requires_approval') == '1',
+            requires_qualification=request.POST.get('requires_qualification') == '1',
+            is_active=True,
+        )
+        messages.success(request, '场地已创建，可立即接受预约。')
+    except ValueError:
+        messages.error(request, '容量必须是数字。')
+    return redirect('/admin/facilities/')
+
+
 @require_GET
 @admin_only
 def booking_approvals(request):

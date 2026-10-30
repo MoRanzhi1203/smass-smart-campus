@@ -11,8 +11,8 @@
     <p class="ws-sub">排课结果发布后，学生端与教师端课表同时更新。</p>
   </div>
   <div class="ws-page-actions">
-    <a class="ws-btn is-primary" href="/r11/plan/">排课规划</a>
-    <a class="ws-btn" href="/r16/rooms/">教室台账</a>
+    <a class="ws-btn" href="{% url 'workspace:admin_facilities' %}">教室与场地</a>
+    <a class="ws-btn is-primary" href="/r11/plan/">排课求解（专业工具）</a>
   </div>
 </div>
 
@@ -51,7 +51,7 @@
       <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
       <b>还没有排课运行</b>
       <p>在排课规划中创建运行并求解。</p>
-      <a class="ws-btn is-primary" href="/r11/plan/">前往排课规划</a>
+      <a class="ws-btn is-primary" href="/r11/plan/">排课求解（专业工具）</a>
     </div>
   {% endif %}
 </section>

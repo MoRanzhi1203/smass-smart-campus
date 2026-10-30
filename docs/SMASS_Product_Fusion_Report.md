@@ -159,9 +159,13 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 新建学年/学期/课程（`/admin/academics/`）、新建教学班与查看名单
 （`/admin/sections/`、`/admin/sections/<pk>/roster/`）、
 学籍详情与编辑（`/admin/records/<student_no>/`）、
+新增场地（`/admin/facilities/`）、
 创建/发布/结束活动（`/admin/activities/`）、创建/发布公告（`/admin/notices/`）、
 创建账号与角色授予（`/admin/users/`）、学籍异动与请假/场地审批
 （`/admin/record-changes/`、`/admin/approvals/`、`/admin/booking-approvals/`）。
+
+仅三处保留“专业工具”入口并明确标注：排课求解 `/r11/plan/`、
+导入向导 `/r4/import/`、流程编辑 `/r6/definitions/`。
 
 ---
 
@@ -320,10 +324,14 @@ python scripts/r10_full_regression.py --json
 
 | 脚本 | 结果 |
 |---|---|
+| `manage.py test smass_workspace` | **40 例 OK**（产品层自动化回归，已并入全量套件） |
 | `product_smoke.py` | PASS（学生 15 / 教师 10 / 辅导员 3 / 学院管理员 21 / 超管 23 / 越权 5 / 动态页 2） |
 | `product_e2e.py` | PASS（27 项 Chromium 检查） |
 | `product_grant_check.py` | PASS（8 项） |
 | `product_consistency.py` | PASS（8 项） |
+
+产品层测试覆盖：登录落地、7 种越权 403、辅导员与教师对象范围、
+学生请假写入、教师审批跨端同步、学院管理员范围、超管建课/建场地/授权/公告。
 
 ---
 
@@ -389,12 +397,14 @@ cd E:\PythonWeb\smass\.local\clean-dev
 smass/settings_product.py                 产品配置（隔离库 + 三端上下文）
 smass/urls_product.py                     产品 URLConf
 smass_workspace/                          产品层 app（导航/守卫/服务/视图/模板）
+smass_workspace/tests/test_workspace.py   产品层自动化回归（40 例）
 static/workspace/app.css                  统一设计系统
 static/workspace/app.js                   统一交互脚本
 scripts/product_bootstrap.py              隔离库 + 合成数据
 scripts/product_smoke.py                  三端页面冒烟
 scripts/product_e2e.py                    Chromium 浏览器验收
 scripts/product_grant_check.py            授权生效验证
+scripts/product_consistency.py            三端状态一致性验证
 scripts/legacy_migration.py               app01 → 统一模型迁移/校验/回滚
 ```
 
