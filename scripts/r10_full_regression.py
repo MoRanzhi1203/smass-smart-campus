@@ -81,7 +81,7 @@ def run_suite(name, settings_name):
     failed_match = FAILED_RE.search(output)
     failed_detail = failed_match.group(1) if failed_match else ''
 
-    return {
+    item = {
         'suite': name,
         'settings': settings_name or 'formal',
         'count': count,
@@ -90,6 +90,11 @@ def run_suite(name, settings_name):
         'seconds': elapsed,
         'failed_detail': failed_detail,
     }
+    if result.returncode != 0:
+        # 保留尾部输出，便于定位偶发失败（例如浏览器 E2E 的间歇性超时）
+        item['failed_output_tail'] = '\n'.join(
+            output.strip().splitlines()[-40:])
+    return item
 
 
 def main():

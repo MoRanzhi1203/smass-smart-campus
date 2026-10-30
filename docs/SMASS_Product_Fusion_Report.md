@@ -283,7 +283,7 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 | 越权后端拒绝 | PASS（403） | E2E 4 项 + 冒烟 5 项 |
 | 历史迁移 + 回滚 + 再迁移 | PASS | `.local/evidence/migration/*.json` |
 | 正式库零写入 | PASS（指纹一致） | `.local/evidence/product/formal_db_fingerprint.json` |
-| 全量回归 | 见 §7.2 | `r10_full_regression.py` |
+| 全量回归 | **32 套件 / 1800 例 / 0 失败**，exit 0 | `.local/evidence/product/regression_rerun.log` |
 
 ### 7.1 浏览器验收截图（节选）
 
@@ -316,9 +316,14 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 python scripts/r10_full_regression.py --json
 ```
 
-**实测：31 套件 / 1760 例 / 0 失败 / exit 0**（`.local/evidence/product/regression.log`）。
+**实测：32 套件 / 1800 例 / 0 失败 / exit 0**（`.local/evidence/product/regression_rerun.log`）。
+其中产品层 `smass_workspace` 40 例、耗时 68.5s，已并入套件列表。
 本轮改动为**纯新增**（`smass_workspace/`、`settings_product.py`、`urls_product.py`、
-`static/workspace/`、5 个脚本、3 份文档），未触碰既有业务代码。
+`static/workspace/`、6 个脚本、4 份文档），未触碰既有业务代码。
+
+> 首次全量运行中 `smass_api_security` 出现 1 例偶发失败；该套件单独重跑
+> 28/28 通过，随后全量复跑 32 套件全绿。回归脚本已增加失败尾部输出，
+> 便于后续定位同类间歇性问题。
 
 产品端另有独立验收：
 
