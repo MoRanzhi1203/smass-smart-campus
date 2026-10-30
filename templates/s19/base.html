@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}可访问性{% endblock %} · SMASS</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#1f2430; --muted:#667085; --line:#e4e7ec;
+            --brand:#2456a6; --brand-soft:#e8effb; --ok:#0f7b4f; --ok-soft:#e7f6ef;
+            --err:#b42318; --err-soft:#fdecea; --warn:#8a5a00; --warn-soft:#fff4d6; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+           font:16px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+    a:focus-visible, button:focus-visible { outline:3px solid #111; outline-offset:2px; }
+    header { background:var(--card); border-bottom:1px solid var(--line); padding:12px 20px;
+             display:flex; gap:12px; align-items:center; justify-content:space-between; }
+    .brand { font-weight:700; color:var(--brand); font-size:18px; }
+    main { max-width:1100px; margin:0 auto; padding:20px; }
+    h1 { font-size:22px; margin:0 0 8px; }
+    .lead { color:var(--muted); font-size:14px; margin:0 0 18px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; }
+    .stat { border:1px solid var(--line); border-radius:10px; padding:12px; }
+    .stat .n { font-size:24px; font-weight:700; }
+    .stat .l { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; table-layout:fixed; }
+    th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line);
+             vertical-align:top; overflow-wrap:anywhere; word-break:break-word; }
+    th { color:var(--muted); font-weight:600; background:#fafbfc; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; }
+    .tag.error { background:var(--err-soft); color:var(--err); }
+    .tag.warning { background:var(--warn-soft); color:var(--warn); }
+    .tag.pass { background:var(--ok-soft); color:var(--ok); }
+    .mono { font-family:ui-monospace, Consolas, monospace; font-size:12px; }
+    .muted { color:var(--muted); font-size:13px; }
+    .empty { color:var(--muted); padding:18px 4px; }
+    .skip { position:absolute; left:-9999px; top:0; background:#fff; padding:8px 12px; z-index:10; }
+    .skip:focus { left:8px; }
+    @media (max-width:640px) { main { padding:14px; } }
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<header>
+  <div class="brand">SMASS 可访问性</div>
+  <span class="muted">WCAG 2.1 AA 基线 · 键盘 · 焦点 · 对比度</span>
+</header>
+<main id="main">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -30,7 +30,7 @@
               </form>
               <form class="inline-form" method="post" action="{% url 'r14:credit_action' c.pk 'reject' %}">
                 {% csrf_token %}
-                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <input name="reason" placeholder="驳回原因" required style="width:110px" aria-label="驳回原因" >
                 <button class="btn small danger" type="submit">驳回</button>
               </form>
             {% else %}

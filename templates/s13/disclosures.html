@@ -10,7 +10,7 @@
     <label>字段（只可勾选已登记字段）</label>
     <div class="checks">
       {% for f in fields %}
-        <label><input type="checkbox" name="fields" value="{{ f.field }}"> {{ f.field }}（{{ f.get_classification_display }}）</label>
+        <label><input type="checkbox" name="fields" value="{{ f.field }}" aria-label="fields" > {{ f.field }}（{{ f.get_classification_display }}）</label>
       {% empty %}
         <span class="muted">尚未登记字段，无法申请。</span>
       {% endfor %}
@@ -40,7 +40,7 @@
               </form>
               <form class="inline-form" method="post" action="{% url 's13:disclosure_action' r.pk 'reject' %}">
                 {% csrf_token %}
-                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <input name="reason" placeholder="驳回原因" required style="width:110px" aria-label="驳回原因" >
                 <button class="btn small danger" type="submit">驳回</button>
               </form>
             {% elif r.status == 'approved' %}

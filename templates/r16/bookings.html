@@ -20,7 +20,7 @@
           {% if b.status == 'pending' or b.status == 'approved' %}
           <form class="inline-form" method="post" action="{% url 'r16:cancel_booking' b.pk %}">
             {% csrf_token %}
-            <input name="reason" placeholder="取消原因（可选）" maxlength="200">
+            <input name="reason" placeholder="取消原因（可选）" maxlength="200" aria-label="取消原因（可选）" >
             <button class="btn small muted" type="submit">取消</button>
           </form>
           {% endif %}

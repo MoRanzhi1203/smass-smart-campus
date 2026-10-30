@@ -11,13 +11,13 @@
   <div class="row">
     {% if is_author and post.status == 'published' %}
       <form class="inline-form" method="post" action="{% url 'r17:content_action' post.pk %}">
-        {% csrf_token %}<input type="hidden" name="action" value="hide">
+        {% csrf_token %}<input type="hidden" name="action" value="hide" aria-label="action" >
         <button class="btn muted" type="submit">下架我的帖子</button>
       </form>
     {% endif %}
     {% if can_moderate and post.status != 'removed' %}
       <form class="inline-form" method="post" action="{% url 'r17:content_action' post.pk %}">
-        {% csrf_token %}<input type="hidden" name="action" value="remove">
+        {% csrf_token %}<input type="hidden" name="action" value="remove" aria-label="action" >
         <button class="btn danger" type="submit">删除帖子</button>
       </form>
     {% endif %}
@@ -28,9 +28,9 @@
   <h2>举报该帖子</h2>
   <form method="post" action="{% url 'r17:content_report' %}">
     {% csrf_token %}
-    <input type="hidden" name="target_type" value="post">
-    <input type="hidden" name="target_id" value="{{ post.pk }}">
-    <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/">
+    <input type="hidden" name="target_type" value="post" aria-label="target_type" >
+    <input type="hidden" name="target_id" value="{{ post.pk }}" aria-label="target_id" >
+    <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/" aria-label="next" >
     <div class="row">
       <div><label for="reason">举报理由</label><input id="reason" name="reason" required maxlength="500"></div>
       <div><button class="btn muted" type="submit">举报</button></div>
@@ -48,10 +48,10 @@
       </p>
       <form class="inline-form" method="post" action="{% url 'r17:content_report' %}">
         {% csrf_token %}
-        <input type="hidden" name="target_type" value="comment">
-        <input type="hidden" name="target_id" value="{{ c.pk }}">
-        <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/">
-        <input name="reason" placeholder="举报理由" required style="width:160px">
+        <input type="hidden" name="target_type" value="comment" aria-label="target_type" >
+        <input type="hidden" name="target_id" value="{{ c.pk }}" aria-label="target_id" >
+        <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/" aria-label="next" >
+        <input name="reason" placeholder="举报理由" required style="width:160px" aria-label="举报理由" >
         <button class="btn small muted" type="submit">举报</button>
       </form>
     </div>

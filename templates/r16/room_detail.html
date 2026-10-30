@@ -23,7 +23,7 @@
     <h2 style="margin-top:0">预约申请</h2>
     <form method="post" action="{% url 'r16:create_booking' room.pk %}">
       {% csrf_token %}
-      <input type="hidden" name="date" value="{{ day|date:'Y-m-d' }}">
+      <input type="hidden" name="date" value="{{ day|date:'Y-m-d' }}" aria-label="date" >
       <label for="start_at">开始时间</label>
       <input id="start_at" type="datetime-local" name="start_at"
              value="{{ form.start_at|default:default_start }}" required>

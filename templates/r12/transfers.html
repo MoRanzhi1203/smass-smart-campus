@@ -62,13 +62,13 @@
               </form>
               <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'reject' %}">
                 {% csrf_token %}
-                <input name="reason" placeholder="驳回原因" required style="width:120px">
+                <input name="reason" placeholder="驳回原因" required style="width:120px" aria-label="驳回原因" >
                 <button class="btn small danger" type="submit">驳回</button>
               </form>
             {% elif can_manage and t.status == 'approved' %}
               <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'apply' %}">
                 {% csrf_token %}
-                <select name="target_class" required>
+                <select name="target_class" required aria-label="target_class" >
                   {% for c in row.classes %}
                     <option value="{{ c.pk }}">{{ c.code }}</option>
                   {% endfor %}

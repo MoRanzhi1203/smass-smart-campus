@@ -1,0 +1,55 @@
+{% extends "s19/base.html" %}
+{% block title %}可访问性报告{% endblock %}
+{% block content %}
+<h1>可访问性审计报告</h1>
+<p class="lead">静态规则扫描全部模板；新模板（R12–R20 与 S09–S16）必须零 error。</p>
+
+<section class="card">
+  <h2>汇总</h2>
+  <div class="grid">
+    <div class="stat"><div class="n">{{ summary.templates }}</div><div class="l">模板总数</div></div>
+    <div class="stat"><div class="n">{{ summary.new_templates }}</div><div class="l">新模板</div></div>
+    <div class="stat"><div class="n">{{ summary.new_errors }}</div><div class="l">新模板 error</div></div>
+    <div class="stat"><div class="n">{{ summary.new_warnings }}</div><div class="l">新模板 warning</div></div>
+    <div class="stat"><div class="n">{{ summary.legacy_errors }}</div><div class="l">历史模板 error</div></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>问题明细</h2>
+  <table>
+    <thead><tr><th>模板</th><th>级别</th><th>规则</th><th>说明</th></tr></thead>
+    <tbody>
+      {% for item in problems %}
+        {% for issue in item.issues %}
+          <tr>
+            <td class="mono">{{ item.path }}{% if not item.new_template %} <span class="muted">（历史）</span>{% endif %}</td>
+            <td><span class="tag {{ issue.level }}">{{ issue.level }}</span></td>
+            <td class="mono">{{ issue.rule }}</td>
+            <td>{{ issue.detail }}</td>
+          </tr>
+        {% endfor %}
+      {% empty %}
+        <tr><td colspan="4" class="empty">未发现问题。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>设计系统配色对比度</h2>
+  <table>
+    <thead><tr><th>前景</th><th>背景</th><th>对比度</th><th>级别</th></tr></thead>
+    <tbody>
+      {% for c in colors %}
+        <tr>
+          <td><span class="mono">{{ c.fg }}</span> <span style="display:inline-block;width:14px;height:14px;background:{{ c.fg }};border:1px solid #ccc;"></span></td>
+          <td><span class="mono">{{ c.bg }}</span> <span style="display:inline-block;width:14px;height:14px;background:{{ c.bg }};border:1px solid #ccc;"></span></td>
+          <td>{{ c.ratio }}:1</td>
+          <td><span class="tag {% if c.level == 'FAIL' %}error{% else %}pass{% endif %}">{{ c.level }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -27,7 +27,7 @@
             </form>
             <form class="inline-form" method="post" action="{% url 'r16:reject' b.pk %}">
               {% csrf_token %}
-              <input name="reason" placeholder="驳回原因（必填）" maxlength="200" required>
+              <input name="reason" placeholder="驳回原因（必填）" maxlength="200" required aria-label="驳回原因（必填）" >
               <button class="btn small danger" type="submit">驳回</button>
             </form>
           {% endif %}

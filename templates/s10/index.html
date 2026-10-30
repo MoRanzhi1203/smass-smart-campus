@@ -19,9 +19,9 @@
             <a class="btn small ghost" href="{% url 's10:verify' %}?action={{ a.code }}&next=/s10/approvals/">去再认证</a>
             <form class="inline-form" method="post" action="{% url 's10:approval_open' %}">
               {% csrf_token %}
-              <input type="hidden" name="action_code" value="{{ a.code }}">
-              <input name="target" placeholder="对象" required style="width:100px">
-              <input name="reason" placeholder="事由" required style="width:130px">
+              <input type="hidden" name="action_code" value="{{ a.code }}" aria-label="action_code" >
+              <input name="target" placeholder="对象" required style="width:100px" aria-label="对象" >
+              <input name="reason" placeholder="事由" required style="width:130px" aria-label="事由" >
               <button class="btn small" type="submit">发起工单</button>
             </form>
           </td>

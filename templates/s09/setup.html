@@ -19,7 +19,7 @@
   <h2>2. 输入 6 位验证码完成绑定</h2>
   <form method="post" action="{% url 's09:setup' %}">
     {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
+    <input type="hidden" name="next" value="{{ next }}" aria-label="next" >
     <label for="code">验证码</label>
     <input id="code" name="code" inputmode="numeric" maxlength="6" required autocomplete="one-time-code">
     <p style="margin-top:14px;"><button type="submit">确认绑定</button></p>

@@ -16,7 +16,7 @@
             {% if r.status == 'pending' %}
               <form class="inline-form" method="post" action="{% url 'r17:report_resolve' r.pk %}">
                 {% csrf_token %}
-                <select name="action">
+                <select name="action" aria-label="action" >
                   <option value="hide">下架内容</option>
                   <option value="remove">删除内容</option>
                   <option value="dismiss">驳回举报</option>

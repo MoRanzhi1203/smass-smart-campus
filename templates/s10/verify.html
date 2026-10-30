@@ -7,7 +7,7 @@
 <section class="card">
   <form method="post" action="{% url 's10:verify_submit' %}">
     {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
+    <input type="hidden" name="next" value="{{ next }}" aria-label="next" >
     <div class="row">
       <div>
         <label for="action_code">操作</label>

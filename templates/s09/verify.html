@@ -6,7 +6,7 @@
 <section class="card">
   <form method="post" action="{% url 's09:verify' %}">
     {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
+    <input type="hidden" name="next" value="{{ next }}" aria-label="next" >
     <label for="code">验证码 / 恢复码</label>
     <input id="code" name="code" required autocomplete="one-time-code" maxlength="16">
     <p style="margin-top:14px;"><button type="submit">验证</button></p>

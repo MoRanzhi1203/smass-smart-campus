@@ -55,8 +55,8 @@
             <td>
               <form class="inline-form" method="post" action="{% url 'r13:session_mark' session.pk %}">
                 {% csrf_token %}
-                <input type="hidden" name="record" value="{{ r.record_id }}">
-                <select name="status">
+                <input type="hidden" name="record" value="{{ r.record_id }}" aria-label="record" >
+                <select name="status" aria-label="status" >
                   {% for code, label in statuses %}
                     <option value="{{ code }}" {% if r.status == code %}selected{% endif %}>{{ label }}</option>
                   {% endfor %}
