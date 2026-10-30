@@ -1,0 +1,97 @@
+{% extends "s15/base.html" %}
+{% block title %}API 管理{% endblock %}
+{% block content %}
+<h1>API 客户端与令牌</h1>
+<p class="lead">令牌只在签发时显示一次；库中仅存 SHA-256。吊销立即生效。</p>
+
+{% if issued_token %}
+<section class="card">
+  <h2>新令牌（仅显示一次）</h2>
+  <div class="token-box mono">{{ issued_token }}</div>
+  <p class="muted">请立即复制保存，刷新后不再显示。</p>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>创建客户端</h2>
+  <form method="post" action="{% url 's15:client_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="name">名称</label><input id="name" name="name" required maxlength="100"></div>
+      <div><button type="submit">创建</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>签发令牌</h2>
+  <form method="post" action="{% url 's15:token_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="client">客户端</label>
+        <select id="client" name="client" required>
+          {% for c in clients %}<option value="{{ c.pk }}">{{ c.client_id }} {{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="scopes">scopes（逗号分隔）</label><input id="scopes" name="scopes" placeholder="students:read" maxlength="300"></div>
+      <div><label for="ttl">有效期（秒）</label><input id="ttl" name="ttl" type="number" value="3600" min="1"></div>
+      <div><button type="submit">签发</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>令牌（{{ tokens|length }}）</h2>
+  <table>
+    <thead><tr><th>令牌前缀</th><th>客户端</th><th>scopes</th><th>过期时间</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for t in tokens %}
+        <tr>
+          <td class="mono">{{ t.token_hash|slice:":10" }}…</td>
+          <td>{{ t.client.client_id }}</td>
+          <td class="mono">{{ t.scopes|default:"（无）" }}</td>
+          <td>{{ t.expires_at|date:"Y-m-d H:i" }}</td>
+          <td>
+            {% if t.revoked_at %}<span class="tag danger">已吊销</span>
+            {% elif t.expires_at < now %}<span class="tag warn">已过期</span>
+            {% else %}<span class="tag ok">有效</span>{% endif %}
+          </td>
+          <td>
+            {% if not t.revoked_at %}
+              <form class="inline-form" method="post" action="{% url 's15:token_revoke' t.pk %}">
+                {% csrf_token %}<button class="btn small danger" type="submit">吊销</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无令牌。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>最近 API 请求</h2>
+  <table>
+    <thead><tr><th>时间</th><th>方法</th><th>路径</th><th>状态</th><th>原因</th><th>令牌</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at|date:"H:i:s" }}</td>
+          <td>{{ log.method }}</td>
+          <td class="mono">{{ log.path }}</td>
+          <td><span class="tag {{ log.status }}">{{ log.status }}</span></td>
+          <td class="muted">{{ log.reason }}</td>
+          <td class="mono">{{ log.token_hash_prefix }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无请求记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
