@@ -167,6 +167,7 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 | 消息 | `messages` → `.ws-alert`（success/warning/error/info） |
 | 空状态 | `.ws-empty`（图标 + 标题 + 说明 + 操作） |
 | 交互规范 | 抽屉式移动端导航、表单防重复提交、`prefers-reduced-motion`、跳过导航链接 |
+| 响应式 | 1180/1024/720 三个断点；390×844 实测无横向溢出，侧边栏可抽屉展开 |
 | 一致性 | 三端同一 CSS 文件、同一组件类名，仅 `--ws-accent` 变量不同 |
 
 不采用 iframe、不采用三套前端框架、不保留外部产品外壳。
@@ -286,6 +287,12 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 | `11_admin_home.png` | 管理控制台总览 |
 | `13_admin_settings.png` | 系统配置与权限治理 |
 | `14_student_notices.png` | 学生端看到管理员发布的公告 |
+| `20_mobile_student_home.png` | 移动端学生工作台（390×844） |
+| `21_mobile_student_drawer.png` | 移动端抽屉导航 |
+| `22_mobile_admin_home.png` | 移动端管理控制台 |
+| `23_mobile_student_timetable.png` | 移动端课表（表格可横向滚动，页面无溢出） |
+
+移动端实测：管理首页与学生课表页 `scrollWidth == clientWidth`（无整页横向溢出）。
 
 ### 7.2 回归
 
