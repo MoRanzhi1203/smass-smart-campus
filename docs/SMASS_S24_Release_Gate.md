@@ -48,7 +48,7 @@ $py = "C:\Users\MSIPC\.conda\envs\smass\python.exe"
 | 检查 | 结果 |
 |---|---|
 | git-clean | PASS |
-| git-remote-sync | PASS（本地 = 远端 = `bfa2a75`，提交后复跑一致） |
+| git-remote-sync | PASS（本地 = 远端 = `4d48f85`） |
 | admission | PASS |
 | secret-scan | PASS（白名单 11 项，测试夹具 108 处已识别） |
 | deps | PASS |
