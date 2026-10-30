@@ -120,13 +120,26 @@ def main():
     if response.status_code != 403:
         failures.append('counselor: /admin/ 期望 403')
 
+    # 动态页面：学籍详情的学号与教学班名单的主键来自真实数据
+    from smass_academic.models import TeachingSection
+    from smass_organization.models import StudentRecord
+
+    student = StudentRecord.objects.filter(account__isnull=False).first()
+    section = TeachingSection.objects.first()
+    dynamic = []
+    if student is not None:
+        dynamic.append('/admin/records/{}/'.format(student.student_no))
+    if section is not None:
+        dynamic.append('/admin/sections/{}/roster/'.format(section.pk))
+
     college = run_role('college_admin', 'dev_college', ADMIN_URLS)
     response = college.get('/admin/settings/')
     report['roles']['college_admin']['settings_status'] = response.status_code
     if response.status_code != 403:
         failures.append('college_admin: /admin/settings/ 期望 403')
 
-    run_role('super_admin', 'dev_admin', ADMIN_URLS + ['/admin/settings/'])
+    run_role('super_admin', 'dev_admin', ADMIN_URLS + dynamic
+             + ['/admin/settings/'])
 
     # 匿名访问工作台 → 302 到 /login/?next=
     anonymous = Client()

@@ -1,0 +1,61 @@
+{% extends "workspace/base.html" %}
+{% block title %}教学班名单{% endblock %}
+{% block topbar_title %}教学班名单{% endblock %}
+{% block topbar_sub %}{{ section.course.title }} · {{ section.code }} 班{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:admin_sections' %}">教学班与选课</a><span class="sep">/</span><span>名单</span></div>
+    <h1>{{ section.course.title }} · {{ section.code }} 班</h1>
+    <p class="ws-sub">
+      {{ section.term.year.code }} {{ section.term.get_semester_display }} ·
+      容量 {% if section.capacity %}{{ section.capacity }}{% else %}不限{% endif %} ·
+      已选 {{ enrollments|length }} 人
+    </p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>选课名单</h2><span class="ws-hint">来自教务选课记录</span></div>
+    {% if enrollments %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>学号</th><th>姓名</th><th>选课时间</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for item in enrollments %}
+              <tr>
+                <td class="is-strong">{{ item.account.login_name }}</td>
+                <td>{{ item.account.display_name }}</td>
+                <td class="is-muted">{{ item.enrolled_at|date:"Y-m-d H:i" }}</td>
+                <td><span class="ws-badge is-success">{{ item.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>暂无学生选课</b><p>选课开始后名单会自动更新。</p></div>
+    {% endif %}
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>任课教师</h2></div>
+    <div class="ws-card-body">
+      {% if assignments %}
+        <div class="ws-timeline">
+          {% for item in assignments %}
+            <div class="ws-timeline-item">
+              <b>{{ item.account.display_name }}</b>
+              <span>{{ item.account.login_name }} · 分配于 {{ item.assigned_at|date:"Y-m-d" }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>尚未分配教师</b><p>教务分配后在教师工作台可见。</p></div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -52,7 +52,11 @@ def main():
     from datetime import date as _date
     from datetime import timedelta as _timedelta
 
-    future = _date.today() + _timedelta(days=60 + LeaveRequest.objects.count())
+    last_leave = LeaveRequest.objects.order_by('-end_date').first()
+    if last_leave is not None:
+        future = last_leave.end_date + _timedelta(days=2)
+    else:
+        future = _date.today() + _timedelta(days=30)
 
     def check(name, ok, detail=''):
         checks.append({'name': name, 'ok': bool(ok), 'detail': str(detail)})
@@ -184,6 +188,46 @@ def main():
         page.goto(base + '/admin/settings/', wait_until='domcontentloaded')
         check('超管可访问系统配置', '系统配置与权限治理' in page.content(), page.url)
         shot('13_admin_settings.png')
+
+        # 管理端可直接操作：建档、开课、开教学班、建活动
+        from datetime import datetime as _dt
+
+        stamp = _dt.now().strftime('%H%M%S')
+        course_code = 'E2E{}'.format(stamp)
+        page.goto(base + '/admin/academics/', wait_until='domcontentloaded')
+        page.fill('#course_code', course_code)
+        page.fill('#course_title', '验收课程{}'.format(stamp))
+        page.fill('#course_credit', '2')
+        page.fill('#course_type', '选修')
+        page.click("button:has-text('创建课程')")
+        page.wait_for_load_state('domcontentloaded')
+        check('管理端创建课程', course_code in page.content(), page.url)
+        shot('15_admin_academics.png')
+
+        page.goto(base + '/admin/sections/', wait_until='domcontentloaded')
+        check('教学班页可新建', '新建教学班' in page.content(), page.url)
+
+        page.goto(base + '/admin/records/', wait_until='domcontentloaded')
+        first_record = page.locator("a:has-text('档案')").first
+        if first_record.count():
+            first_record.click()
+            page.wait_for_load_state('domcontentloaded')
+            check('管理端学籍档案页', '编辑学籍' in page.content(), page.url)
+            shot('16_admin_record_detail.png')
+        else:
+            check('管理端学籍档案页', False, '没有档案入口')
+
+        activity_title = '验收活动{}'.format(stamp)
+        page.goto(base + '/admin/activities/', wait_until='domcontentloaded')
+        page.fill('#act_title', activity_title)
+        page.select_option('#act_category', 'second_class')
+        page.fill('#act_start', '2027-05-01T10:00')
+        page.fill('#act_end', '2027-05-01T12:00')
+        page.fill('#act_location', '教学楼 A 座')
+        page.click("button:has-text('创建活动')")
+        page.wait_for_load_state('domcontentloaded')
+        check('管理端创建活动', activity_title in page.content(), page.url)
+        shot('17_admin_activities.png')
 
         # 9. 学生端看到新公告
         context.clear_cookies()

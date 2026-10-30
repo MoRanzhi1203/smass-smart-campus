@@ -10,49 +10,104 @@
     <h1>活动管理</h1>
     <p class="ws-sub">共 {{ activities|length }} 个活动 · 待认定学分 {{ credits_pending }} 条</p>
   </div>
-  {% if is_super %}<div class="ws-page-actions"><a class="ws-btn" href="/r14/activities/">活动详情管理</a></div>{% endif %}
 </div>
 
-<section class="ws-card">
-  <div class="ws-card-head"><h2>活动列表</h2><span class="ws-hint">发布后学生端可见</span></div>
-  {% if activities %}
-    <div class="ws-table-wrap">
-      <table class="ws-table">
-        <thead><tr><th>活动</th><th>类别</th><th>时间</th><th class="is-num">报名</th><th>状态</th><th></th></tr></thead>
-        <tbody>
-          {% for activity in activities %}
-            <tr>
-              <td class="is-strong">{{ activity.title }}</td>
-              <td>{{ activity.get_category_display }}</td>
-              <td class="is-muted">{{ activity.start_at|date:"m-d H:i" }}</td>
-              <td class="is-num">{{ activity.reg_count }}{% if activity.capacity %} / {{ activity.capacity }}{% endif %}</td>
-              <td><span class="ws-badge {% if activity.status == 'published' %}is-success{% elif activity.status == 'draft' %}is-warning{% else %}is-neutral{% endif %}">{{ activity.get_status_display }}</span></td>
-              <td class="is-num">
-                {% if is_super %}
-                  <div style="display:flex;gap:6px;justify-content:flex-end">
-                    {% if activity.status == 'draft' %}
-                      <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'publish' %}" data-once>
-                        {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">发布</button>
-                      </form>
-                    {% elif activity.status == 'published' %}
-                      <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'close' %}" data-once>
-                        {% csrf_token %}<button class="ws-btn is-sm" type="submit">结束</button>
-                      </form>
-                    {% endif %}
-                  </div>
-                {% else %}<span class="is-muted">只读</span>{% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>活动列表</h2><span class="ws-hint">发布后学生端可见</span></div>
+    {% if activities %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>活动</th><th>类别</th><th>时间</th><th class="is-num">报名</th><th>状态</th><th></th></tr></thead>
+          <tbody>
+            {% for activity in activities %}
+              <tr>
+                <td class="is-strong">{{ activity.title }}</td>
+                <td>{{ activity.get_category_display }}</td>
+                <td class="is-muted">{{ activity.start_at|date:"m-d H:i" }}</td>
+                <td class="is-num">{{ activity.reg_count }}{% if activity.capacity %} / {{ activity.capacity }}{% endif %}</td>
+                <td><span class="ws-badge {% if activity.status == 'published' %}is-success{% elif activity.status == 'draft' %}is-warning{% else %}is-neutral{% endif %}">{{ activity.get_status_display }}</span></td>
+                <td class="is-num">
+                  {% if is_super %}
+                    <div style="display:flex;gap:6px;justify-content:flex-end">
+                      {% if activity.status == 'draft' %}
+                        <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'publish' %}" data-once>
+                          {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">发布</button>
+                        </form>
+                      {% elif activity.status == 'published' %}
+                        <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'close' %}" data-once>
+                          {% csrf_token %}<button class="ws-btn is-sm" type="submit">结束</button>
+                        </form>
+                        <form method="post" action="{% url 'workspace:admin_activity_action' activity.pk 'credits' %}" data-once>
+                          {% csrf_token %}<button class="ws-btn is-sm" type="submit">生成学分</button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  {% else %}<span class="is-muted">只读</span>{% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-megaphone"></use></svg></div>
+        <b>暂无活动</b>
+        <p>在右侧创建活动后即可发布。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if is_super %}
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>创建活动</h2></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_activity_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_title">活动名称</label>
+          <input class="ws-input" id="act_title" name="title" maxlength="100" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_category">类别</label>
+          <select class="ws-select" id="act_category" name="category">
+            {% for value, label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_start">开始时间</label>
+          <input class="ws-input" type="datetime-local" id="act_start" name="start_at" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_end">结束时间</label>
+          <input class="ws-input" type="datetime-local" id="act_end" name="end_at" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_location">地点</label>
+          <input class="ws-input" id="act_location" name="location" maxlength="100" placeholder="教学楼 A 座">
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="act_capacity">容量（0 表示不限）</label>
+          <input class="ws-input" type="number" min="0" id="act_capacity" name="capacity" value="50">
+        </div>
+        <div class="ws-grid ws-grid-2" style="margin-bottom:11px">
+          <div class="ws-field">
+            <label for="act_points">第二课堂学分</label>
+            <input class="ws-input" type="number" step="0.5" min="0" id="act_points" name="credit_points" value="0">
+          </div>
+          <div class="ws-field">
+            <label for="act_hours">志愿时长</label>
+            <input class="ws-input" type="number" step="0.5" min="0" id="act_hours" name="volunteer_hours" value="0">
+          </div>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:10px">
+          <input type="checkbox" name="publish" value="1" checked> 创建后立即发布
+        </label>
+        <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">创建活动</button></div>
+      </form>
     </div>
-  {% else %}
-    <div class="ws-empty">
-      <div class="ws-empty-icon"><svg><use href="#ws-i-megaphone"></use></svg></div>
-      <b>暂无活动</b>
-      <p>活动创建后可在此发布。</p>
-    </div>
+  </section>
   {% endif %}
-</section>
+</div>
 {% endblock %}

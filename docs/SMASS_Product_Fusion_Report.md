@@ -147,11 +147,21 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 | 数据范围 | 全局 | `scope_college` 对应学院子树 |
 | 用户/角色写操作 | 可 | **403** |
 | 系统配置与权限治理 | 可 | **403** |
-| 活动发布/结束 | 可 | 只读 |
+| 创建学年/学期/课程/教学班 | 可 | 只读 |
+| 学籍详情与编辑 | 可（写） | 可看（不可改） |
+| 活动创建/发布/结束 | 可 | 只读 |
 | 公告创建/发布 | 可 | 只读 |
 | 学籍异动审批 | 可 | 可（限本院学生） |
 | 请假 / 场地审批 | 可 | 可（限本院学生） |
 | 监控 / 审计 / 数据交换 | 可 | 可（读） |
+
+管理端内的核心操作**在产品界面内完成**，不依赖跳转到旧页面：
+新建学年/学期/课程（`/admin/academics/`）、新建教学班与查看名单
+（`/admin/sections/`、`/admin/sections/<pk>/roster/`）、
+学籍详情与编辑（`/admin/records/<student_no>/`）、
+创建/发布/结束活动（`/admin/activities/`）、创建/发布公告（`/admin/notices/`）、
+创建账号与角色授予（`/admin/users/`）、学籍异动与请假/场地审批
+（`/admin/record-changes/`、`/admin/approvals/`、`/admin/booking-approvals/`）。
 
 ---
 
@@ -262,7 +272,7 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 | 检查 | 结果 | 证据 |
 |---|---|---|
 | 三端页面冒烟（Django client） | PASS | `.local/evidence/product/smoke.json` |
-| 三端真实浏览器（Chromium） | PASS，23 项检查 | `.local/evidence/product/e2e.json` + 15 张截图 |
+| 三端真实浏览器（Chromium） | PASS，27 项检查 | `.local/evidence/product/e2e.json` + 17 张截图 |
 | 管理员授权 → 用户落地变化 | PASS，8 项检查 | `.local/evidence/product/grant_check.json` |
 | 教师审批 → 学生端状态同步 | PASS | E2E「学生端同步看到已批准」 |
 | 管理员发布公告 → 学生端可见 | PASS | E2E「学生端看到管理员发布的公告」 |
@@ -302,9 +312,18 @@ SMASS 现在是**一套系统**，而不是三套独立产品：
 python scripts/r10_full_regression.py --json
 ```
 
-结果见 `.local/evidence/product/regression.log`；本轮改动为**纯新增**
-（`smass_workspace/`、`settings_product.py`、`urls_product.py`、`static/workspace/`、
-3 个脚本），未触碰既有业务代码。
+**实测：31 套件 / 1760 例 / 0 失败 / exit 0**（`.local/evidence/product/regression.log`）。
+本轮改动为**纯新增**（`smass_workspace/`、`settings_product.py`、`urls_product.py`、
+`static/workspace/`、5 个脚本、3 份文档），未触碰既有业务代码。
+
+产品端另有独立验收：
+
+| 脚本 | 结果 |
+|---|---|
+| `product_smoke.py` | PASS（学生 15 / 教师 10 / 辅导员 3 / 学院管理员 21 / 超管 23 / 越权 5 / 动态页 2） |
+| `product_e2e.py` | PASS（27 项 Chromium 检查） |
+| `product_grant_check.py` | PASS（8 项） |
+| `product_consistency.py` | PASS（8 项） |
 
 ---
 
@@ -354,8 +373,9 @@ cd E:\PythonWeb\smass\.local\clean-dev
    确定性构造 + 回溯求解与独立复核。
 3. 缴费为校内台账登记，**不接真实支付渠道**；退费需财务审批。
 4. 历史迁移默认掩码 PII；真实原值迁移需数据所有者授权。
-5. 教务深层操作（学年/课程/教学班/选课/流程定义编辑）仍使用既有功能页，
-   通过统一导航进入，产品层未重写这些表单。
+5. 排课求解（`/r11/plan/`）与数据导入向导（`/r4/import/`）保留为**专业工具页**：
+   前者需要冲突求解与人工复核，后者是多步文件向导；二者通过管理端链接进入，
+   其余核心操作已在产品界面内完成。
 6. 学院管理员的数据范围以 `scope_college` 字符串匹配组织编码/名称；
    该字段为既有模型，未做数据库结构变更。
 

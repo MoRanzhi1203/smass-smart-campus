@@ -8,82 +8,178 @@
   <div>
     <div class="ws-eyebrow">学籍与教学</div>
     <h1>学年学期与课程</h1>
-    <p class="ws-sub">教务基础数据；新增与编辑沿用教务管理功能页。</p>
-  </div>
-  <div class="ws-page-actions">
-    <a class="ws-btn" href="/r5/years/">学年管理</a>
-    <a class="ws-btn" href="/r5/courses/">课程管理</a>
+    <p class="ws-sub">学年 {{ years|length }} 个 · 学期 {{ terms|length }} 个 · 课程 {{ courses|length }} 门</p>
   </div>
 </div>
 
-<div class="ws-grid ws-grid-2">
-  <section class="ws-card">
-    <div class="ws-card-head"><h2>学年</h2><span class="ws-hint">{{ years|length }} 个</span></div>
-    {% if years %}
-      <div class="ws-table-wrap">
-        <table class="ws-table">
-          <thead><tr><th>编码</th><th>起止</th><th>当前</th></tr></thead>
-          <tbody>
-            {% for year in years %}
-              <tr>
-                <td class="is-strong">{{ year.code }}</td>
-                <td class="is-muted">{{ year.start_date|date:"Y-m-d" }} – {{ year.end_date|date:"Y-m-d" }}</td>
-                <td>{% if year.is_active %}<span class="ws-badge is-success">当前学年</span>{% else %}—{% endif %}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="ws-empty is-compact"><b>暂无学年</b><p>先在教务管理中创建学年。</p></div>
-    {% endif %}
-  </section>
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>学年</h2><span class="ws-hint">当前学年决定默认学期</span></div>
+      {% if years %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>编码</th><th>起止</th><th>当前</th></tr></thead>
+            <tbody>
+              {% for year in years %}
+                <tr>
+                  <td class="is-strong">{{ year.code }}</td>
+                  <td class="is-muted">{{ year.start_date|date:"Y-m-d" }} – {{ year.end_date|date:"Y-m-d" }}</td>
+                  <td>{% if year.is_active %}<span class="ws-badge is-success">当前学年</span>{% else %}—{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无学年</b><p>在右侧创建学年后即可建立学期。</p></div>
+      {% endif %}
+    </section>
 
-  <section class="ws-card">
-    <div class="ws-card-head"><h2>学期</h2><span class="ws-hint">{{ terms|length }} 个</span></div>
-    {% if terms %}
-      <div class="ws-table-wrap">
-        <table class="ws-table">
-          <thead><tr><th>学年</th><th>学期</th><th>起止</th><th>当前</th></tr></thead>
-          <tbody>
-            {% for term in terms %}
-              <tr>
-                <td>{{ term.year.code }}</td>
-                <td>{{ term.get_semester_display }}</td>
-                <td class="is-muted">{{ term.start_date|date:"Y-m-d" }} – {{ term.end_date|date:"Y-m-d" }}</td>
-                <td>{% if term.is_active %}<span class="ws-badge is-success">当前</span>{% else %}—{% endif %}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>学期</h2><span class="ws-hint">{{ terms|length }} 个</span></div>
+      {% if terms %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>学年</th><th>学期</th><th>起止</th><th>当前</th></tr></thead>
+            <tbody>
+              {% for term in terms %}
+                <tr>
+                  <td>{{ term.year.code }}</td>
+                  <td>{{ term.get_semester_display }}</td>
+                  <td class="is-muted">{{ term.start_date|date:"Y-m-d" }} – {{ term.end_date|date:"Y-m-d" }}</td>
+                  <td>{% if term.is_active %}<span class="ws-badge is-success">当前</span>{% else %}—{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无学期</b></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>课程目录</h2><span class="ws-hint">{{ courses|length }} 门</span></div>
+      {% if courses %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>课程编码</th><th>课程名称</th><th class="is-num">学分</th><th>类型</th><th>启用</th></tr></thead>
+            <tbody>
+              {% for course in courses %}
+                <tr>
+                  <td class="is-strong">{{ course.code }}</td>
+                  <td>{{ course.title }}</td>
+                  <td class="is-num">{{ course.credit }}</td>
+                  <td class="is-muted">{{ course.course_type|default:"—" }}</td>
+                  <td>{% if course.is_active %}<span class="ws-badge is-success">启用</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无课程</b></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    {% if is_super %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>新建学年</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_year_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="year_code">学年编码</label>
+            <input class="ws-input" id="year_code" name="code" placeholder="2026-2027" required maxlength="16">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="year_start">开始日期</label>
+            <input class="ws-input" type="date" id="year_start" name="start_date" required>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="year_end">结束日期</label>
+            <input class="ws-input" type="date" id="year_end" name="end_date" required>
+          </div>
+          <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:10px">
+            <input type="checkbox" name="is_active" value="1"> 设为当前学年
+          </label>
+          <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">创建学年</button></div>
+        </form>
       </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>新建学期</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_term_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="term_year">所属学年</label>
+            <select class="ws-select" id="term_year" name="year" required>
+              {% for pk, label in year_options %}<option value="{{ pk }}">{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="term_semester">学期</label>
+            <select class="ws-select" id="term_semester" name="semester">
+              <option value="1">第一学期</option>
+              <option value="2">第二学期</option>
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="term_start">开始日期</label>
+            <input class="ws-input" type="date" id="term_start" name="start_date" required>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="term_end">结束日期</label>
+            <input class="ws-input" type="date" id="term_end" name="end_date" required>
+          </div>
+          <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:10px">
+            <input type="checkbox" name="is_active" value="1"> 设为当前学期
+          </label>
+          <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">创建学期</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>新建课程</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_course_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="course_code">课程编码</label>
+            <input class="ws-input" id="course_code" name="code" required maxlength="32">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="course_title">课程名称</label>
+            <input class="ws-input" id="course_title" name="title" required maxlength="128">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="course_credit">学分</label>
+            <input class="ws-input" type="number" step="0.5" min="0" id="course_credit" name="credit" value="3">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="course_type">课程类型</label>
+            <input class="ws-input" id="course_type" name="course_type" placeholder="必修 / 选修 / 公共" maxlength="32">
+          </div>
+          <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">创建课程</button></div>
+        </form>
+      </div>
+      <div class="ws-card-foot">学期日期必须落在所属学年范围内；编码不可重复。</div>
+    </section>
     {% else %}
-      <div class="ws-empty is-compact"><b>暂无学期</b></div>
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>只读范围</h2></div>
+      <div class="ws-card-body">
+        <p class="ws-sub">学院管理员可以查看教务基础数据，但不能新增学年/学期/课程。
+        如需调整，请联系系统管理员。</p>
+      </div>
+    </section>
     {% endif %}
-  </section>
+  </div>
 </div>
-
-<section class="ws-card" style="margin-top:16px">
-  <div class="ws-card-head"><h2>课程目录</h2><span class="ws-hint">{{ courses|length }} 门</span></div>
-  {% if courses %}
-    <div class="ws-table-wrap">
-      <table class="ws-table">
-        <thead><tr><th>课程编码</th><th>课程名称</th><th class="is-num">学分</th><th>类型</th><th>启用</th></tr></thead>
-        <tbody>
-          {% for course in courses %}
-            <tr>
-              <td class="is-strong">{{ course.code }}</td>
-              <td>{{ course.title }}</td>
-              <td class="is-num">{{ course.credit }}</td>
-              <td class="is-muted">{{ course.course_type|default:"—" }}</td>
-              <td>{% if course.is_active %}<span class="ws-badge is-success">启用</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="ws-empty is-compact"><b>暂无课程</b></div>
-  {% endif %}
-</section>
 {% endblock %}

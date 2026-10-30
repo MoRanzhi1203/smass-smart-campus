@@ -308,8 +308,100 @@ def status_change_action(request, pk, action):
 @require_GET
 @admin_only
 def academics(request):
+    from smass_academic.models import Course
+    from smass_organization.models import OrganizationUnit
+
+    data = svc.academics()
     return render(request, 'workspace/admin/academics.html', _ctx(
-        request, **svc.academics()))
+        request,
+        **data,
+        year_options=[(year.pk, year.code) for year in data['years']],
+        course_options=[(course.pk, '{} {}'.format(course.code, course.title))
+                        for course in data['courses'] if course.is_active],
+        term_options=[(term.pk, '{} {}'.format(
+            term.year.code, term.get_semester_display()))
+            for term in data['terms']],
+        class_units=[(unit.pk, unit.name) for unit in
+                     OrganizationUnit.objects.filter(
+                         unit_type='class', status='active')
+                     .order_by('code')],
+    ))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def year_create(request):
+    from django.utils.dateparse import parse_date
+
+    from smass_academic import services as academic_services
+    from smass_academic.services import AcademicError
+
+    try:
+        academic_services.create_year(
+            request.POST.get('code', ''),
+            parse_date(request.POST.get('start_date', '') or ''),
+            parse_date(request.POST.get('end_date', '') or ''),
+            is_active=request.POST.get('is_active') == '1',
+        )
+        messages.success(request, '学年已创建。')
+    except AcademicError as exc:
+        messages.error(request, str(exc))
+    return redirect('/admin/academics/')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def term_create(request):
+    from django.utils.dateparse import parse_date
+
+    from smass_academic import services as academic_services
+    from smass_academic.models import AcademicYear
+    from smass_academic.services import AcademicError
+
+    year = AcademicYear.objects.filter(pk=request.POST.get('year') or 0).first()
+    if year is None:
+        messages.error(request, '请选择有效学年。')
+        return redirect('/admin/academics/')
+    try:
+        academic_services.create_term(
+            year, request.POST.get('semester', '1'),
+            parse_date(request.POST.get('start_date', '') or ''),
+            parse_date(request.POST.get('end_date', '') or ''),
+            name=request.POST.get('name', ''),
+            is_active=request.POST.get('is_active') == '1',
+        )
+        messages.success(request, '学期已创建。')
+    except AcademicError as exc:
+        messages.error(request, str(exc))
+    return redirect('/admin/academics/')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def course_create(request):
+    from smass_academic import services as academic_services
+    from smass_academic.services import AcademicError
+
+    credit = request.POST.get('credit') or None
+    try:
+        credit_value = float(credit) if credit else None
+    except ValueError:
+        messages.error(request, '学分必须是数字。')
+        return redirect('/admin/academics/')
+    try:
+        academic_services.create_course(
+            request.POST.get('code', ''),
+            request.POST.get('title', ''),
+            credit=credit_value,
+            course_type=request.POST.get('course_type', ''),
+        )
+        messages.success(request, '课程已创建。')
+    except AcademicError as exc:
+        messages.error(request, str(exc))
+    return redirect('/admin/academics/')
 
 
 @require_GET
@@ -320,8 +412,118 @@ def sections(request):
         request,
         sections=data['sections'],
         enrollment_total=data['enrollment_total'],
-        term=[term for term in data['terms'] if term.is_active][:1],
+        term_options=[(term.pk, '{} {}'.format(
+            term.year.code, term.get_semester_display()))
+            for term in data['terms']],
+        course_options=[(course.pk, '{} {}'.format(course.code, course.title))
+                        for course in data['courses'] if course.is_active],
     ))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def section_create(request):
+    from smass_academic import services as academic_services
+    from smass_academic.models import AcademicTerm, Course
+    from smass_academic.services import AcademicError
+
+    term = AcademicTerm.objects.filter(pk=request.POST.get('term') or 0).first()
+    course = Course.objects.filter(pk=request.POST.get('course') or 0).first()
+    if term is None or course is None:
+        messages.error(request, '请选择有效学期与课程。')
+        return redirect('/admin/sections/')
+    try:
+        academic_services.create_section(
+            term, course, request.POST.get('code', ''),
+            capacity=int(request.POST.get('capacity') or 0))
+        messages.success(request, '教学班已创建。')
+    except (AcademicError, ValueError) as exc:
+        messages.error(request, str(exc))
+    return redirect('/admin/sections/')
+
+
+@require_GET
+@admin_only
+def section_roster(request, pk):
+    from smass_academic.models import Enrollment, TeachingAssignment, TeachingSection
+
+    section = (TeachingSection.objects.select_related(
+        'term', 'term__year', 'course').filter(pk=pk).first())
+    if section is None:
+        messages.error(request, '教学班不存在。')
+        return redirect('/admin/sections/')
+    enrollments = list(
+        Enrollment.objects.filter(section=section).exclude(status='dropped')
+        .select_related('account').order_by('account__login_name'))
+    assignments = list(
+        TeachingAssignment.objects.filter(section=section,
+                                          revoked_at__isnull=True)
+        .select_related('account'))
+    return render(request, 'workspace/admin/section_roster.html', _ctx(
+        request,
+        section=section,
+        enrollments=enrollments,
+        assignments=assignments,
+    ))
+
+
+@require_GET
+@admin_only
+def record_detail(request, student_no):
+    from smass_academic.models import Enrollment
+    from smass_organization.models import OrganizationUnit, StudentRecord
+
+    record = (StudentRecord.objects.select_related(
+        'unit', 'unit__parent', 'unit__parent__parent')
+        .filter(student_no=student_no).first())
+    if record is None or not perms.can_access_student(request.user, record):
+        return render(request, 'workspace/403.html', {
+            'workspace_kind': perms.KIND_ADMIN,
+            'attempted_label': '该学籍档案',
+            'detail': '该学生不在你的组织范围内。',
+            'landing_url': perms.landing_url(request.user),
+        }, status=403)
+    enrollments = list(
+        Enrollment.objects.filter(account=record.account).exclude(
+            status='dropped').select_related('section', 'section__course'))
+    return render(request, 'workspace/admin/record_detail.html', _ctx(
+        request,
+        record=record,
+        enrollments=enrollments,
+        class_units=[(unit.pk, unit.name) for unit in
+                     OrganizationUnit.objects.filter(
+                         unit_type='class', status='active').order_by('code')],
+        statuses=(('enrolled', '在读'), ('suspended', '休学'),
+                  ('graduated', '毕业'), ('withdrawn', '退学')),
+    ))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def record_update(request, student_no):
+    from smass_organization import services as org_services
+    from smass_organization.models import OrganizationUnit, StudentRecord
+
+    record = StudentRecord.objects.filter(student_no=student_no).first()
+    if record is None:
+        messages.error(request, '学籍不存在。')
+        return redirect('/admin/records/')
+    unit = OrganizationUnit.objects.filter(
+        pk=request.POST.get('unit') or 0, unit_type='class').first()
+    try:
+        org_services.update_student(
+            record,
+            name=request.POST.get('name') or record.name,
+            status=request.POST.get('status') or record.status,
+            unit=unit or record.unit,
+            actor=request.user.login_name,
+        )
+        messages.success(request, '学籍信息已更新，变更已记录。')
+    except Exception as exc:  # noqa: BLE001 - 服务层错误原样提示
+        messages.error(request, str(exc) or '更新失败。')
+    return redirect('/admin/records/{}/'.format(student_no))
 
 
 @require_GET
@@ -455,8 +657,54 @@ def workflows(request):
 @require_GET
 @admin_only
 def activities(request):
+    from smass_activities.models import ACTIVITY_STATUS
+
+    data = svc.activities(request.user)
     return render(request, 'workspace/admin/activities.html', _ctx(
-        request, **svc.activities(request.user)))
+        request,
+        **data,
+        categories=(('second_class', '第二课堂'), ('volunteer', '志愿服务'),
+                    ('lecture', '讲座报告'), ('club', '社团活动')),
+        statuses=ACTIVITY_STATUS,
+    ))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def activity_create(request):
+    from django.utils import timezone
+    from django.utils.dateparse import parse_datetime
+
+    from smass_activities import services as activity_services
+    from smass_activities.services import ActivityError
+
+    start_at = parse_datetime(request.POST.get('start_at', '') or '')
+    end_at = parse_datetime(request.POST.get('end_at', '') or '')
+    if start_at is None or end_at is None:
+        messages.error(request, '请填写完整的活动起止时间。')
+        return redirect('/admin/activities/')
+    if timezone.is_naive(start_at):
+        start_at = timezone.make_aware(start_at)
+    if timezone.is_naive(end_at):
+        end_at = timezone.make_aware(end_at)
+    try:
+        activity = activity_services.create_activity(
+            request.user,
+            request.POST.get('title', ''),
+            request.POST.get('category', 'second_class'),
+            start_at, end_at,
+            capacity=int(request.POST.get('capacity') or 0),
+            credit_points=float(request.POST.get('credit_points') or 0),
+            volunteer_hours=float(request.POST.get('volunteer_hours') or 0),
+            location=request.POST.get('location', ''),
+        )
+        if request.POST.get('publish') == '1':
+            activity_services.publish_activity(activity, request.user)
+        messages.success(request, '活动已创建。')
+    except (ActivityError, ValueError) as exc:
+        messages.error(request, str(exc) or '创建失败。')
+    return redirect('/admin/activities/')
 
 
 @require_POST

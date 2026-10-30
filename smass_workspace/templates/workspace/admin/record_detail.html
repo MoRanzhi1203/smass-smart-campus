@@ -1,0 +1,94 @@
+{% extends "workspace/base.html" %}
+{% block title %}学籍档案{% endblock %}
+{% block topbar_title %}学籍档案{% endblock %}
+{% block topbar_sub %}{{ record.name }} · {{ record.student_no }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:admin_records' %}">学籍管理</a><span class="sep">/</span><span>{{ record.name }}</span></div>
+    <h1>{{ record.name }}</h1>
+    <p class="ws-sub">
+      {{ record.student_no }} · {{ record.unit.name|default:"—" }} ·
+      {{ record.get_status_display }} ·
+      入学 {{ record.enrolled_at|date:"Y-m-d"|default:"—" }}
+    </p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>基本信息</h2>
+        <span class="ws-badge {% if record.status == 'enrolled' %}is-success{% else %}is-warning{% endif %}">{{ record.get_status_display }}</span>
+      </div>
+      <div class="ws-card-body">
+        <div class="ws-meta">
+          <div><span class="is-label">学号</span><b>{{ record.student_no }}</b></div>
+          <div><span class="is-label">姓名</span><b>{{ record.name }}</b></div>
+          <div><span class="is-label">学院</span><b>{{ record.unit.parent.parent.name|default:"—" }}</b></div>
+          <div><span class="is-label">专业</span><b>{{ record.unit.parent.name|default:"—" }}</b></div>
+          <div><span class="is-label">班级</span><b>{{ record.unit.name|default:"—" }}</b></div>
+          <div><span class="is-label">账号</span><b>{{ record.account.login_name|default:"未绑定" }}</b></div>
+          <div><span class="is-label">寝室</span><b>{% if record.extra.dormitory.building %}{{ record.extra.dormitory.building }} {{ record.extra.dormitory.room }}{% else %}—{% endif %}</b></div>
+          <div><span class="is-label">版本号</span><b>{{ record.version }}</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>选课情况</h2><span class="ws-hint">{{ enrollments|length }} 门</span></div>
+      {% if enrollments %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>课程</th><th>教学班</th><th>学期</th><th>状态</th></tr></thead>
+            <tbody>
+              {% for item in enrollments %}
+                <tr>
+                  <td class="is-strong">{{ item.section.course.title }}</td>
+                  <td>{{ item.section.code }}</td>
+                  <td class="is-muted">{{ item.section.term.year.code }} {{ item.section.term.get_semester_display }}</td>
+                  <td><span class="ws-badge is-success">{{ item.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无选课</b><p>该学生本学期没有有效选课记录。</p></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>编辑学籍</h2></div>
+    <div class="ws-card-body">
+      {% if is_super %}
+      <form method="post" action="{% url 'workspace:admin_record_update' record.student_no %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="rec_name">姓名</label>
+          <input class="ws-input" id="rec_name" name="name" value="{{ record.name }}" maxlength="32" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="rec_status">学籍状态</label>
+          <select class="ws-select" id="rec_status" name="status">
+            {% for value, label in statuses %}<option value="{{ value }}" {% if value == record.status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="rec_unit">班级</label>
+          <select class="ws-select" id="rec_unit" name="unit">
+            {% for pk, label in class_units %}<option value="{{ pk }}" {% if record.unit_id == pk %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">保存变更</button></div>
+      </form>
+      {% else %}
+        <p class="ws-sub">学院管理员可以查看本院学籍；修改姓名、状态与班级需要系统管理员权限。</p>
+      {% endif %}
+    </div>
+    <div class="ws-card-foot">保存会写入学籍变更历史（字段、原值、新值、操作者）。</div>
+  </section>
+</div>
+{% endblock %}

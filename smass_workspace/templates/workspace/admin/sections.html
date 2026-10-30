@@ -10,39 +10,73 @@
     <h1>教学班与选课</h1>
     <p class="ws-sub">共 {{ sections|length }} 个教学班 · {{ enrollment_total }} 条有效选课</p>
   </div>
-  <div class="ws-page-actions">
-    <a class="ws-btn" href="/r5/sections/">教学班管理</a>
-    <a class="ws-btn" href="/r5/enroll/">选课管理</a>
-  </div>
 </div>
 
-<section class="ws-card">
-  <div class="ws-card-head"><h2>教学班列表</h2><span class="ws-hint">选课人数来自实时统计</span></div>
-  {% if sections %}
-    <div class="ws-table-wrap">
-      <table class="ws-table">
-        <thead><tr><th>课程</th><th>教学班</th><th>学期</th><th class="is-num">容量</th><th class="is-num">已选</th><th>状态</th><th></th></tr></thead>
-        <tbody>
-          {% for section in sections %}
-            <tr>
-              <td class="is-strong">{{ section.course.title }}</td>
-              <td>{{ section.code }}</td>
-              <td class="is-muted">{{ section.term.year.code }} {{ section.term.get_semester_display }}</td>
-              <td class="is-num">{% if section.capacity %}{{ section.capacity }}{% else %}不限{% endif %}</td>
-              <td class="is-num">{{ section.enrolled }}</td>
-              <td><span class="ws-badge {% if section.status == 'open' %}is-success{% else %}is-neutral{% endif %}">{{ section.get_status_display }}</span></td>
-              <td class="is-num"><a class="ws-btn is-sm" href="/r5/sections/{{ section.pk }}/roster/">名单</a></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>教学班列表</h2><span class="ws-hint">选课人数来自实时统计</span></div>
+    {% if sections %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>课程</th><th>教学班</th><th>学期</th><th class="is-num">容量</th><th class="is-num">已选</th><th>状态</th><th></th></tr></thead>
+          <tbody>
+            {% for section in sections %}
+              <tr>
+                <td class="is-strong">{{ section.course.title }}</td>
+                <td>{{ section.code }}</td>
+                <td class="is-muted">{{ section.term.year.code }} {{ section.term.get_semester_display }}</td>
+                <td class="is-num">{% if section.capacity %}{{ section.capacity }}{% else %}不限{% endif %}</td>
+                <td class="is-num">{{ section.enrolled }}</td>
+                <td><span class="ws-badge {% if section.status == 'open' %}is-success{% else %}is-neutral{% endif %}">{{ section.get_status_display }}</span></td>
+                <td class="is-num"><a class="ws-btn is-sm" href="{% url 'workspace:admin_section_roster' section.pk %}">名单</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty">
+        <div class="ws-empty-icon"><svg><use href="#ws-i-clipboard"></use></svg></div>
+        <b>暂无教学班</b>
+        <p>先创建学期与课程，再开设教学班。</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if is_super %}
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>新建教学班</h2></div>
+    <div class="ws-card-body">
+      {% if term_options and course_options %}
+      <form method="post" action="{% url 'workspace:admin_section_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="sec_term">学期</label>
+          <select class="ws-select" id="sec_term" name="term" required>
+            {% for pk, label in term_options %}<option value="{{ pk }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="sec_course">课程</label>
+          <select class="ws-select" id="sec_course" name="course" required>
+            {% for pk, label in course_options %}<option value="{{ pk }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="sec_code">教学班号</label>
+          <input class="ws-input" id="sec_code" name="code" required maxlength="32" placeholder="A / B / 01">
+        </div>
+        <div class="ws-field" style="margin-bottom:11px">
+          <label for="sec_capacity">容量（0 表示不限）</label>
+          <input class="ws-input" type="number" min="0" id="sec_capacity" name="capacity" value="40">
+        </div>
+        <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">创建教学班</button></div>
+      </form>
+      {% else %}
+        <div class="ws-empty is-compact"><b>缺少学期或课程</b><p>请先在“学年学期与课程”中创建。</p></div>
+      {% endif %}
     </div>
-  {% else %}
-    <div class="ws-empty">
-      <div class="ws-empty-icon"><svg><use href="#ws-i-clipboard"></use></svg></div>
-      <b>暂无教学班</b>
-      <p>在教务管理中创建学期与教学班。</p>
-    </div>
+  </section>
   {% endif %}
-</section>
+</div>
 {% endblock %}
