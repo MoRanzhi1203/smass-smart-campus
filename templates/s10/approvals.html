@@ -1,0 +1,64 @@
+{% extends "s10/base.html" %}
+{% block title %}审批工单{% endblock %}
+{% block content %}
+<h1>双人审批工单</h1>
+
+<section class="card">
+  <table>
+    <thead><tr><th>工单</th><th>操作</th><th>发起人</th><th>事由</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for a in approvals %}
+        <tr>
+          <td>#{{ a.pk }}</td>
+          <td>{{ a.action_code }}</td>
+          <td>{{ a.requester.login_name }}</td>
+          <td>{{ a.reason|truncatechars:24 }}</td>
+          <td><span class="tag {{ a.status }}">{{ a.get_status_display }}</span></td>
+          <td>
+            {% if can_approve and a.status == 'pending' %}
+              <form class="inline-form" method="post" action="{% url 's10:approval_action' a.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 's10:approval_action' a.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif a.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 's10:approval_action' a.pk 'execute' %}">
+                {% csrf_token %}<button class="btn small" type="submit">执行</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无工单。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if can_approve %}
+<section class="card">
+  <h2>最近执行记录</h2>
+  <table>
+    <thead><tr><th>时间</th><th>操作</th><th>执行人</th><th>工单</th><th>说明</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td>{{ log.action_code }}</td>
+          <td>{{ log.actor_id_text }}</td>
+          <td>#{{ log.approval_id }}</td>
+          <td>{{ log.detail }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无执行记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

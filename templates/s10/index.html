@@ -1,0 +1,33 @@
+{% extends "s10/base.html" %}
+{% block title %}操作目录{% endblock %}
+{% block content %}
+<h1>敏感操作</h1>
+<p class="lead">每个操作都要求先完成再认证，再提交双人审批工单。</p>
+
+<section class="card">
+  <h2>操作目录</h2>
+  <table>
+    <thead><tr><th>操作</th><th>双人审批</th><th>再认证有效期</th><th>我的再认证</th><th>发起</th></tr></thead>
+    <tbody>
+      {% for a in actions %}
+        <tr>
+          <td>{{ a.label }} <span class="mono">{{ a.code }}</span></td>
+          <td>{% if a.dual %}需要{% else %}不需要{% endif %}</td>
+          <td>{{ a.ttl }} 秒</td>
+          <td>{% if a.verified %}<span class="tag ok">已再认证</span>{% else %}<span class="tag warn">未再认证</span>{% endif %}</td>
+          <td>
+            <a class="btn small ghost" href="{% url 's10:verify' %}?action={{ a.code }}&next=/s10/approvals/">去再认证</a>
+            <form class="inline-form" method="post" action="{% url 's10:approval_open' %}">
+              {% csrf_token %}
+              <input type="hidden" name="action_code" value="{{ a.code }}">
+              <input name="target" placeholder="对象" required style="width:100px">
+              <input name="reason" placeholder="事由" required style="width:130px">
+              <button class="btn small" type="submit">发起工单</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

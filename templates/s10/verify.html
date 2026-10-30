@@ -1,0 +1,34 @@
+{% extends "s10/base.html" %}
+{% block title %}再认证{% endblock %}
+{% block content %}
+<h1>敏感操作再认证</h1>
+<p class="lead">重新输入账号密码或认证器 TOTP，验证后 5 分钟内可发起对应敏感操作。</p>
+
+<section class="card">
+  <form method="post" action="{% url 's10:verify_submit' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="row">
+      <div>
+        <label for="action_code">操作</label>
+        <select id="action_code" name="action_code" required>
+          {% for a in actions %}
+            <option value="{{ a.code }}" {% if action_code == a.code %}selected{% endif %}>{{ a.label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="method">方式</label>
+        <select id="method" name="method">
+          {% for code, label in methods %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="code">密码或 TOTP</label>
+        <input id="code" name="code" required autocomplete="current-password">
+      </div>
+      <div><button type="submit">验证</button></div>
+    </div>
+  </form>
+</section>
+{% endblock %}
