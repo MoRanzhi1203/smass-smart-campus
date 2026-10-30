@@ -73,3 +73,6 @@ Desktop.ini
 .DS_Store
 # S14 私有上传目录（鉴权下载，禁止入库）
 private_uploads/
+
+# S20 环境快照（仅本地审计证据，不入库）
+requirements.env-snapshot.txt
