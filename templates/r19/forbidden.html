@@ -1,0 +1,9 @@
+{% extends "r19/base.html" %}
+{% block title %}无权访问{% endblock %}
+{% block content %}
+<h1>403 · 无权访问</h1>
+<section class="card">
+  <p>{{ message }}</p>
+  <p><a class="btn ghost" href="{% url 'r19:orgs' %}">返回组织列表</a></p>
+</section>
+{% endblock %}

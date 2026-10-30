@@ -1,0 +1,37 @@
+{% extends "r19/base.html" %}
+{% block title %}资料借阅{% endblock %}
+{% block content %}
+<h1>资料借阅申请</h1>
+<section class="card">
+  <table>
+    <thead><tr><th>资料</th><th>申请人</th><th>用途</th><th>状态</th><th>有效期至</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for r in requests %}
+        <tr>
+          <td>{{ r.document.title }}</td>
+          <td>{{ r.applicant.login_name }}</td>
+          <td>{{ r.purpose|truncatechars:30 }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>{{ r.valid_until|date:"Y-m-d H:i"|default:"—" }}</td>
+          <td>
+            {% if can_manage and r.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r19:access_action' r.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r19:access_action' r.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无借阅申请。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

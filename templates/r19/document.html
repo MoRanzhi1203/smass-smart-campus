@@ -1,0 +1,33 @@
+{% extends "r19/base.html" %}
+{% block title %}{{ document.title }}{% endblock %}
+{% block content %}
+<h1>{{ document.title }}
+  <span class="tag {{ document.classification }}">{{ document.get_classification_display }}</span>
+</h1>
+<p class="muted">{{ document.org.code }} {{ document.org.name }} · {{ document.created_at|date:"Y-m-d H:i" }}</p>
+
+<section class="card">
+  <h2>内容</h2>
+  {% if result.allowed %}
+    <p class="body">{{ result.summary|default:"（无摘要）" }}</p>
+  {% else %}
+    <div class="masked">{{ result.summary }}</div>
+    <p class="muted">本次访问已被记录（deny 审计）。</p>
+  {% endif %}
+</section>
+
+{% if not result.allowed %}
+<section class="card">
+  <h2>申请借阅</h2>
+  <form method="post" action="{% url 'r19:document_request' document.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="purpose">用途</label><input id="purpose" name="purpose" required maxlength="500"></div>
+      <div><button class="btn muted" type="submit">提交借阅申请</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<p><a class="btn ghost" href="{% url 'r19:org_detail' document.org_id %}">返回组织</a></p>
+{% endblock %}

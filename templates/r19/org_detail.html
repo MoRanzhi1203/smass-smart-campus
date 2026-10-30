@@ -1,0 +1,139 @@
+{% extends "r19/base.html" %}
+{% block title %}{{ org.name }}{% endblock %}
+{% block content %}
+<h1>{{ org.name }} <span class="tag">{{ org.get_org_type_display }}</span></h1>
+<p class="muted">
+  编码 {{ org.code }} · 敏感级别 {{ org.get_sensitivity_display }}
+  {% if org.parent %}· 上级 {{ org.parent.name }}{% endif %}
+</p>
+
+{% if can_manage %}
+<section class="card">
+  <h2>添加成员</h2>
+  <form method="post" action="{% url 'r19:member_add' org.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="record">学生</label>
+        <select id="record" name="record" required>
+          {% for r in records %}<option value="{{ r.pk }}">{{ r.student_no }} {{ r.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="political_status">政治面貌</label>
+        <select id="political_status" name="political_status">
+          {% for code, label in political_statuses %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="note">备注</label><input id="note" name="note" maxlength="200"></div>
+      <div><button type="submit">添加</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>成员（{{ members|length }}）</h2>
+  <table>
+    <thead><tr><th>学号</th><th>姓名</th><th>政治面貌</th><th>状态</th></tr></thead>
+    <tbody>
+      {% for m in members %}
+        <tr>
+          <td>{{ m.record.student_no }}</td>
+          <td>{{ m.record.name }}</td>
+          <td>{{ m.get_political_status_display }}</td>
+          <td>{{ m.get_status_display }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty">暂无成员。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>创建组织生活/专项活动</h2>
+  <form method="post" action="{% url 'r19:activity_create' org.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="title">主题</label><input id="title" name="title" required maxlength="120"></div>
+      <div>
+        <label for="activity_type">类型</label>
+        <select id="activity_type" name="activity_type">
+          {% for code, label in activity_types %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="held_on">日期</label><input id="held_on" name="held_on" type="date" required></div>
+      <div><label for="activity_summary">纪要摘要</label><input id="activity_summary" name="summary" maxlength="500"></div>
+      <div><button type="submit">创建</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>归档受控资料</h2>
+  <form method="post" action="{% url 'r19:document_create' org.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="doc_title">标题</label><input id="doc_title" name="title" required maxlength="120"></div>
+      <div>
+        <label for="classification">密级</label>
+        <select id="classification" name="classification">
+          {% for code, label in classifications %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="doc_summary">摘要（合成）</label><input id="doc_summary" name="summary" maxlength="500" placeholder="仅合成摘要，不含真实材料"></div>
+      <div><button type="submit">归档</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>活动记录（{{ activities|length }}）</h2>
+  <table>
+    <thead><tr><th>主题</th><th>类型</th><th>日期</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for a in activities %}
+        <tr>
+          <td>{{ a.title }}</td>
+          <td>{{ a.get_activity_type_display }}</td>
+          <td>{{ a.held_on }}</td>
+          <td><span class="tag {{ a.status }}">{{ a.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and a.status == 'planned' %}
+              <form class="inline-form" method="post" action="{% url 'r19:activity_complete' a.pk %}">
+                {% csrf_token %}<button class="btn small" type="submit">标记完成</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无活动。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>受控资料（{{ documents|length }}）</h2>
+  <table>
+    <thead><tr><th>标题</th><th>密级</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for d in documents %}
+        <tr>
+          <td>{{ d.title }}</td>
+          <td><span class="tag {{ d.classification }}">{{ d.get_classification_display }}</span></td>
+          <td>{{ d.get_status_display }}</td>
+          <td><a class="btn small ghost" href="{% url 'r19:document_detail' d.pk %}">查看</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty">暂无资料。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<p><a class="btn ghost" href="{% url 'r19:orgs' %}">返回组织列表</a></p>
+{% endblock %}
