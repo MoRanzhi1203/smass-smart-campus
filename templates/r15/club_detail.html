@@ -1,0 +1,133 @@
+{% extends "r15/base.html" %}
+{% block title %}{{ club.name }}{% endblock %}
+{% block content %}
+<h1>{{ club.name }} <span class="tag">{{ club.get_category_display }}</span></h1>
+<p class="muted">
+  编码 {{ club.code }} ·
+  {% if club.parent %}上级：{{ club.parent.name }} · {% endif %}
+  {% if club.advisor %}指导教师：{{ club.advisor.display_name }} · {% endif %}
+  {{ club.description|default:"暂无简介" }}
+</p>
+
+<section class="card">
+  <h2>我的成员身份</h2>
+  {% if my_membership %}
+    <p>状态：<span class="tag {{ my_membership.status }}">{{ my_membership.get_status_display }}</span>
+       · 角色：{{ my_membership.get_role_display }}</p>
+    {% if my_membership.status == 'active' or my_membership.status == 'pending' %}
+      <form class="inline-form" method="post" action="{% url 'r15:membership_action' my_membership.pk 'leave' %}">
+        {% csrf_token %}<button class="btn muted" type="submit">退出组织</button>
+      </form>
+    {% endif %}
+  {% elif my_record %}
+    <form class="inline-form" method="post" action="{% url 'r15:club_apply' club.pk %}">
+      {% csrf_token %}<button type="submit">申请加入</button>
+    </form>
+  {% else %}
+    <p class="muted">当前账号没有学籍档案。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>成员（{{ memberships|length }}）</h2>
+  <table>
+    <thead><tr><th>学号</th><th>姓名</th><th>角色</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for m in memberships %}
+        <tr>
+          <td>{{ m.record.student_no }}</td>
+          <td>{{ m.record.name }}</td>
+          <td>{{ m.get_role_display }}</td>
+          <td><span class="tag {{ m.status }}">{{ m.get_status_display }}</span></td>
+          <td>
+            {% if can_admin and m.status == 'pending' %}
+              <form class="inline-form" method="post" action="{% url 'r15:membership_action' m.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r15:membership_action' m.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif can_admin and m.status == 'active' %}
+              {% if m.role == 'leader' %}
+                <form class="inline-form" method="post" action="{% url 'r15:membership_action' m.pk 'demote' %}">
+                  {% csrf_token %}<button class="btn small muted" type="submit">取消负责人</button>
+                </form>
+              {% else %}
+                <form class="inline-form" method="post" action="{% url 'r15:membership_action' m.pk 'promote' %}">
+                  {% csrf_token %}<button class="btn small ghost" type="submit">设为负责人</button>
+                </form>
+              {% endif %}
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无成员。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if can_admin %}
+<section class="card">
+  <h2>任命干部</h2>
+  <form method="post" action="{% url 'r15:post_appoint' club.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="record">在册成员</label>
+        <select id="record" name="record" required>
+          {% for m in memberships %}{% if m.status == 'active' %}
+            <option value="{{ m.record_id }}">{{ m.record.student_no }} {{ m.record.name }}</option>
+          {% endif %}{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="title">职务</label>
+        <select id="title" name="title">
+          <option value="president">主席/会长</option>
+          <option value="vice_president">副主席/副会长</option>
+          <option value="secretary">书记/秘书长</option>
+          <option value="minister">部长</option>
+        </select>
+      </div>
+      <div><label for="term">任期</label><input id="term" name="term" value="2026-2027" required maxlength="32"></div>
+      <div><button type="submit">任命</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>干部任职（{{ posts|length }}）</h2>
+  <table>
+    <thead><tr><th>学号</th><th>职务</th><th>任期</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for p in posts %}
+        <tr>
+          <td>{{ p.record.student_no }}</td>
+          <td>{{ p.get_title_display }}</td>
+          <td>{{ p.term }}</td>
+          <td><span class="tag {{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td>
+            {% if can_admin and p.status == 'active' %}
+              <form class="inline-form" method="post" action="{% url 'r15:post_end' p.pk %}">
+                {% csrf_token %}<button class="btn small danger" type="submit">卸任</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无任职记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<p><a class="btn ghost" href="{% url 'r15:clubs' %}">返回组织列表</a></p>
+{% endblock %}

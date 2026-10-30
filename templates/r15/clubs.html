@@ -1,0 +1,47 @@
+{% extends "r15/base.html" %}
+{% block title %}群团组织{% endblock %}
+{% block content %}
+<h1>团委、学生会与学生社团</h1>
+
+{% if can_manage %}
+<section class="card">
+  <h2>创建组织</h2>
+  <form method="post" action="{% url 'r15:club_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="code">编码</label><input id="code" name="code" required maxlength="64" placeholder="如 CLUB-ROBOT"></div>
+      <div><label for="name">名称</label><input id="name" name="name" required maxlength="100"></div>
+      <div>
+        <label for="category">类别</label>
+        <select id="category" name="category">
+          {% for code, label in categories %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="description">简介</label><input id="description" name="description" maxlength="500"></div>
+      <div><button type="submit">创建</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>组织列表</h2>
+  <table>
+    <thead><tr><th>编码</th><th>名称</th><th>类别</th><th>成员</th><th>在任干部</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.club.code }}</td>
+          <td>{{ row.club.name }}</td>
+          <td>{{ row.club.get_category_display }}</td>
+          <td>{{ row.stats.active }} 在册 / {{ row.stats.pending }} 待审</td>
+          <td>{{ row.stats.posts }}</td>
+          <td><a class="btn small ghost" href="{% url 'r15:club_detail' row.club.pk %}">进入</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无组织。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
