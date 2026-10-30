@@ -1,0 +1,52 @@
+{% extends "r12/base.html" %}
+{% block title %}自动分班{% endblock %}
+{% block content %}
+<h1>自动分班</h1>
+<p class="muted">
+  分班先“预览”再“执行”：预览不修改任何学籍档案，执行后写入班级并保留原组织，可整批回滚。
+</p>
+
+{% for s in summaries %}
+  <section class="card">
+    <h2>{{ s.rule.name }} <span class="tag">{{ s.rule.major.code }} {{ s.rule.major.name }}</span></h2>
+    <table>
+      <tr><th>分配策略</th><td>{{ s.rule.get_strategy_display }}</td></tr>
+      <tr><th>均衡维度</th><td>{{ s.rule.balance_keys|join:"、"|default:"（无，按顺序轮转）" }}</td></tr>
+      <tr><th>每班容量</th><td>{% if s.rule.capacity_per_class %}{{ s.rule.capacity_per_class }}{% else %}不限{% endif %}</td></tr>
+      <tr><th>可用班级</th><td>{{ s.classes|length }} 个：{% for c in s.classes %}{{ c.code }}{% if not forloop.last %}、{% endif %}{% endfor %}</td></tr>
+      <tr><th>待分班候选</th><td><strong>{{ s.candidates }}</strong> 人</td></tr>
+      <tr><th>已在该专业班级</th><td>{{ s.existing_students }} 人</td></tr>
+    </table>
+    <form class="inline-form" method="post" action="{% url 'r12:placement_preview' s.rule.pk %}">
+      {% csrf_token %}
+      <button type="submit" {% if not s.candidates %}disabled{% endif %}>生成预览</button>
+    </form>
+    {% if not s.candidates %}<p class="muted">没有可分班的候选学生（在读且尚未编班）。</p>{% endif %}
+  </section>
+{% empty %}
+  <div class="card empty">尚未配置分班规则。</div>
+{% endfor %}
+
+<h2>最近批次</h2>
+<section class="card">
+  <table>
+    <thead>
+      <tr><th>批次</th><th>规则</th><th>人数</th><th>状态</th><th>创建时间</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for b in batches %}
+        <tr>
+          <td>#{{ b.pk }}</td>
+          <td>{{ b.rule.name }}</td>
+          <td>{{ b.stats.total|default:0 }}</td>
+          <td><span class="tag {{ b.status }}">{{ b.get_status_display }}</span></td>
+          <td>{{ b.created_at|date:"Y-m-d H:i" }}</td>
+          <td><a class="btn small ghost" href="{% url 'r12:placement_detail' b.pk %}">查看</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">还没有分班批次。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

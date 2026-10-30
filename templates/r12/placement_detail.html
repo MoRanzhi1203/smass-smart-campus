@@ -1,0 +1,64 @@
+{% extends "r12/base.html" %}
+{% block title %}分班批次 #{{ batch.pk }}{% endblock %}
+{% block content %}
+<h1>分班批次 #{{ batch.pk }}
+  <span class="tag {{ batch.status }}">{{ batch.get_status_display }}</span>
+</h1>
+<p class="muted">
+  规则：{{ batch.rule.name }}（{{ batch.rule.major.code }} {{ batch.rule.major.name }}）·
+  策略：{{ batch.rule.get_strategy_display }} ·
+  创建：{{ batch.created_at|date:"Y-m-d H:i" }}
+  {% if batch.applied_at %}· 执行：{{ batch.applied_at|date:"Y-m-d H:i" }}{% endif %}
+  {% if batch.rolled_back_at %}· 回滚：{{ batch.rolled_back_at|date:"Y-m-d H:i" }}{% endif %}
+</p>
+
+<section class="card">
+  <h2>分配统计</h2>
+  <p>
+    共 <strong>{{ batch.stats.total|default:0 }}</strong> 人；
+    {% for code, count in batch.stats.per_class.items %}
+      <span class="tag">{{ code }}：{{ count }} 人</span>
+    {% endfor %}
+  </p>
+  <div class="row">
+    {% if batch.status == 'preview' %}
+      <form class="inline-form" method="post" action="{% url 'r12:placement_apply' batch.pk %}">
+        {% csrf_token %}
+        <button type="submit">执行分班</button>
+      </form>
+    {% elif batch.status == 'applied' %}
+      <form class="inline-form" method="post" action="{% url 'r12:placement_rollback' batch.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn danger">回滚本次分班</button>
+      </form>
+    {% endif %}
+    <a class="btn ghost" href="{% url 'r12:placement_list' %}">返回规则列表</a>
+  </div>
+  <p class="muted">
+    说明：执行会写入学籍档案并追加变更历史；若执行后学生班级又被其它操作修改，
+    回滚会被拒绝（避免覆盖他人改动）。
+  </p>
+</section>
+
+<section class="card">
+  <h2>分班明细（{{ rows|length }} 行）</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>姓名</th><th>原组织</th><th>目标班级</th><th>状态</th></tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.record.student_no }}</td>
+          <td>{{ r.record.name }}</td>
+          <td>{% if r.from_unit %}{{ r.from_unit.code }}{% else %}<span class="muted">未编班</span>{% endif %}</td>
+          <td>{{ r.to_unit.code }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">该批次没有分班结果。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

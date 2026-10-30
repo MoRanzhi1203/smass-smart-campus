@@ -1,0 +1,94 @@
+{% extends "r12/base.html" %}
+{% block title %}转专业{% endblock %}
+{% block content %}
+<h1>转专业</h1>
+
+<section class="card">
+  <h2>提交申请</h2>
+  {% if my_record or can_manage %}
+    <form method="post" action="{% url 'r12:transfer_submit' %}">
+      {% csrf_token %}
+      <div class="row">
+        {% if can_manage %}
+          <div>
+            <label for="record_id">学籍档案（管理员可代提交）</label>
+            <select id="record_id" name="record_id">
+              <option value="">— 使用本人档案 —</option>
+              {% for r in records_for_admin %}
+                <option value="{{ r.pk }}">{{ r.student_no }} {{ r.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <div>
+          <label for="to_major">目标专业</label>
+          <select id="to_major" name="to_major" required>
+            {% for m in majors %}
+              <option value="{{ m.pk }}">{{ m.code }} {{ m.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="reason">申请理由</label>
+          <input id="reason" name="reason" required maxlength="500"
+                 placeholder="例如：兴趣方向调整">
+        </div>
+        <div><button type="submit">提交申请</button></div>
+      </div>
+    </form>
+  {% else %}
+    <p class="muted">当前账号没有可用的学籍档案，无法提交转专业申请。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>申请列表（{{ transfers|length }}）</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>目标专业</th><th>理由</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        {% with t=row.t %}
+        <tr>
+          <td>{{ t.record.student_no }} {{ t.record.name }}</td>
+          <td>{{ t.to_major.code }}</td>
+          <td>{{ t.reason|truncatechars:40 }}</td>
+          <td><span class="tag {{ t.status }}">{{ t.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and t.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:120px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif can_manage and t.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'apply' %}">
+                {% csrf_token %}
+                <select name="target_class" required>
+                  {% for c in row.classes %}
+                    <option value="{{ c.pk }}">{{ c.code }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn small" type="submit">编入班级并生效</button>
+              </form>
+            {% elif t.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r12:transfer_action' t.pk 'cancel' %}">
+                {% csrf_token %}<button class="btn small muted" type="submit">撤销</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endwith %}
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无转专业申请。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

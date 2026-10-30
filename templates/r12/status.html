@@ -1,0 +1,86 @@
+{% extends "r12/base.html" %}
+{% block title %}学籍异动{% endblock %}
+{% block content %}
+<h1>学籍异动</h1>
+
+<section class="card">
+  <h2>提交异动</h2>
+  {% if my_record or can_manage %}
+    <form method="post" action="{% url 'r12:status_submit' %}">
+      {% csrf_token %}
+      <div class="row">
+        {% if can_manage %}
+          <div>
+            <label for="record_id">学籍档案</label>
+            <select id="record_id" name="record_id">
+              <option value="">— 使用本人档案 —</option>
+              {% for r in records %}
+                <option value="{{ r.pk }}">{{ r.student_no }} {{ r.name }}（{{ r.get_status_display }}）</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <div>
+          <label for="change_type">异动类型</label>
+          <select id="change_type" name="change_type" required>
+            {% for code, label in change_types %}
+              <option value="{{ code }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="reason">原因</label>
+          <input id="reason" name="reason" maxlength="500" placeholder="离校类异动必填">
+        </div>
+        <div><button type="submit">提交异动</button></div>
+      </div>
+    </form>
+    <p class="muted">
+      状态机：在读 → 休学；休学 → 复学；在读/休学 → 退学或转出；在读 → 毕业。
+      退学、毕业、转出为终态，不能再异动。
+    </p>
+  {% else %}
+    <p class="muted">当前账号没有可用的学籍档案。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>异动记录（{{ changes|length }}）</h2>
+  <table>
+    <thead>
+      <tr><th>学号</th><th>类型</th><th>状态变化</th><th>原因</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for c in changes %}
+        <tr>
+          <td>{{ c.record.student_no }} {{ c.record.name }}</td>
+          <td>{{ c.get_change_type_display }}</td>
+          <td>{{ c.from_status }} → {{ c.to_status }}</td>
+          <td>{{ c.reason|truncatechars:30|default:"—" }}</td>
+          <td><span class="tag {{ c.status }}">{{ c.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and c.status == 'submitted' %}
+              <form class="inline-form" method="post" action="{% url 'r12:status_action' c.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r12:status_action' c.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif can_manage and c.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 'r12:status_action' c.pk 'apply' %}">
+                {% csrf_token %}<button class="btn small" type="submit">确认生效</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无学籍异动记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

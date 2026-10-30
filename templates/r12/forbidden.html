@@ -1,0 +1,10 @@
+{% extends "r12/base.html" %}
+{% block title %}无权访问{% endblock %}
+{% block content %}
+<h1>403 · 无权访问</h1>
+<section class="card">
+  <p>{{ message }}</p>
+  <p class="muted">如需访问，请联系教务管理员开通相应权限。</p>
+  <p><a class="btn ghost" href="{% url 'r12:transfers' %}">返回转专业首页</a></p>
+</section>
+{% endblock %}
