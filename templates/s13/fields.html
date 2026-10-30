@@ -1,0 +1,57 @@
+{% extends "s13/base.html" %}
+{% block title %}字段分级{% endblock %}
+{% block content %}
+<h1>字段分级与保留控制</h1>
+<p class="lead">已登记字段 {{ stats.fields }} · 披露申请 {{ stats.requests }} · 已执行 {{ stats.executed }} · 保留样本 {{ stats.samples }}</p>
+
+{% if can_manage %}
+<section class="card">
+  <h2>配置字段</h2>
+  <form method="post" action="{% url 's13:field_save' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="resource">资源</label><input id="resource" name="resource" value="{{ resource }}" required maxlength="64"></div>
+      <div><label for="field">字段</label><input id="field" name="field" required maxlength="64" placeholder="phone / id_card"></div>
+      <div>
+        <label for="classification">分级</label>
+        <select id="classification" name="classification">
+          {% for code, label in classifications %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="mask">导出脱敏</label>
+        <select id="mask" name="mask">
+          {% for code, label in masks %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="retention_days">保留天数（0 不限）</label><input id="retention_days" name="retention_days" type="number" min="0" value="0"></div>
+      <div><button type="submit">保存</button></div>
+    </div>
+  </form>
+  <form method="post" action="{% url 's13:field_purge' %}" style="margin-top:12px;">
+    {% csrf_token %}
+    <button class="btn danger" type="submit">按保留期清理过期样本</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>字段清单（{{ fields|length }}）</h2>
+  <table>
+    <thead><tr><th>资源#字段</th><th>分级</th><th>导出脱敏</th><th>保留天数</th><th>状态</th></tr></thead>
+    <tbody>
+      {% for f in fields %}
+        <tr>
+          <td class="mono">{{ f.resource }}#{{ f.field }}</td>
+          <td><span class="tag {{ f.classification }}">{{ f.get_classification_display }}</span></td>
+          <td>{{ f.get_mask_display }}</td>
+          <td>{{ f.retention_days }}</td>
+          <td>{% if f.enabled %}<span class="tag ok">启用</span>{% else %}<span class="tag danger">停用</span>{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">尚未登记字段。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

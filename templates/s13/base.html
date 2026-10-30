@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}数据最小化{% endblock %} · SMASS</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#1f2430; --muted:#667085; --line:#e4e7ec;
+            --brand:#2456a6; --brand-soft:#e8effb; --ok:#0f7b4f; --ok-soft:#e7f6ef;
+            --err:#b42318; --err-soft:#fdecea; --warn:#8a5a00; --warn-soft:#fff4d6; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+           font:15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+    header { background:var(--card); border-bottom:1px solid var(--line); padding:12px 20px;
+             display:flex; gap:12px; align-items:center; justify-content:space-between; }
+    .brand { font-weight:700; color:var(--brand); font-size:18px; }
+    nav { display:flex; gap:6px; }
+    nav a { color:var(--muted); text-decoration:none; padding:6px 10px; border-radius:8px; font-size:14px; }
+    nav a:hover { background:var(--brand-soft); color:var(--brand); }
+    main { max-width:1050px; margin:0 auto; padding:20px; }
+    h1 { font-size:22px; margin:0 0 8px; }
+    .lead { color:var(--muted); font-size:14px; margin:0 0 18px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+    .flash { padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:14px; }
+    .flash.ok { background:var(--ok-soft); color:var(--ok); }
+    .flash.error { background:var(--err-soft); color:var(--err); }
+    .banner { background:var(--warn-soft); color:var(--warn); padding:10px 14px;
+              border-radius:8px; margin-bottom:14px; font-size:13px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { color:var(--muted); font-weight:600; background:#fafbfc; }
+    label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+    input, select, textarea { width:100%; padding:8px 10px; border:1px solid var(--line);
+                              border-radius:8px; font:inherit; background:#fff; }
+    textarea { min-height:60px; resize:vertical; }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; }
+    .row > div { flex:1 1 150px; }
+    button, .btn { display:inline-block; padding:8px 14px; border-radius:8px; border:1px solid transparent;
+                   background:var(--brand); color:#fff; font:inherit; cursor:pointer; text-decoration:none; font-size:14px; }
+    .btn.ghost { background:#fff; color:var(--brand); border-color:var(--line); }
+    .btn.danger { background:var(--err); }
+    .btn.small { padding:5px 9px; font-size:13px; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px;
+           background:var(--brand-soft); color:var(--brand); }
+    .tag.executed, .tag.ok, .tag.public { background:var(--ok-soft); color:var(--ok); }
+    .tag.pending, .tag.internal, .tag.sensitive { background:var(--warn-soft); color:var(--warn); }
+    .tag.rejected, .tag.expired, .tag.personal { background:var(--err-soft); color:var(--err); }
+    .muted { color:var(--muted); font-size:13px; }
+    .empty { color:var(--muted); padding:18px 4px; }
+    .mono { font-family:ui-monospace, Consolas, monospace; font-size:12px; }
+    .inline-form { display:inline; }
+    .checks { display:flex; flex-wrap:wrap; gap:12px; margin:8px 0; }
+    .checks label { display:inline-flex; align-items:center; gap:6px; margin:0; font-size:14px; color:var(--ink); }
+    .checks input { width:auto; }
+    @media (max-width:640px) { main { padding:14px; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">SMASS 数据治理</div>
+  <nav>
+    <a href="{% url 's13:fields' %}">字段分级</a>
+    <a href="{% url 's13:disclosures' %}">披露申请</a>
+  </nav>
+</header>
+<main>
+  <div class="banner">导出遵循<b>最小化</b>：只含已登记字段；敏感/个人隐私字段强制脱敏；每次披露留痕。</div>
+  {% if ok_message %}<div class="flash ok">{{ ok_message }}</div>{% endif %}
+  {% if error_message %}<div class="flash error">{{ error_message }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

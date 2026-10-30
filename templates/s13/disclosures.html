@@ -1,0 +1,86 @@
+{% extends "s13/base.html" %}
+{% block title %}披露申请{% endblock %}
+{% block content %}
+<h1>受控数据披露</h1>
+
+<section class="card">
+  <h2>申请披露</h2>
+  <form method="post" action="{% url 's13:disclosure_request' %}">
+    {% csrf_token %}
+    <label>字段（只可勾选已登记字段）</label>
+    <div class="checks">
+      {% for f in fields %}
+        <label><input type="checkbox" name="fields" value="{{ f.field }}"> {{ f.field }}（{{ f.get_classification_display }}）</label>
+      {% empty %}
+        <span class="muted">尚未登记字段，无法申请。</span>
+      {% endfor %}
+    </div>
+    <label for="purpose">用途</label>
+    <textarea id="purpose" name="purpose" required maxlength="500"></textarea>
+    <p style="margin-top:12px;"><button type="submit">提交申请</button></p>
+  </form>
+</section>
+
+<section class="card">
+  <h2>申请列表（{{ requests|length }}）</h2>
+  <table>
+    <thead><tr><th>编号</th><th>字段</th><th>申请人</th><th>状态</th><th>行数</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for r in requests %}
+        <tr>
+          <td>#{{ r.pk }}</td>
+          <td class="mono">{{ r.fields|join:"," }}</td>
+          <td>{{ r.requester.login_name }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>{{ r.row_count }}</td>
+          <td>
+            {% if can_manage and r.status == 'pending' %}
+              <form class="inline-form" method="post" action="{% url 's13:disclosure_action' r.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">批准</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 's13:disclosure_action' r.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% elif r.status == 'approved' %}
+              <form class="inline-form" method="post" action="{% url 's13:disclosure_action' r.pk 'execute' %}">
+                {% csrf_token %}<button class="btn small" type="submit">执行导出</button>
+              </form>
+            {% elif r.status == 'executed' %}
+              <a class="btn small ghost" href="{% url 's13:disclosure_export' r.pk %}">下载 CSV</a>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无披露申请。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if can_manage %}
+<section class="card">
+  <h2>披露日志</h2>
+  <table>
+    <thead><tr><th>时间</th><th>申请</th><th>资源</th><th>执行人</th><th>行数</th><th>摘要</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td>#{{ log.request_id }}</td>
+          <td>{{ log.resource }}</td>
+          <td>{{ log.actor_id_text }}</td>
+          <td>{{ log.row_count }}</td>
+          <td class="mono">{{ log.digest|slice:":12" }}…</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无披露记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}
