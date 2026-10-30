@@ -33,8 +33,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT.parent / '.local' / 'evidence' / 's23'
 BENCH_DB = 'smass_s23_bench'
-PASSWORD = 'S23Bench#2026'
+PASSWORD = ''  # 运行时随机生成，不硬编码凭据
 ADMIN = 's23bench_admin'
+
+
+def bench_password():
+    """每次运行生成一次性压测密码（避免硬编码凭据）。"""
+    global PASSWORD
+    if not PASSWORD:
+        import secrets
+        PASSWORD = 'S23-' + secrets.token_urlsafe(12)
+    return PASSWORD
 
 
 def ensure_prefix(name):
@@ -102,7 +111,7 @@ def seed():
             unit=klass, extra={'phone': '1390000{:04d}'.format(index)})
 
     account = Account.objects.create_user(
-        ADMIN, PASSWORD, display_name='压测管理员', person_type='admin')
+        ADMIN, bench_password(), display_name='压测管理员', person_type='admin')
     account.must_change_password = False
     account.save(update_fields=['must_change_password'])
     account_services.ensure_role_groups()
@@ -215,7 +224,7 @@ def benchmark(keep=False):
     exec_sql(cfg, 'CREATE DATABASE `{}` CHARACTER SET utf8mb4'.format(BENCH_DB))
     report['migrate'] = migrate()
     report['seed'] = seed()
-    login_data = {'login_name': ADMIN, 'password': PASSWORD}
+    login_data = {'login_name': ADMIN, 'password': bench_password()}
 
     scenarios = [
         bench('anonymous_login_page', '/r21/login/', total=120, concurrency=6),
