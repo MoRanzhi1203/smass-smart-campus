@@ -1,0 +1,91 @@
+{% extends "r14/base.html" %}
+{% block title %}{{ activity.title }}{% endblock %}
+{% block content %}
+<h1>{{ activity.title }}
+  <span class="tag {{ activity.status }}">{{ activity.get_status_display }}</span>
+</h1>
+<p class="muted">
+  {{ activity.get_category_display }} · {{ activity.location|default:"地点待定" }} ·
+  {{ activity.start_at|date:"Y-m-d H:i" }} ~ {{ activity.end_at|date:"Y-m-d H:i" }}
+  {% if activity.registration_deadline %}· 报名截止 {{ activity.registration_deadline|date:"Y-m-d H:i" }}{% endif %}
+  · 学分 {{ activity.credit_points }} / 志愿时长 {{ activity.volunteer_hours }} 小时
+</p>
+
+<section class="card">
+  <h2>报名与签到</h2>
+  <p>共 {{ stats.total }} 条报名：{{ stats.registered }} 报名 / {{ stats.waitlisted }} 候补 / {{ stats.checked_in }} 签到 / {{ stats.absent }} 缺勤 / {{ stats.cancelled }} 取消</p>
+
+  {% if my_record %}
+    {% if not my_registration or my_registration.status == 'cancelled' %}
+      <form class="inline-form" method="post" action="{% url 'r14:activity_register' activity.pk %}">
+        {% csrf_token %}<button type="submit">报名</button>
+      </form>
+    {% elif my_registration.status == 'registered' or my_registration.status == 'waitlisted' %}
+      <form class="inline-form" method="post" action="{% url 'r14:registration_cancel' my_registration.pk %}">
+        {% csrf_token %}<button class="btn muted" type="submit">取消报名</button>
+      </form>
+    {% endif %}
+
+    {% if my_registration and my_registration.status == 'registered' %}
+      <form method="post" action="{% url 'r14:activity_check_in' my_registration.pk %}">
+        {% csrf_token %}
+        <div class="row">
+          <div><label for="code">签到码</label><input id="code" name="code" inputmode="numeric" maxlength="8" required></div>
+          <div><button type="submit">签到</button></div>
+        </div>
+      </form>
+    {% elif my_registration %}
+      <p class="muted">当前报名状态：{{ my_registration.get_status_display }}</p>
+    {% endif %}
+  {% else %}
+    <p class="muted">当前账号没有学籍档案，无法报名。</p>
+  {% endif %}
+</section>
+
+{% if can_manage %}
+<section class="card">
+  <h2>组织者操作</h2>
+  <p>签到码：<span class="code">{{ activity.checkin_code|default:"—" }}</span>
+     {% if activity.checkin_expires_at %}（有效至 {{ activity.checkin_expires_at|date:"Y-m-d H:i" }}）{% endif %}</p>
+  <div class="row">
+    {% if activity.status == 'draft' %}
+      <form class="inline-form" method="post" action="{% url 'r14:activity_publish' activity.pk %}">
+        {% csrf_token %}<button type="submit">发布活动</button>
+      </form>
+    {% endif %}
+    {% if activity.status == 'published' %}
+      <form class="inline-form" method="post" action="{% url 'r14:activity_close' activity.pk %}">
+        {% csrf_token %}<button class="btn danger" type="submit">结束并补记缺勤</button>
+      </form>
+    {% endif %}
+    {% if activity.status == 'closed' %}
+      <form class="inline-form" method="post" action="{% url 'r14:activity_generate_credits' activity.pk %}">
+        {% csrf_token %}<button type="submit">生成待认定记录</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h2>报名名单</h2>
+  <table>
+    <thead><tr><th>学号</th><th>姓名</th><th>状态</th><th>报名时间</th><th>签到时间</th></tr></thead>
+    <tbody>
+      {% for r in registrations %}
+        <tr>
+          <td>{{ r.record.student_no }}</td>
+          <td>{{ r.record.name }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>{{ r.registered_at|date:"m-d H:i" }}</td>
+          <td>{{ r.checked_in_at|date:"m-d H:i"|default:"—" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">还没有报名。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<p><a class="btn ghost" href="{% url 'r14:activities' %}">返回活动列表</a></p>
+{% endblock %}

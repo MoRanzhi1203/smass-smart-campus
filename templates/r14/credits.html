@@ -1,0 +1,47 @@
+{% extends "r14/base.html" %}
+{% block title %}学分认定{% endblock %}
+{% block content %}
+<h1>第二课堂学分与志愿时长</h1>
+
+{% if summary %}
+<section class="card">
+  <h2>我的累计（已认定）</h2>
+  <p>学分：<strong>{{ summary.points }}</strong> · 志愿时长：<strong>{{ summary.hours }}</strong> 小时 · 记录：{{ summary.count }} 条</p>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>认定记录</h2>
+  <table>
+    <thead><tr><th>学号</th><th>活动</th><th>类别</th><th>学分</th><th>时长</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for c in credits %}
+        <tr>
+          <td>{{ c.record.student_no }}</td>
+          <td>{{ c.activity.title }}</td>
+          <td>{{ c.get_category_display }}</td>
+          <td>{{ c.points }}</td>
+          <td>{{ c.hours }}</td>
+          <td><span class="tag {{ c.status }}">{{ c.get_status_display }}</span></td>
+          <td>
+            {% if can_manage and c.status == 'pending' %}
+              <form class="inline-form" method="post" action="{% url 'r14:credit_action' c.pk 'approve' %}">
+                {% csrf_token %}<button class="btn small" type="submit">认定</button>
+              </form>
+              <form class="inline-form" method="post" action="{% url 'r14:credit_action' c.pk 'reject' %}">
+                {% csrf_token %}
+                <input name="reason" placeholder="驳回原因" required style="width:110px">
+                <button class="btn small danger" type="submit">驳回</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty">暂无认定记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

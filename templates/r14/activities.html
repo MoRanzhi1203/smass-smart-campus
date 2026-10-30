@@ -1,0 +1,56 @@
+{% extends "r14/base.html" %}
+{% block title %}活动{% endblock %}
+{% block content %}
+<h1>第二课堂与志愿活动</h1>
+
+{% if can_manage %}
+<section class="card">
+  <h2>创建活动</h2>
+  <form method="post" action="{% url 'r14:activity_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="title">名称</label><input id="title" name="title" required maxlength="100"></div>
+      <div>
+        <label for="category">类别</label>
+        <select id="category" name="category">
+          {% for code, label in categories %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label for="location">地点</label><input id="location" name="location" maxlength="100"></div>
+      <div><label for="capacity">容量（0 不限）</label><input id="capacity" name="capacity" type="number" min="0" value="0"></div>
+    </div>
+    <div class="row">
+      <div><label for="start_at">开始</label><input id="start_at" name="start_at" type="datetime-local" required></div>
+      <div><label for="end_at">结束</label><input id="end_at" name="end_at" type="datetime-local" required></div>
+      <div><label for="registration_deadline">报名截止</label><input id="registration_deadline" name="registration_deadline" type="datetime-local"></div>
+      <div><label for="credit_points">学分</label><input id="credit_points" name="credit_points" type="number" step="0.5" min="0" value="0"></div>
+      <div><label for="volunteer_hours">志愿时长</label><input id="volunteer_hours" name="volunteer_hours" type="number" step="0.5" min="0" value="0"></div>
+      <div><button type="submit">创建（草稿）</button></div>
+    </div>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>活动列表</h2>
+  <table>
+    <thead>
+      <tr><th>活动</th><th>类别</th><th>时间</th><th>报名</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.activity.title }}</td>
+          <td>{{ row.activity.get_category_display }}</td>
+          <td>{{ row.activity.start_at|date:"Y-m-d H:i" }} ~ {{ row.activity.end_at|date:"H:i" }}</td>
+          <td>{{ row.stats.registered }} 报名 / {{ row.stats.waitlisted }} 候补 / {{ row.stats.checked_in }} 签到</td>
+          <td><span class="tag {{ row.activity.status }}">{{ row.activity.get_status_display }}</span></td>
+          <td><a class="btn small ghost" href="{% url 'r14:activity_detail' row.activity.pk %}">详情</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty">暂无活动。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
