@@ -46,7 +46,7 @@ def report(request):
         return render(request, 's19/forbidden.html',
                       {'message': '只有管理员可以查看可访问性报告'}, status=403)
     root = Path(settings.BASE_DIR) / 'templates'
-    results = services.audit_dir(root)
+    results = services.audit_dir_cached(root)
     colors = [
         {'fg': fg, 'bg': bg, 'ratio': services.contrast_ratio(fg, bg),
          'level': services.wcag_level(services.contrast_ratio(fg, bg), large)}

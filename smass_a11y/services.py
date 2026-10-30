@@ -232,6 +232,28 @@ def summarize(results):
     }
 
 
+#: 报告页缓存 TTL（秒）；模板变更后最多 5 分钟生效，避免每次请求全量扫描
+CACHE_TTL = 300
+
+
+def audit_dir_cached(root):
+    """带缓存的扫描结果。
+
+    S23 压测发现 ``/s19/`` 每次请求都全量解析 147 个模板（p50 约 3.8 秒），
+    因此加进程缓存；缓存不可用时退化为直接扫描。
+    """
+    try:
+        from django.core.cache import cache
+    except Exception:  # noqa: BLE001 - 非 Django 环境（脚本/测试）直接扫描
+        return audit_dir(root)
+    key = 'smass_a11y:audit:v1:{}'.format(root)
+    data = cache.get(key)
+    if data is None:
+        data = audit_dir(root)
+        cache.set(key, data, CACHE_TTL)
+    return data
+
+
 #: 设计系统关键配色的对比度基线（用于回归）
 COLOR_PAIRS = (
     ('#1f2430', '#f5f7fb', False),
