@@ -1,0 +1,37 @@
+{% extends "r17/base.html" %}
+{% block title %}举报处理{% endblock %}
+{% block content %}
+<h1>举报处理</h1>
+<section class="card">
+  <table>
+    <thead><tr><th>对象</th><th>举报人</th><th>理由</th><th>状态</th><th>处理</th></tr></thead>
+    <tbody>
+      {% for r in reports %}
+        <tr>
+          <td>{{ r.get_target_type_display }} #{{ r.target_id }}</td>
+          <td>{{ r.reporter.display_name }}</td>
+          <td>{{ r.reason|truncatechars:40 }}</td>
+          <td><span class="tag {{ r.status }}">{{ r.get_status_display }}</span></td>
+          <td>
+            {% if r.status == 'pending' %}
+              <form class="inline-form" method="post" action="{% url 'r17:report_resolve' r.pk %}">
+                {% csrf_token %}
+                <select name="action">
+                  <option value="hide">下架内容</option>
+                  <option value="remove">删除内容</option>
+                  <option value="dismiss">驳回举报</option>
+                </select>
+                <button class="btn small" type="submit">处理</button>
+              </form>
+            {% else %}
+              <span class="muted">{{ r.get_action_display }} · {{ r.handled_by }} · {{ r.handled_at|date:"m-d H:i" }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无举报。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

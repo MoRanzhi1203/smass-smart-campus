@@ -1,0 +1,49 @@
+{% extends "r17/base.html" %}
+{% block title %}论坛{% endblock %}
+{% block content %}
+<h1>校内论坛</h1>
+
+<section class="card">
+  <h2>公告</h2>
+  {% for a in announcements %}
+    <p><strong>{{ a.title }}</strong> <span class="muted">{{ a.published_at|date:"Y-m-d H:i" }} · {{ a.get_audience_display }}</span><br>
+      <span class="body">{{ a.body|truncatechars:200 }}</span></p>
+  {% empty %}
+    <p class="muted">暂无公告。</p>
+  {% endfor %}
+</section>
+
+<section class="card">
+  <h2>板块</h2>
+  <table>
+    <thead><tr><th>板块</th><th>简介</th><th>帖子</th><th>评论</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.board.name }}</td>
+          <td>{{ row.board.description|default:"—" }}</td>
+          <td>{{ row.stats.posts }}</td>
+          <td>{{ row.stats.comments }}</td>
+          <td><a class="btn small ghost" href="{% url 'r17:board' row.board.pk %}">进入</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty">暂无板块。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>最新帖子</h2>
+  {% for p in posts %}
+    <p>
+      {% if p.pinned %}<span class="tag">置顶</span>{% endif %}
+      <a href="{% url 'r17:post' p.pk %}">{{ p.title }}</a>
+      <span class="muted">· {{ p.board.name }} · {{ p.author.display_name }} · {{ p.created_at|date:"Y-m-d H:i" }}</span>
+      {% if p.status != 'published' %}<span class="tag {{ p.status }}">{{ p.get_status_display }}</span>{% endif %}
+    </p>
+  {% empty %}
+    <p class="muted">暂无帖子。</p>
+  {% endfor %}
+</section>
+{% endblock %}

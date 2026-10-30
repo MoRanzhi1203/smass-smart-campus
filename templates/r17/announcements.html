@@ -1,0 +1,45 @@
+{% extends "r17/base.html" %}
+{% block title %}公告{% endblock %}
+{% block content %}
+<h1>校园公告</h1>
+
+{% if can_moderate %}
+<section class="card">
+  <h2>创建公告</h2>
+  <form method="post" action="{% url 'r17:announcement_create' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div><label for="title">标题</label><input id="title" name="title" required maxlength="120"></div>
+      <div>
+        <label for="audience">受众</label>
+        <select id="audience" name="audience">
+          {% for code, label in audiences %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div><label for="body">正文</label><textarea id="body" name="body" required maxlength="5000"></textarea></div>
+    <p><button type="submit">创建（草稿）</button></p>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>公告列表</h2>
+  {% for a in announcements %}
+    <div style="border-bottom:1px solid var(--line); padding:10px 0;">
+      <p><strong>{{ a.title }}</strong>
+        <span class="tag {{ a.status }}">{{ a.get_status_display }}</span>
+        <span class="muted">· {{ a.get_audience_display }} · {{ a.published_at|date:"Y-m-d H:i"|default:"未发布" }}</span>
+      </p>
+      <p class="body">{{ a.body }}</p>
+      {% if can_moderate and a.status == 'draft' %}
+        <form class="inline-form" method="post" action="{% url 'r17:announcement_publish' a.pk %}">
+          {% csrf_token %}<button class="btn small" type="submit">发布</button>
+        </form>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="muted">暂无公告。</p>
+  {% endfor %}
+</section>
+{% endblock %}

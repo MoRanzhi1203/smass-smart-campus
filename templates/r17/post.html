@@ -1,0 +1,74 @@
+{% extends "r17/base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}
+  {% if post.status != 'published' %}<span class="tag {{ post.status }}">{{ post.get_status_display }}</span>{% endif %}
+</h1>
+<p class="muted">{{ post.board.name }} · {{ post.author.display_name }} · {{ post.created_at|date:"Y-m-d H:i" }} · 浏览 {{ post.view_count }}</p>
+
+<section class="card">
+  <p class="body">{{ post.body }}</p>
+  <div class="row">
+    {% if is_author and post.status == 'published' %}
+      <form class="inline-form" method="post" action="{% url 'r17:content_action' post.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="hide">
+        <button class="btn muted" type="submit">下架我的帖子</button>
+      </form>
+    {% endif %}
+    {% if can_moderate and post.status != 'removed' %}
+      <form class="inline-form" method="post" action="{% url 'r17:content_action' post.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="remove">
+        <button class="btn danger" type="submit">删除帖子</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h2>举报该帖子</h2>
+  <form method="post" action="{% url 'r17:content_report' %}">
+    {% csrf_token %}
+    <input type="hidden" name="target_type" value="post">
+    <input type="hidden" name="target_id" value="{{ post.pk }}">
+    <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/">
+    <div class="row">
+      <div><label for="reason">举报理由</label><input id="reason" name="reason" required maxlength="500"></div>
+      <div><button class="btn muted" type="submit">举报</button></div>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>评论（{{ comments|length }}）</h2>
+  {% for c in comments %}
+    <div style="border-bottom:1px solid var(--line); padding:8px 0;">
+      <p class="body">{{ c.body }}</p>
+      <p class="muted">{{ c.author.display_name }} · {{ c.created_at|date:"Y-m-d H:i" }}
+        {% if c.status != 'published' %}<span class="tag {{ c.status }}">{{ c.get_status_display }}</span>{% endif %}
+      </p>
+      <form class="inline-form" method="post" action="{% url 'r17:content_report' %}">
+        {% csrf_token %}
+        <input type="hidden" name="target_type" value="comment">
+        <input type="hidden" name="target_id" value="{{ c.pk }}">
+        <input type="hidden" name="next" value="/r17/forum/post/{{ post.pk }}/">
+        <input name="reason" placeholder="举报理由" required style="width:160px">
+        <button class="btn small muted" type="submit">举报</button>
+      </form>
+    </div>
+  {% empty %}
+    <p class="muted">暂无评论。</p>
+  {% endfor %}
+
+  {% if post.status == 'published' %}
+    <form method="post" action="{% url 'r17:comment_create' post.pk %}">
+      {% csrf_token %}
+      <div><label for="body">发表评论</label><textarea id="body" name="body" required maxlength="2000"></textarea></div>
+      <p><button type="submit">评论</button></p>
+    </form>
+  {% else %}
+    <p class="muted">该帖子当前不可评论。</p>
+  {% endif %}
+</section>
+
+<p><a class="btn ghost" href="{% url 'r17:board' post.board_id %}">返回板块</a></p>
+{% endblock %}
