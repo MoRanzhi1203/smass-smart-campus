@@ -247,6 +247,8 @@ class SilentJourneyTests(U8Fixture):
         instance.refresh_from_db()
         self.assertEqual(instance.status, 'pending')
 
+        approver = make_account('U8AP', RoleCode.SYSTEM_ADMIN)
+        self.client.force_login(approver)
         self.client.post('/r6/instances/{}/action/'.format(instance.pk),
                          {'action': 'approve'})
         instance.refresh_from_db()

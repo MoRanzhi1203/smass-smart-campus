@@ -130,7 +130,7 @@ class FullChainE2ETests(TestCase):
             subject_id=student_record.student_no, created_by='R10E2E',
         )
         workflow_services.transition(instance, 'submit', actor='R10E2E')
-        instance = workflow_services.transition(instance, 'approve', actor='R10E2E')
+        instance = workflow_services.transition(instance, 'approve', actor='R10AP')
         self.assertEqual(instance.status, 'approved')
 
         # ---- R7：指标（与直接聚合对账）----

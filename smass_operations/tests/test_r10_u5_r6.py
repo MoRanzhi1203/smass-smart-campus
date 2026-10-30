@@ -52,6 +52,8 @@ class U5Fixture(TestCase):
     def setUp(self):
         core_services.ensure_role_groups()
         self.admin = make_account('U5ADM', RoleCode.SYSTEM_ADMIN)
+        # S12 职责分离：审批必须由另一账号执行
+        self.approver = make_account('U5AP', RoleCode.SYSTEM_ADMIN)
         self.teacher = make_account('U5T', RoleCode.TEACHER, 'teacher')
         self.client.force_login(self.admin)
 
@@ -165,6 +167,7 @@ class InstanceFlowTests(U5Fixture):
         instance.refresh_from_db()
         self.assertEqual(instance.status, 'pending')
 
+        self.client.force_login(self.approver)
         self.client.post('/r6/instances/{}/action/'.format(instance.pk),
                          {'action': 'approve'})
         instance.refresh_from_db()
@@ -176,6 +179,7 @@ class InstanceFlowTests(U5Fixture):
             created_by='U5ADM')
         services.transition(instance, 'submit')
 
+        self.client.force_login(self.approver)
         self.client.post('/r6/instances/{}/action/'.format(instance.pk),
                          {'action': 'reject', 'reason': '材料不全'})
         instance.refresh_from_db()
@@ -291,7 +295,10 @@ class DemoWorkflowAuditTests(U5Fixture):
         instance = WorkflowInstance.objects.get(subject_id='E2E-001')
 
         # 3) 提交 -> 初审 -> 复审
-        for action in ('submit', 'approve', 'approve'):
+        self.client.post('/r6/instances/{}/action/'.format(instance.pk),
+                         {'action': 'submit'})
+        self.client.force_login(self.approver)
+        for action in ('approve', 'approve'):
             self.client.post('/r6/instances/{}/action/'.format(instance.pk),
                              {'action': action})
 

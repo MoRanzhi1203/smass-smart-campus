@@ -32,6 +32,24 @@ SUITES = [
     ('r21_account', 'smass.settings_r21'),
     ('app01', None),
     ('tests_e2e', None),
+    # ---- DSH 新增模块（R12–R20 / S09–S19）----
+    ('smass_enrollment', 'smass.settings_r12'),
+    ('smass_attendance', 'smass.settings_r13'),
+    ('smass_activities', 'smass.settings_r14'),
+    ('smass_clubs', 'smass.settings_r15'),
+    ('smass_forum', 'smass.settings_r17'),
+    ('smass_finance', 'smass.settings_r18'),
+    ('smass_party', 'smass.settings_r19'),
+    ('smass_portal', 'smass.settings_r20'),
+    ('smass_uploads', 'smass.settings_s14'),
+    ('smass_audit', 'smass.settings_s16'),
+    ('smass_security_tests', 'smass.settings_security'),
+    ('smass_mfa', 'smass.settings_s09'),
+    ('smass_stepup', 'smass.settings_s10'),
+    ('smass_policy', 'smass.settings_s11'),
+    ('smass_privacy', 'smass.settings_s13'),
+    ('smass_api_security', 'smass.settings_s15'),
+    ('smass_a11y', 'smass.settings_s19'),
 ]
 
 RAN_RE = re.compile(r'^Ran (\d+) tests? in ([\d.]+)s', re.M)
