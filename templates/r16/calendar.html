@@ -1,0 +1,48 @@
+{% extends "r16/base.html" %}
+{% block title %}共享日历{% endblock %}
+{% block content %}
+<h1>共享日历</h1>
+
+<div class="card">
+  <form method="get" class="row">
+    <div style="flex:0 0 220px">
+      <label for="date">日期</label>
+      <input id="date" type="date" name="date" value="{{ day|date:'Y-m-d' }}">
+    </div>
+    <div style="flex:0 0 auto"><button type="submit">查看</button></div>
+  </form>
+</div>
+
+{% for item in calendars %}
+<div class="card">
+  <h2 style="margin-top:0">
+    <a href="{% url 'r16:room_detail' item.room.pk %}">{{ item.room.code }}</a>
+    · {{ item.room.name }}
+    <span class="muted">{{ item.room.building.code }} / 容量 {{ item.room.capacity|default:"不限" }}</span>
+  </h2>
+  {% if item.bookings %}
+    <table>
+      <thead><tr><th>时间</th><th>用途</th><th>状态</th></tr></thead>
+      <tbody>
+        {% for b in item.bookings %}
+        <tr>
+          <td>{{ b.start_at|date:"H:i" }} - {{ b.end_at|date:"H:i" }}</td>
+          <td>{{ b.purpose }}</td>
+          <td>{{ b.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty">当日无占用。</div>
+  {% endif %}
+  {% if item.maintenances %}
+    <p class="muted">维护封闭：
+      {% for m in item.maintenances %}{{ m.start_at|date:"H:i" }}-{{ m.end_at|date:"H:i" }} {{ m.reason|default:"维护" }}{% if not forloop.last %}；{% endif %}{% endfor %}
+    </p>
+  {% endif %}
+</div>
+{% empty %}
+<div class="card"><div class="empty">暂无启用房间。</div></div>
+{% endfor %}
+{% endblock %}

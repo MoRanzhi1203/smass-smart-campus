@@ -51,6 +51,7 @@ BOOKING_CHECKED_IN = 'checked_in'
 BOOKING_NO_SHOW = 'no_show'
 BOOKING_CANCELLED = 'cancelled'
 BOOKING_RELEASED = 'released'
+BOOKING_REJECTED = 'rejected'
 BOOKING_STATUS_CHOICES = (
     (BOOKING_PENDING, '待审批'),
     (BOOKING_APPROVED, '已批准'),
@@ -58,6 +59,7 @@ BOOKING_STATUS_CHOICES = (
     (BOOKING_NO_SHOW, '爽约'),
     (BOOKING_CANCELLED, '已取消'),
     (BOOKING_RELEASED, '已释放'),
+    (BOOKING_REJECTED, '已驳回'),
 )
 
 #: 视为"占用房间"的状态（用于冲突检测）

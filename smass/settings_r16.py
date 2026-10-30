@@ -16,7 +16,7 @@ DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_r16_facilities
 
 INSTALLED_APPS = list(INSTALLED_APPS) + ['smass_facilities.apps.SmassFacilitiesConfig']
 
-ROOT_URLCONF = 'smass.urls_r22'
+ROOT_URLCONF = 'smass.urls_r16'
 
 # R16 阶段不启用身份路由策略（只测模型/服务/视图）
 R22_FLAGS = {

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}场地预约{% endblock %} · SMASS</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --card: #ffffff; --ink: #1f2430; --muted: #667085;
+      --line: #e4e7ec; --brand: #2456a6; --brand-soft: #e8effb;
+      --ok: #0f7b4f; --ok-soft: #e7f6ef; --err: #b42318; --err-soft: #fdecea;
+      --warn: #8a5a00; --warn-soft: #fff4d6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 15px/1.55 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    header {
+      background: var(--card); border-bottom: 1px solid var(--line);
+      padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px;
+      align-items: center; justify-content: space-between;
+    }
+    .brand { font-weight: 700; color: var(--brand); font-size: 18px; }
+    nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    nav a {
+      color: var(--muted); text-decoration: none; padding: 6px 10px;
+      border-radius: 8px; font-size: 14px;
+    }
+    nav a:hover, nav a.active { background: var(--brand-soft); color: var(--brand); }
+    main { max-width: 1120px; margin: 0 auto; padding: 20px; }
+    h1 { font-size: 22px; margin: 0 0 14px; }
+    h2 { font-size: 17px; margin: 22px 0 10px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 16px; margin-bottom: 16px;
+    }
+    .flash { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+    .flash.ok { background: var(--ok-soft); color: var(--ok); }
+    .flash.error { background: var(--err-soft); color: var(--err); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; background: #fafbfc; }
+    tr:last-child td { border-bottom: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+    input, select, textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+      border-radius: 8px; font: inherit; background: #fff;
+    }
+    textarea { min-height: 64px; resize: vertical; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+    .row > div { flex: 1 1 160px; }
+    button, .btn {
+      display: inline-block; padding: 8px 14px; border-radius: 8px;
+      border: 1px solid transparent; background: var(--brand); color: #fff;
+      font: inherit; cursor: pointer; text-decoration: none; font-size: 14px;
+    }
+    .btn.ghost { background: #fff; color: var(--brand); border-color: var(--line); }
+    .btn.danger { background: var(--err); }
+    .btn.muted { background: #eef0f4; color: var(--ink); }
+    .btn.small { padding: 5px 9px; font-size: 13px; }
+    .tag {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 12px; background: var(--brand-soft); color: var(--brand);
+    }
+    .tag.pending { background: var(--warn-soft); color: var(--warn); }
+    .tag.approved, .tag.checked_in { background: var(--ok-soft); color: var(--ok); }
+    .tag.rejected, .tag.no_show { background: var(--err-soft); color: var(--err); }
+    .muted { color: var(--muted); font-size: 13px; }
+    .empty { color: var(--muted); padding: 18px 4px; }
+    .stack { display: grid; gap: 8px; }
+    .inline-form { display: inline; }
+    .inline-form input { width: auto; }
+    @media (max-width: 640px) {
+      main { padding: 14px; }
+      th:nth-child(4), td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">SMASS 场地预约</div>
+  <nav>
+    <a href="{% url 'r16:rooms' %}">房间</a>
+    <a href="{% url 'r16:calendar' %}">共享日历</a>
+    <a href="{% url 'r16:bookings' %}">我的预约</a>
+    <a href="{% url 'r16:approvals' %}">审批</a>
+  </nav>
+</header>
+<main>
+  {% if ok_message %}<div class="flash ok">{{ ok_message }}</div>{% endif %}
+  {% if error_message %}<div class="flash error">{{ error_message }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "r16/base.html" %}
+{% block title %}无权访问{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>403 · 无权访问</h1>
+  <p class="muted">当前账号没有审批权限。审批需要具备更新类操作权限的管理角色。</p>
+  <p><a class="btn ghost" href="{% url 'r16:rooms' %}">返回房间列表</a></p>
+</div>
+{% endblock %}

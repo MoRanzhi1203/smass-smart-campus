@@ -32,6 +32,7 @@ from .models import (
     BOOKING_CHECKED_IN,
     BOOKING_NO_SHOW,
     BOOKING_PENDING,
+    BOOKING_REJECTED,
     BOOKING_RELEASED,
     OCCUPYING_STATUSES,
     ROOM_STATUS_OPEN,
@@ -252,6 +253,25 @@ def approve_booking(booking, actor, *, request=None):
         booking.save(update_fields=['status', 'approved_by', 'approved_at', 'updated_at'])
 
     logger.info('room_booking_approved id=%s by=%s', booking.pk, _actor_id(actor))
+    return booking
+
+
+def reject_booking(booking, actor, reason='', *, request=None):
+    """驳回待审批预约（必须填写原因，且不得自批）。"""
+    if booking.status != BOOKING_PENDING:
+        raise FacilityError('只有待审批的预约可以驳回', code='BAD_STATE')
+    if not can_approve(actor):
+        raise FacilityError('当前账号没有审批权限', code='PERMISSION_DENIED')
+    if str(getattr(booking.account, 'pk', '')) == str(getattr(actor, 'pk', '')):
+        raise FacilityError('不能驳回自己提交的预约', code='SELF_APPROVAL_DENIED')
+    if not str(reason or '').strip():
+        raise FacilityError('驳回必须填写原因', code='EMPTY_REASON')
+
+    booking.status = BOOKING_REJECTED
+    booking.cancel_reason = str(reason).strip()[:200]
+    booking.released_at = timezone.now()
+    booking.save(update_fields=['status', 'cancel_reason', 'released_at', 'updated_at'])
+    logger.info('room_booking_rejected id=%s by=%s', booking.pk, _actor_id(actor))
     return booking
 
 

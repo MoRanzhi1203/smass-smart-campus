@@ -1,0 +1,43 @@
+{% extends "r16/base.html" %}
+{% block title %}审批{% endblock %}
+{% block content %}
+<h1>待审批预约</h1>
+
+<div class="card">
+  {% if pending %}
+  <table>
+    <thead>
+      <tr><th>房间</th><th>申请人</th><th>时间</th><th>用途</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for b in pending %}
+      <tr>
+        <td>{{ b.room.code }} {{ b.room.name }}</td>
+        <td>{{ b.account.display_name|default:b.account.login_name }}
+          {% if b.account_id == me.pk %}<span class="tag pending">本人提交</span>{% endif %}
+        </td>
+        <td>{{ b.start_at|date:"m-d H:i" }} - {{ b.end_at|date:"m-d H:i" }}</td>
+        <td>{{ b.purpose }}</td>
+        <td class="stack">
+          {% if b.account_id == me.pk %}
+            <span class="muted">职责分离：不能审批自己提交的预约。</span>
+          {% else %}
+            <form class="inline-form" method="post" action="{% url 'r16:approve' b.pk %}">
+              {% csrf_token %}<button class="btn small" type="submit">批准</button>
+            </form>
+            <form class="inline-form" method="post" action="{% url 'r16:reject' b.pk %}">
+              {% csrf_token %}
+              <input name="reason" placeholder="驳回原因（必填）" maxlength="200" required>
+              <button class="btn small danger" type="submit">驳回</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">当前没有待审批预约。</div>
+  {% endif %}
+</div>
+{% endblock %}

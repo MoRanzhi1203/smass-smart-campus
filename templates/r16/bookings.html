@@ -1,0 +1,46 @@
+{% extends "r16/base.html" %}
+{% block title %}我的预约{% endblock %}
+{% block content %}
+<h1>我的预约</h1>
+
+<div class="card">
+  {% if bookings %}
+  <table>
+    <thead>
+      <tr><th>房间</th><th>时间</th><th>用途</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.room.code }} {{ b.room.name }}</td>
+        <td>{{ b.start_at|date:"m-d H:i" }} - {{ b.end_at|date:"m-d H:i" }}</td>
+        <td>{{ b.purpose }}{% if b.cancel_reason %}<div class="muted">原因：{{ b.cancel_reason }}</div>{% endif %}</td>
+        <td><span class="tag {{ b.status }}">{{ b.get_status_display }}</span></td>
+        <td class="stack">
+          {% if b.status == 'pending' or b.status == 'approved' %}
+          <form class="inline-form" method="post" action="{% url 'r16:cancel_booking' b.pk %}">
+            {% csrf_token %}
+            <input name="reason" placeholder="取消原因（可选）" maxlength="200">
+            <button class="btn small muted" type="submit">取消</button>
+          </form>
+          {% endif %}
+          {% if b.status == 'approved' %}
+          <form class="inline-form" method="post" action="{% url 'r16:check_in' b.pk %}">
+            {% csrf_token %}<button class="btn small" type="submit">签到</button>
+          </form>
+          {% endif %}
+          {% if b.status == 'approved' or b.status == 'checked_in' %}
+          <form class="inline-form" method="post" action="{% url 'r16:release' b.pk %}">
+            {% csrf_token %}<button class="btn small ghost" type="submit">释放房间</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">还没有预约记录。<a href="{% url 'r16:rooms' %}">去预约房间</a></div>
+  {% endif %}
+</div>
+{% endblock %}

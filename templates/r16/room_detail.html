@@ -1,0 +1,85 @@
+{% extends "r16/base.html" %}
+{% block title %}{{ room.code }} 详情{% endblock %}
+{% block content %}
+<h1>{{ room.code }} · {{ room.name }}</h1>
+
+<div class="grid">
+  <div class="card">
+    <h2 style="margin-top:0">房间信息</h2>
+    <table>
+      <tr><th>楼宇</th><td>{{ room.building.code }} {{ room.building.name }}</td></tr>
+      <tr><th>类型</th><td>{{ room.get_room_type_display }}</td></tr>
+      <tr><th>容量</th><td>{{ room.capacity|default:"不限" }}</td></tr>
+      <tr><th>状态</th><td>{{ room.get_status_display }}</td></tr>
+      <tr><th>审批</th><td>{% if room.requires_approval %}需要审批{% else %}自动批准{% endif %}</td></tr>
+      <tr><th>资格</th><td>{% if room.requires_qualification %}需要资格（当前：{% if has_qualification %}已具备{% else %}缺少{% endif %}）{% else %}无要求{% endif %}</td></tr>
+    </table>
+    {% if not can_book %}
+      <div class="flash error">当前账号不满足预约条件（房间不可预约、缺少角色或缺少资格）。</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">预约申请</h2>
+    <form method="post" action="{% url 'r16:create_booking' room.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="date" value="{{ day|date:'Y-m-d' }}">
+      <label for="start_at">开始时间</label>
+      <input id="start_at" type="datetime-local" name="start_at"
+             value="{{ form.start_at|default:default_start }}" required>
+      <label for="end_at">结束时间</label>
+      <input id="end_at" type="datetime-local" name="end_at"
+             value="{{ form.end_at|default:default_end }}" required>
+      <label for="purpose">用途</label>
+      <input id="purpose" name="purpose" maxlength="200" value="{{ form.purpose }}" required>
+      <label for="attendees">人数</label>
+      <input id="attendees" type="number" min="0" name="attendees" value="{{ form.attendees|default:0 }}">
+      <p class="muted">冲突、维护期、容量与资格均由后端再次校验。</p>
+      <button type="submit">提交预约</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">当日日历（{{ day|date:"Y-m-d" }}）</h2>
+  <h3 style="font-size:15px">占用</h3>
+  {% if calendar.bookings %}
+    <table>
+      <thead><tr><th>时间</th><th>用途</th><th>状态</th></tr></thead>
+      <tbody>
+        {% for b in calendar.bookings %}
+        <tr>
+          <td>{{ b.start_at|date:"H:i" }} - {{ b.end_at|date:"H:i" }}</td>
+          <td>{{ b.purpose }}</td>
+          <td>{{ b.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty">当日暂无占用。</div>
+  {% endif %}
+
+  <h3 style="font-size:15px">维护封闭期</h3>
+  {% if calendar.maintenances %}
+    <ul>
+      {% for m in calendar.maintenances %}
+      <li>{{ m.start_at|date:"m-d H:i" }} - {{ m.end_at|date:"m-d H:i" }}：{{ m.reason|default:"维护" }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty">无维护封闭。</div>
+  {% endif %}
+
+  <h3 style="font-size:15px">常规可用时段</h3>
+  {% if calendar.availability %}
+    <ul>
+      {% for w in calendar.availability %}
+      <li>周{{ w.weekday|add:1 }} {{ w.start }} - {{ w.end }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty">未配置，视为全天可用。</div>
+  {% endif %}
+</div>
+{% endblock %}

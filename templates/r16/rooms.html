@@ -1,0 +1,71 @@
+{% extends "r16/base.html" %}
+{% block title %}房间列表{% endblock %}
+{% block content %}
+<h1>房间列表</h1>
+
+<div class="card">
+  <form method="get" class="row">
+    <div>
+      <label for="building">楼宇</label>
+      <select id="building" name="building">
+        <option value="">全部</option>
+        {% for b in buildings %}
+          <option value="{{ b.pk }}" {% if filters.building == b.pk|stringformat:'s' %}selected{% endif %}>{{ b.code }} {{ b.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="room_type">类型</label>
+      <select id="room_type" name="room_type">
+        <option value="">全部</option>
+        {% for value, label in room_types %}
+          <option value="{{ value }}" {% if filters.room_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="min_capacity">最小容量</label>
+      <input id="min_capacity" type="number" min="0" name="min_capacity" value="{{ filters.min_capacity }}">
+    </div>
+    <div>
+      <label for="start_at">空闲开始</label>
+      <input id="start_at" type="datetime-local" name="start_at" value="{{ filters.start_at }}">
+    </div>
+    <div>
+      <label for="end_at">空闲结束</label>
+      <input id="end_at" type="datetime-local" name="end_at" value="{{ filters.end_at }}">
+    </div>
+    <div style="flex:0 0 auto">
+      <button type="submit">筛选</button>
+    </div>
+  </form>
+  <p class="muted">填写时间区间后，仅显示该时段无占用、无维护封闭的房间。</p>
+</div>
+
+<div class="card">
+  {% if rooms %}
+  <table>
+    <thead>
+      <tr><th>房间</th><th>楼宇</th><th>类型</th><th>容量</th><th>状态</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for room in rooms %}
+      <tr>
+        <td><strong>{{ room.code }}</strong> {{ room.name }}
+          {% if room.requires_approval %}<span class="tag pending">需审批</span>{% endif %}
+          {% if room.requires_qualification %}<span class="tag">需资格</span>{% endif %}
+        </td>
+        <td>{{ room.building.code }}</td>
+        <td>{{ room.get_room_type_display }}</td>
+        <td>{{ room.capacity|default:"不限" }}</td>
+        <td>{{ room.get_status_display }}</td>
+        <td><a class="btn small ghost" href="{% url 'r16:room_detail' room.pk %}">查看与预约</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">没有符合条件的房间。</div>
+  {% endif %}
+</div>
+{% endblock %}
