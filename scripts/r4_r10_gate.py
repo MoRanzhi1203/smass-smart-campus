@@ -14,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-LEDGER = Path(__file__).resolve().parent.parent / 'docs' / 'dsh_run' / 'R4_R10_MANDATORY_TASKS.json'
+LEDGER = _resolve_run_dir() / 'R4_R10_MANDATORY_TASKS.json'
 
 VALID_STATUS = {
     'NOT_STARTED', 'IN_PROGRESS', 'IMPLEMENTED', 'TESTED',

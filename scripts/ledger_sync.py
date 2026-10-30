@@ -11,8 +11,9 @@ import sys
 from pathlib import Path
 
 BASE = Path(r"E:\PythonWeb\smass")
-TASKS = BASE / "docs" / "dsh_run" / "SMART_CAMPUS_MASTER_TASKS.json"
-STATE = BASE / "docs" / "dsh_run" / "SMART_CAMPUS_MASTER_STATE.json"
+RUN_DIR = _resolve_run_dir()
+TASKS = RUN_DIR / "SMART_CAMPUS_MASTER_TASKS.json"
+STATE = RUN_DIR / "SMART_CAMPUS_MASTER_STATE.json"
 
 
 def load(p: Path) -> dict:

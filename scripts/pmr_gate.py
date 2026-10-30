@@ -23,8 +23,15 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
-LEDGER = BASE / 'docs' / 'dsh_run' / 'PMR_TASKS.json'
-COMMAND_LOG = BASE / 'docs' / 'dsh_run' / 'PMR_COMMAND_LOG.md'
+
+def _resolve_run_dir():
+    """账本目录：优先本地 .local/，回退到整理前的 docs/dsh_run/。"""
+    local = BASE / '.local' / 'agent-sessions' / 'dsh_run'
+    if local.is_dir():
+        return local
+    return BASE / 'docs' / 'dsh_run'
+LEDGER = _resolve_run_dir() / 'PMR_TASKS.json'
+COMMAND_LOG = _resolve_run_dir() / 'PMR_COMMAND_LOG.md'
 
 VALID = {
     'NOT_STARTED', 'READY', 'IN_PROGRESS', 'TESTED',
@@ -153,7 +160,7 @@ def check_commands():
     """
     warnings = []
     if not COMMAND_LOG.exists():
-        return ['缺少命令日志: docs/dsh_run/PMR_COMMAND_LOG.md']
+        return ['缺少命令日志: .local/agent-sessions/dsh_run/PMR_COMMAND_LOG.md']
 
     text = COMMAND_LOG.read_text(encoding='utf-8')
     rows = re.findall(r'^\|\s*(\d+)\s*\|([^|]*)\|([^|]*)\|', text, re.M)

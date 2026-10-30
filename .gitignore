@@ -38,6 +38,7 @@ secrets/
 *.swp
 
 # ---- 数据库备份与导出产物 ----
+# 注意：不使用 *.sql 之外的宽泛规则；正式 SQL 迁移模板如需入库应显式豁免
 *.sql
 *.sql.gz
 *.dump
@@ -47,11 +48,24 @@ dump/
 # ---- 测试与工具产物 ----
 .pytest_cache/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 .mypy_cache/
 .ruff_cache/
 *.zip
+
+# ---- 本地研发资料（RH2：全部过程材料，禁止进入 Git） ----
+# 提示词、Agent 会话、检查点、日志、证据、截图、数据库与 Git 备份
+/.local/
+
+# ---- 受保护备份与凭据补充规则 ----
+*.bundle
+*.bak
+*.p12
+*.pfx
+uploads/
+media/
 
 # ---- OS ----
 Thumbs.db

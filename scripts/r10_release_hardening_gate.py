@@ -25,7 +25,14 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
-LEDGER = BASE / 'docs' / 'dsh_run' / 'R10_HARDENING_TASKS.json'
+
+def _resolve_run_dir():
+    """账本目录：优先本地 .local/，回退到整理前的 docs/dsh_run/。"""
+    local = BASE / '.local' / 'agent-sessions' / 'dsh_run'
+    if local.is_dir():
+        return local
+    return BASE / 'docs' / 'dsh_run'
+LEDGER = _resolve_run_dir() / 'R10_HARDENING_TASKS.json'
 
 VALID = {'NOT_STARTED', 'READY', 'IN_PROGRESS', 'TESTED', 'BLOCKED', 'NOT_RUN'}
 
@@ -147,9 +154,11 @@ def check_artifacts():
         if not (BASE / rel).exists():
             warnings.append('缺少脚本: {}'.format(rel))
 
-    shots = BASE / 'docs' / 'screenshots' / 'r10_uiux'
+    shots = (BASE / '.local' / 'screenshots' / 'r10_uiux'
+             if (BASE / '.local' / 'screenshots').is_dir()
+             else BASE / 'docs' / 'screenshots' / 'r10_uiux')
     if not shots.exists():
-        warnings.append('缺少截图目录: docs/screenshots/r10_uiux')
+        warnings.append('缺少截图目录: .local/screenshots/r10_uiux')
     else:
         pngs = list(shots.glob('*.png'))
         if len(pngs) < 10:

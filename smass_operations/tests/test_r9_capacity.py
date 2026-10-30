@@ -48,12 +48,17 @@ class CapacityConstraintTests(TestCase):
         )
 
     def test_capacity_documented_in_decisions(self):
-        """决策日志里必须记录实测的 max_connections，避免文档漂移。"""
+        """公开技术决策文档必须记录实测的 max_connections，避免文档漂移。
+
+        该断言刻意依赖**公开文档**（`docs/SMASS_Technical_Decisions.md`）而不是
+        本地 Agent 账本——账本位于 `.local/`（禁止上传），克隆环境不应因缺少
+        私有资料而失败；而容量基线本身是有维护价值的技术事实，应当公开可查。
+        """
         from pathlib import Path
 
         base = Path(__file__).resolve().parents[2]
-        decisions = base / 'docs' / 'dsh_run' / 'R4_R10_DECISIONS.md'
-        self.assertTrue(decisions.exists(), '决策日志缺失')
+        decisions = base / 'docs' / 'SMASS_Technical_Decisions.md'
+        self.assertTrue(decisions.exists(), '技术决策文档缺失')
 
         text = decisions.read_text(encoding='utf-8')
         self.assertIn('max_connections', text)

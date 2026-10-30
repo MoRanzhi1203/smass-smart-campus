@@ -29,7 +29,14 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
-RUN_DIR = BASE / 'docs' / 'dsh_run'
+
+def _resolve_run_dir():
+    """账本目录：优先本地 .local/，回退到整理前的 docs/dsh_run/。"""
+    local = BASE / '.local' / 'agent-sessions' / 'dsh_run'
+    if local.is_dir():
+        return local
+    return BASE / 'docs' / 'dsh_run'
+RUN_DIR = _resolve_run_dir()
 TASKS_PATH = RUN_DIR / 'SMART_CAMPUS_MASTER_TASKS.json'
 STATE_PATH = RUN_DIR / 'SMART_CAMPUS_MASTER_STATE.json'
 
@@ -184,6 +191,24 @@ def check_dependencies(tasks: list[dict], rep: Report) -> None:
 # ---------------------------------------------------------------------------
 # 3. 证据校验（只针对 TESTED）
 # ---------------------------------------------------------------------------
+def _resolve_evidence_path(rel: str) -> Path:
+    """证据路径解析。
+
+    账本里的 ``evidence_paths`` 是历史路径 ``docs/dsh_run/...``。RH2 整理后
+    这些文件被迁到本地 ``.local/agent-sessions/dsh_run/``（禁止上传）。
+    这里做**只读重定向**，因此无需改写账本本身，也不改变任何任务状态。
+    """
+    p = BASE / rel
+    if p.exists():
+        return p
+    prefix = 'docs/dsh_run/'
+    if rel.startswith(prefix):
+        alt = BASE / '.local' / 'agent-sessions' / 'dsh_run' / rel[len(prefix):]
+        if alt.exists():
+            return alt
+    return p
+
+
 def check_evidence(tasks: list[dict], rep: Report, deep: bool) -> None:
     tested = [t for t in tasks if t.get('state') == DONE]
     rep.ok('TESTED 计数', f'{len(tested)} 个任务')
@@ -196,7 +221,7 @@ def check_evidence(tasks: list[dict], rep: Report, deep: bool) -> None:
             missing.append(f"{t['id']}(无证据路径)")
             continue
         for rel in paths:
-            p = BASE / rel
+            p = _resolve_evidence_path(rel)
             if not p.exists():
                 missing.append(f"{t['id']} -> {rel}")
                 continue

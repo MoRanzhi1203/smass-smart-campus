@@ -17,7 +17,14 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
-LEDGER = BASE / 'docs' / 'dsh_run' / 'R10_UIUX_TASKS.json'
+
+def _resolve_run_dir():
+    """账本目录：优先本地 .local/，回退到整理前的 docs/dsh_run/。"""
+    local = BASE / '.local' / 'agent-sessions' / 'dsh_run'
+    if local.is_dir():
+        return local
+    return BASE / 'docs' / 'dsh_run'
+LEDGER = _resolve_run_dir() / 'R10_UIUX_TASKS.json'
 
 VALID = {
     'NOT_STARTED', 'IN_PROGRESS', 'IMPLEMENTED', 'TESTED',
