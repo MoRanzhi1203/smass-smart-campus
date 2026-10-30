@@ -65,6 +65,11 @@
 `main` 与 `feat/smass-r11-r20-full-campus` **完全一致**（同一 SHA），
 GitHub Compare 结果 `identical`（ahead 0 / behind 0）。
 
+> **时点说明**：上表是 **RH9 验证时点**的远端状态（`55150fc`）。
+> 本报告自身作为一次正常提交（非强推）追加到这两个 ref，因此它们的
+> 当前 SHA 会在 `55150fc` 之后前进一步，差异**仅为本文档**。
+> 本文件不自引用自身提交的 SHA；精确当前值以 `git ls-remote` 为准。
+
 ### 已删除的不合规 refs
 
 | ref | 旧 SHA | 删除原因 |
