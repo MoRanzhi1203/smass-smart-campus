@@ -91,7 +91,7 @@ def migrate():
     completed = subprocess.run(  # noqa: S603 - 固定参数
         [sys.executable, 'manage.py', 'migrate', '--noinput',
          '--settings=smass.settings_s22'],
-        cwd=str(ROOT), capture_output=True, text=True, timeout=1800)
+        cwd=str(ROOT), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=1800)
     if completed.returncode != 0:
         raise SystemExit('migrate 失败：{}'.format(
             (completed.stderr or '').strip()[-1200:]))

@@ -139,7 +139,7 @@ def run_test(label, args, timeout=1800):
     started = time.time()
     try:
         completed = subprocess.run(  # noqa: S603 - 固定参数
-            command, cwd=str(ROOT), capture_output=True, text=True,
+            command, cwd=str(ROOT), capture_output=True, text=True, encoding='utf-8', errors='replace',
             timeout=timeout)
     except subprocess.SubprocessError as exc:
         return {'label': label, 'ok': False, 'ran': 0,
