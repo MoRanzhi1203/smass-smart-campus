@@ -1,0 +1,160 @@
+{% extends "r10/base.html" %}
+{% block title %}排课规划{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><span class="current">排课规划</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">排课规划</h1>
+    <p class="sm-subtitle">运行求解 → 查看硬冲突与软成本 → 复核通过后发布。求解为<b>确定性构造</b>算法，不保证全局最优。</p>
+  </div>
+  <div class="sm-page-actions">
+    <a class="sm-btn" href="/r11/timetable/student/">学生课表</a>
+    <a class="sm-btn" href="/r11/timetable/teacher/">教师课表</a>
+  </div>
+</div>
+
+{% if not runs %}
+  <div class="sm-alert is-info"><span>还没有排课批次。请先在后台创建 ScheduleRun 与课时需求。</span></div>
+{% else %}
+<div class="sm-card" style="margin-bottom:16px;">
+  <div class="sm-card-head">批次</div>
+  <div class="sm-card-body" style="overflow:auto;">
+    <table class="sm-table" style="width:100%;font-size:13px;">
+      <thead><tr>
+        <th>ID</th><th>学期</th><th>状态</th><th>已排/所需</th>
+        <th>硬冲突</th><th>软成本</th><th>算法</th><th>创建</th><th>操作</th>
+      </tr></thead>
+      <tbody>
+      {% for r in runs %}
+        <tr {% if selected and selected.pk == r.pk %}style="background:#f0f6ff;"{% endif %}>
+          <td><a href="/r11/plan/?run={{ r.pk }}">{{ r.pk }}</a></td>
+          <td>{{ r.term }}</td>
+          <td>{{ r.get_status_display }}</td>
+          <td>{{ r.placed_sessions }} / {{ r.required_sessions }}</td>
+          <td>{{ r.hard_conflicts }}</td>
+          <td>{{ r.soft_cost }}</td>
+          <td>{{ r.algorithm|default:"-" }}</td>
+          <td>{{ r.created_at|date:"m-d H:i" }}</td>
+          <td>
+            {% if r.status != 'published' %}
+              <button type="button" class="sm-btn btn-sm js-solve" data-run="{{ r.pk }}"
+                {% if not can_solve %}disabled{% endif %}>求解</button>
+            {% endif %}
+            {% if r.status == 'solved' and r.hard_conflicts == 0 %}
+              <button type="button" class="sm-btn is-primary btn-sm js-publish" data-run="{{ r.pk }}"
+                {% if not can_publish %}disabled{% endif %}>发布</button>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if selected %}
+<div class="sm-card" style="margin-bottom:16px;">
+  <div class="sm-card-head">批次 {{ selected.pk }} 的求解说明</div>
+  <div class="sm-card-body">
+    <p class="sm-help" style="margin-top:0;">
+      已排 {{ entry_count }} 节 / 需要 {{ selected.required_sessions }} 节；
+      硬冲突 {{ selected.hard_conflicts }}；软成本 {{ selected.soft_cost }}。
+    </p>
+    {% if selected.explanation %}
+      <div class="sm-alert is-warn"><span>存在未能排入的需求：</span></div>
+      <table class="sm-table" style="width:100%;font-size:12.5px;">
+        <thead><tr><th>需求</th><th>教学班</th><th>教师</th><th>已排/需要</th><th>原因</th></tr></thead>
+        <tbody>
+        {% for e in selected.explanation %}
+          <tr>
+            <td>{{ e.requirement }}</td>
+            <td>{{ e.section }}</td>
+            <td>{{ e.teacher }}</td>
+            <td>{{ e.placed }} / {{ e.needed }}</td>
+            <td>{{ e.reason }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="sm-alert is-info"><span>没有未排入的需求。</span></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="sm-card">
+  <div class="sm-card-head">已排课次（{{ entry_count }}）</div>
+  <div class="sm-card-body" style="overflow:auto;max-height:420px;">
+    <table class="sm-table" style="width:100%;font-size:12.5px;">
+      <thead><tr><th>星期</th><th>节次</th><th>课程</th><th>教学班</th><th>教师</th><th>教室</th><th>群体</th></tr></thead>
+      <tbody>
+      {% for e in entries %}
+        <tr>
+          <td>周{{ e.weekday|add:1 }}</td>
+          <td>{{ e.period }}</td>
+          <td>{{ e.requirement.section.course.title }}</td>
+          <td>{{ e.requirement.section.code }}</td>
+          <td>{{ e.teacher.display_name }}</td>
+          <td>{{ e.room.code }}</td>
+          <td>{{ e.cohort.name }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+<script>
+(function () {
+  function csrf() {
+    var m = document.cookie.match(/(^|;)\s*csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[2]) : '';
+  }
+  function post(url) {
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrf(), 'X-Requested-With': 'XMLHttpRequest',
+                 'Content-Type': 'application/json' },
+      body: '{}'
+    }).then(function (r) { return r.json().then(function (d) {
+      return { status: r.status, body: d };
+    }); });
+  }
+  document.querySelectorAll('.js-solve').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var run = btn.getAttribute('data-run');
+      btn.disabled = true;
+      post('/r11/plan/' + run + '/solve/').then(function (res) {
+        var d = res.body || {};
+        var msg = d.ok
+          ? '求解完成：已排 ' + d.placed + '/' + d.required +
+            '，硬冲突 ' + d.hard_conflicts + '，软成本 ' + d.soft_cost
+          : ('求解失败：' + (d.error || res.status));
+        alert(msg);
+        location.reload();
+      }).catch(function (err) {
+        btn.disabled = false;
+        alert('请求失败：' + err);
+      });
+    });
+  });
+  document.querySelectorAll('.js-publish').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var run = btn.getAttribute('data-run');
+      if (!confirm('发布后课表将对学生/教师可见，确认发布？')) return;
+      btn.disabled = true;
+      post('/r11/plan/' + run + '/publish/').then(function (res) {
+        var d = res.body || {};
+        alert(d.ok ? '已发布' : ('发布失败：' + (d.error || res.status)));
+        location.reload();
+      }).catch(function (err) {
+        btn.disabled = false;
+        alert('请求失败：' + err);
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

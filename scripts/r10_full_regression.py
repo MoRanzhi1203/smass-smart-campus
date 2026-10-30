@@ -25,6 +25,7 @@ SUITES = [
     ('smass_data_exchange.tests.test_s25_r5', 'smass.settings_r5'),
     ('smass_academic', 'smass.settings_r5'),
     ('smass_facilities', 'smass.settings_r16'),
+    ('smass_scheduling', 'smass.settings_r11'),
     ('smass_workflow', 'smass.settings_r6'),
     ('smass_api', 'smass.settings_r8'),
     ('r22_account', 'smass.settings_r22'),

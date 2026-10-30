@@ -1,0 +1,106 @@
+{% extends "r10/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}<span class="sep">/</span><span class="current">{{ title }}</span>{% endblock %}
+{% block content %}
+<div class="sm-page-head">
+  <div>
+    <h1 class="sm-title">{{ title }}</h1>
+    <p class="sm-subtitle">
+      {% if run %}
+        批次 {{ run.pk }} · 发布于 {{ run.published_at|date:"Y-m-d H:i" }} ·
+        共 {{ entry_count }} 节
+      {% else %}
+        暂无已发布的课表
+      {% endif %}
+    </p>
+  </div>
+  <div class="sm-page-actions">
+    {% if runs %}
+      <form method="get" style="display:flex;gap:6px;align-items:center;">
+        <label class="sm-label" for="run-select" style="margin:0;">批次</label>
+        <select id="run-select" name="run" class="sm-input" onchange="this.form.submit()">
+          {% for r in runs %}
+            <option value="{{ r.pk }}" {% if run and run.pk == r.pk %}selected{% endif %}>
+              #{{ r.pk }} · {{ r.term }} · {{ r.published_at|date:"m-d H:i" }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if not run %}
+  <div class="sm-alert is-info"><span>还没有已发布的排课批次。教务在「排课规划」中求解并发布后，这里才会显示课表。</span></div>
+{% elif not has_data %}
+  <div class="sm-alert is-info"><span>该批次里没有与你相关的课次。</span></div>
+{% else %}
+<div class="sm-card">
+  <div class="sm-card-body" style="overflow:auto;">
+    <table class="sm-table" style="width:100%;font-size:12.5px;table-layout:fixed;">
+      <thead>
+        <tr>
+          <th style="width:64px;">节次</th>
+          {% for label in weekday_labels %}
+            <th>{{ label }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for period in periods %}
+        <tr>
+          <td style="font-weight:600;">第 {{ period }} 节</td>
+          {% for day in grid %}
+            <td style="vertical-align:top;padding:6px;">
+              {% for cell in day %}
+                {% if forloop.counter == period %}
+                  {% for item in cell %}
+                    <div style="border:1px solid var(--sm-border);border-radius:6px;padding:6px;margin-bottom:6px;background:#f8fbff;">
+                      <div style="font-weight:600;">{{ item.course }}</div>
+                      <div style="color:var(--sm-text-muted);">{{ item.section }}</div>
+                      <div>{{ item.teacher }}</div>
+                      <div>教室 {{ item.room }}</div>
+                      {% if item.time_label %}
+                        <div style="color:var(--sm-text-muted);">{{ item.time_label }}</div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<details style="margin-top:12px;">
+  <summary style="cursor:pointer;font-weight:600;">查看课次清单</summary>
+  <div class="sm-card" style="margin-top:8px;">
+    <div class="sm-card-body" style="overflow:auto;">
+      <table class="sm-table" style="width:100%;font-size:12.5px;">
+        <thead><tr><th>星期</th><th>节次</th><th>课程</th><th>教学班</th><th>教师</th><th>教室</th></tr></thead>
+        <tbody>
+        {% for day in grid %}
+          {% for cell in day %}
+            {% for item in cell %}
+              <tr>
+                <td>周{{ forloop.parentloop.counter }}</td>
+                <td>{{ item.entry.period }}</td>
+                <td>{{ item.course }}</td>
+                <td>{{ item.section }}</td>
+                <td>{{ item.teacher }}</td>
+                <td>{{ item.room }}</td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</details>
+{% endif %}
+{% endblock %}

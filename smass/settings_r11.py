@@ -21,7 +21,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
 ]
 
 # R11 需要 R5 的学期/教学班模型，因此其上层的 R5 app 必须存在
-ROOT_URLCONF = 'smass.urls_r22'
+ROOT_URLCONF = 'smass.urls_r11'
 
 R22_FLAGS = {
     'identity_mode': 'account',
@@ -31,7 +31,7 @@ R22_FLAGS = {
     'legacy_bridge': False,
 }
 
-LOGIN_URL = '/r21/login/'
+LOGIN_URL = '/r11/login/'
 
 # ---------------------------------------------------------------------------
 # R11 可配置策略（默认保守值，学校政策未定时可覆盖）
