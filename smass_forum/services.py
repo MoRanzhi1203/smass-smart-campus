@@ -257,6 +257,21 @@ def publish_announcement(announcement, actor):
     announcement.save(update_fields=['status', 'published_at'])
     logger.info('announcement_published id=%s by=%s',
                 announcement.pk, _actor_id(actor))
+    try:
+        from r21_account.models import Account
+        from smass_workflow.services import notify_account
+
+        queryset = Account.objects.filter(is_active=True)
+        if announcement.audience in ('student', 'teacher'):
+            queryset = queryset.filter(person_type=announcement.audience)
+        for account in queryset[:200]:
+            notify_account(
+                account, '公告：{}'.format(announcement.title),
+                body=(announcement.body or '')[:200],
+                event_key='announcement:{}:{}'.format(
+                    announcement.pk, account.pk))
+    except Exception:  # noqa: BLE001 - 通知失败不影响发布
+        pass
     return announcement
 
 

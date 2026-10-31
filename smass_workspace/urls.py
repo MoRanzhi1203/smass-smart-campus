@@ -12,6 +12,10 @@ urlpatterns = [
     path('no-role/', common.no_role, name='no_role'),
     path('profile/', common.profile, name='profile'),
     path('notifications/', common.notifications, name='notifications'),
+    path('notifications/<int:pk>/read/', common.notification_read,
+         name='notification_read'),
+    path('notifications/read-all/', common.notifications_read_all,
+         name='notifications_read_all'),
 
     path('student/', include('smass_workspace.urls_student')),
     path('teacher/', include('smass_workspace.urls_teacher')),

@@ -1284,6 +1284,65 @@ class TimetableWeekTests(WorkspaceFixture):
                          fallback.context['current_week'])
 
 
+class NotificationFlowTests(WorkspaceFixture):
+    """F02/C07：活动、公告、排课通知与已读管理。"""
+
+    def test_activity_register_notifies(self):
+        from django.utils import timezone
+
+        from smass_activities import services as activity_services
+        from smass_activities.models import Activity
+        from smass_workflow.models import Notification
+
+        activity = Activity.objects.create(
+            title='通知测试活动', category='second_class',
+            start_at=timezone.now() + timedelta(days=2),
+            end_at=timezone.now() + timedelta(days=2, hours=2),
+            status='published', created_by='t_admin')
+        activity_services.register(activity, self.record, self.student)
+        self.assertTrue(Notification.objects.filter(
+            recipient='t_student', title='活动报名成功').exists())
+
+    def test_announcement_publish_notifies_audience(self):
+        from smass_forum import services as forum_services
+        from smass_workflow.models import Notification
+
+        announcement = forum_services.create_announcement(
+            self.admin, '通知公告测试', '正文', 'student')
+        forum_services.publish_announcement(announcement, self.admin)
+        self.assertTrue(Notification.objects.filter(
+            recipient='t_student', title__startswith='公告：').exists())
+
+    def test_schedule_publish_notifies_teacher(self):
+        from smass_scheduling import services as schedule_services
+        from smass_scheduling.models import ScheduleRun
+        from smass_workflow.models import Notification
+
+        run = ScheduleRun.objects.create(
+            term=self.term, status='solved', hard_conflicts=0)
+        schedule_services.publish_run(run, actor='t_admin')
+        self.assertTrue(Notification.objects.filter(
+            recipient='t_teacher', title='课表已发布').exists())
+
+    def test_notification_read_and_read_all(self):
+        from smass_workflow.models import Notification
+        from smass_workflow.services import notify
+
+        note = notify('t_student', '未读通知一', event_key='test:read:1')
+        self.login(self.student)
+        self.client.post(
+            '/notifications/{}/read/'.format(note.pk), follow=True)
+        note.refresh_from_db()
+        self.assertTrue(note.is_read)
+
+        second = notify('t_student', '未读通知二', event_key='test:read:2')
+        self.client.post('/notifications/read-all/', follow=True)
+        second.refresh_from_db()
+        self.assertTrue(second.is_read)
+        self.assertFalse(Notification.objects.filter(
+            recipient='t_student', is_read=False).exists())
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

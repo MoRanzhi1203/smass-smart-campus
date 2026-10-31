@@ -210,6 +210,18 @@ def register(activity, record, actor):
 
     logger.info('activity_registered activity=%s record=%s status=%s by=%s',
                 activity.pk, record.student_no, status, _actor_id(actor))
+    try:
+        from smass_workflow.services import notify_account
+
+        notify_account(
+            getattr(record, 'account', None),
+            '活动报名成功' if status == REG_REGISTERED else '活动已进入候补',
+            body='「{}」{}'.format(
+                activity.title,
+                '报名成功' if status == REG_REGISTERED else '已满员，进入候补队列'),
+            event_key='activity:{}:register:{}'.format(activity.pk, record.pk))
+    except Exception:  # noqa: BLE001 - 通知失败不影响报名
+        pass
     return registration
 
 

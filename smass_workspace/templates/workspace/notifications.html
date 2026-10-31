@@ -8,27 +8,43 @@
   <div>
     <div class="ws-eyebrow">消息</div>
     <h1>通知中心</h1>
-    <p class="ws-sub">共 {{ total }} 条；站内通知打开后标记为已读。</p>
+    <p class="ws-sub">共 {{ total }} 条{% if unread_count %} · 未读 {{ unread_count }} 条{% endif %}；站内通知可逐条标记已读。</p>
   </div>
+  {% if unread_count %}
+  <div class="ws-page-actions">
+    <form method="post" action="{% url 'workspace:notifications_read_all' %}" data-once>
+      {% csrf_token %}
+      <button class="ws-btn" type="submit">全部标为已读（{{ unread_count }}）</button>
+    </form>
+  </div>
+  {% endif %}
 </div>
 
 <section class="ws-card">
   {% if items %}
     <div class="ws-list">
       {% for item in items %}
-        <div class="ws-list-item" style="align-items:flex-start">
+        <div class="ws-list-item" style="align-items:flex-start{% if not item.is_read %};background:var(--smass-surface-muted){% endif %}">
           <div class="ws-list-main">
-            <b>{{ item.title }}</b>
+            <b>{{ item.title }}{% if not item.is_read %} <span class="ws-badge is-warning">未读</span>{% endif %}</b>
             <p class="ws-sub" style="margin-top:2px">{{ item.body|default:"—" }}</p>
             <span>{{ item.source }} · {{ item.time|date:"Y-m-d H:i"|default:"—" }}</span>
           </div>
-          {% if item.level == 'error' or item.level == 'danger' %}
-            <span class="ws-badge is-danger">重要</span>
-          {% elif item.level == 'warning' %}
-            <span class="ws-badge is-warning">提醒</span>
-          {% else %}
-            <span class="ws-badge is-info">{{ item.source }}</span>
-          {% endif %}
+          <div class="ws-stack" style="gap:6px;align-items:flex-end">
+            {% if item.level == 'error' or item.level == 'danger' %}
+              <span class="ws-badge is-danger">重要</span>
+            {% elif item.level == 'warning' %}
+              <span class="ws-badge is-warning">提醒</span>
+            {% else %}
+              <span class="ws-badge is-info">{{ item.source }}</span>
+            {% endif %}
+            {% if item.id and not item.is_read %}
+              <form method="post" action="{% url 'workspace:notification_read' item.id %}" data-once>
+                {% csrf_token %}
+                <button class="ws-btn is-sm" type="submit">标记已读</button>
+              </form>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     </div>

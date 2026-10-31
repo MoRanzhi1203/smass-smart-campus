@@ -4,6 +4,7 @@ from __future__ import annotations
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from .. import permissions as perms
 
@@ -69,6 +70,7 @@ def notifications(request):
     for note in Notification.objects.filter(
             recipient=account.login_name).order_by('-created_at')[:80]:
         items.append({
+            'id': note.pk,
             'title': note.title,
             'body': note.body,
             'time': note.created_at,
@@ -83,6 +85,7 @@ def notifications(request):
         if note.audience not in ('all', role_code):
             continue
         items.append({
+            'id': None,
             'title': note.title,
             'body': note.body,
             'time': note.published_at or note.created_at,
@@ -93,17 +96,42 @@ def notifications(request):
 
     items.sort(key=lambda item: item['time'] or timezone.now(), reverse=True)
 
-    # 打开通知中心即把本人站内通知标记为已读
-    unread = Notification.objects.filter(
-        recipient=account.login_name, is_read=False)
-    if unread.exists():
-        unread.update(is_read=True)
+    unread_count = Notification.objects.filter(
+        recipient=account.login_name, is_read=False).count()
 
     return render(request, 'workspace/notifications.html', {
         'workspace_kind': kind,
         'items': items,
         'total': len(items),
+        'unread_count': unread_count,
     })
+
+
+@require_POST
+def notification_read(request, pk):
+    from smass_workflow.models import Notification
+
+    account = getattr(request, 'user', None)
+    if not perms.is_authenticated(account):
+        return redirect('/login/?next=/notifications/')
+    note = Notification.objects.filter(
+        pk=pk, recipient=account.login_name).first()
+    if note is not None and not note.is_read:
+        note.is_read = True
+        note.save(update_fields=['is_read'])
+    return redirect('workspace:notifications')
+
+
+@require_POST
+def notifications_read_all(request):
+    from smass_workflow.models import Notification
+
+    account = getattr(request, 'user', None)
+    if not perms.is_authenticated(account):
+        return redirect('/login/?next=/notifications/')
+    Notification.objects.filter(
+        recipient=account.login_name, is_read=False).update(is_read=True)
+    return redirect('workspace:notifications')
 
 
 def forbid(request, detail=''):
