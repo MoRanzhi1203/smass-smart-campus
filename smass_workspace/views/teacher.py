@@ -557,3 +557,50 @@ def notices(request):
         request,
         notices=svc.notices(request.user, limit=40),
     ))
+
+
+# ---------------------------------------------------------------------------
+# D 增量：名单导出与班级考勤统计
+# ---------------------------------------------------------------------------
+@require_GET
+@teacher_only
+def sections_export(request):
+    from smass_workspace.services import export as export_svc
+
+    sections_list = svc.my_sections(request.user)
+    enrollments = svc.section_students(sections_list)
+    rows = []
+    for item in enrollments:
+        profile = getattr(item.account, 'student_profile', None)
+        rows.append([
+            getattr(profile, 'student_no', '') or item.account.login_name,
+            item.account.display_name,
+            item.section.course.title,
+            item.section.code,
+            item.get_status_display(),
+        ])
+    return export_svc.csv_response(
+        ['学号', '姓名', '课程', '教学班', '选课状态'], rows,
+        'section-students')
+
+
+@require_GET
+@teacher_only
+def attendance_stats(request):
+    from smass_attendance import services as attendance_services
+
+    classes = list(svc.my_classes(request.user))
+    stats = []
+    for unit in classes:
+        rows = attendance_services.unit_stats(unit)
+        total = sum(row['total'] for row in rows)
+        attended = sum(row['present'] + row['late'] for row in rows)
+        stats.append({
+            'unit': unit,
+            'students': len(rows),
+            'total': total,
+            'attended': attended,
+            'rate': round(attended * 100.0 / total, 1) if total else 0.0,
+        })
+    return render(request, 'workspace/teacher/attendance_stats.html', _ctx(
+        request, stats=stats, classes=classes))

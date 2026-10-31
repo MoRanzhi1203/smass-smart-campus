@@ -10,6 +10,10 @@
     <h1>教学班</h1>
     <p class="ws-sub">仅展示你本人被分配的教学班；学生名单来自选课记录。</p>
   </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:teacher_sections_export' %}">导出名单</a>
+    <a class="ws-btn" href="{% url 'workspace:teacher_attendance_stats' %}">班级考勤统计</a>
+  </div>
 </div>
 
 {% if rows %}

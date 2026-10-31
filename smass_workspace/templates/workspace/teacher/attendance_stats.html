@@ -1,0 +1,42 @@
+{% extends "workspace/base.html" %}
+{% block title %}班级考勤统计{% endblock %}
+{% block topbar_title %}班级考勤统计{% endblock %}
+{% block topbar_sub %}按负责班级汇总出勤{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:teacher_attendance' %}">考勤管理</a><span class="sep">/</span><span>统计</span></div>
+    <h1>班级考勤统计</h1>
+    <p class="ws-sub">按你负责的班级汇总考勤记录；仅统计已登记的场次。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:teacher_attendance' %}">返回考勤管理</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>班级汇总</h2><span class="ws-hint">{{ stats|length }} 个班级</span></div>
+  {% if stats %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>班级</th><th class="is-num">学生数</th><th class="is-num">记录数</th><th class="is-num">出勤</th><th class="is-num">出勤率</th></tr></thead>
+        <tbody>
+          {% for item in stats %}
+            <tr>
+              <td class="is-strong">{{ item.unit.name }}</td>
+              <td class="is-num">{{ item.students }}</td>
+              <td class="is-num">{{ item.total }}</td>
+              <td class="is-num">{{ item.attended }}</td>
+              <td class="is-num"><span class="ws-badge {% if item.rate >= 90 %}is-success{% elif item.rate >= 70 %}is-warning{% else %}is-danger{% endif %}">{{ item.rate }}%</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "workspace/_empty_state.html" with icon="calendar" title="暂无可统计的班级" desc="你还没有负责班级，或班级尚未产生考勤记录。" %}
+  {% endif %}
+  <div class="ws-card-foot">出勤 = 出勤 + 迟到；出勤率 = 出勤 / 记录数。</div>
+</section>
+{% endblock %}

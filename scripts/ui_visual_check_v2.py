@@ -29,6 +29,7 @@ PAGES = {
     'teacher': [
         ('/teacher/', 'home'),
         ('/teacher/attendance/', 'attendance'),
+        ('/teacher/attendance/stats/', 'attendance-stats'),
         ('/teacher/approvals/', 'approvals'),
         ('/teacher/timetable/', 'timetable'),
     ],

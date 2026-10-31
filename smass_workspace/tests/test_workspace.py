@@ -1785,6 +1785,29 @@ class ProfileSyncTests(WorkspaceFixture):
         self.assertEqual(profile.student_no, before)
 
 
+class TeacherExportAndStatsTests(WorkspaceFixture):
+    """D 增量：教师名单导出与班级考勤统计页。"""
+
+    def test_sections_export_csv(self):
+        self.login(self.teacher)
+        response = self.client.get('/teacher/sections/export/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('text/csv', response['Content-Type'])
+        body = response.content.decode('utf-8-sig')
+        self.assertIn('测试课程', body)
+
+    def test_sections_export_requires_teacher(self):
+        self.login(self.student)
+        response = self.client.get('/teacher/sections/export/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_attendance_stats_page(self):
+        self.login(self.teacher)
+        response = self.client.get('/teacher/attendance/stats/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '班级考勤统计')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
