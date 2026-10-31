@@ -20,7 +20,7 @@
 
 | 项 | 现状 | 风险 | 建议 |
 |---|---|---|---|
-| A02 统一 RBAC 与业务守卫 | **已审计、未收口**：新增 `scripts/rbac_consistency_check.py` 量化差异——产品视图 35 处 `require_system_admin`、深层代码 28 处 `has_action`；学院管理员在 RBAC 持有 `add/change/import`，但产品端写操作要求系统管理员 | 同一角色在产品页与深层页能力不一致（深层更宽） | 以服务层为唯一判定，深层页分批收口；收口会触及 R4/R5 回归，需独立窗口 |
+| A02 统一 RBAC 与业务守卫 | **已审计，试点后决定不收紧**：`rbac_consistency_check.py` 量化 35 处产品守卫 / 28 处深层 `has_action`；把 activities/clubs 的 `MANAGER_ROLES` 去掉 `teacher` 后 R14 立刻 22 errors（教师无法发起活动），已回滚 | 产品端与深层存在“入口策略 vs 业务语义”的分层差异；不是越权漏洞，但需文档化 | 保持现状；若未来要收口，应先补“教师可发起活动”的产品入口（而非砍掉深层能力） |
 | A03 敏感操作安全 | **实现（MFA + 退费双人审批）**：二次口令；MFA 接入（默认关闭，env 开启）；退费 `submitted → reviewed → approved`，复核人 ≠ 批准人 ≠ 申请人；产品库迁移 `smass_finance/0002` | MFA 默认关闭需生产显式开启；其他高风险操作（授权/导入）仍为单人 | 生产开启 MFA；双人审批扩展到授权与导入 |
 | A04 数据权威源 | **实现（通知外键）**：`Notification.recipient_account` 外键 + 迁移回填，字符串 `recipient` 保留兼容；数据质量页 5 类检查；`StudentProfile`/`StudentRecord` 双份字段仍未合并 | 双份字段仍可能漂移（已可检测）；通知旧数据依赖回填 | 定期跑数据质量页；双份字段在后续窗口合并 |
 

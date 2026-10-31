@@ -11,7 +11,7 @@
 | ID | 任务 | 审计映射 | 缺口 | 状态 | 证据 |
 |---|---|---|---|---|---|
 | A01 | 兼课辅导员对象范围（教学班 ∪ 负责班级） | M5-F03/F04、P1-01 | P1-01 | **VERIFIED** | `permissions.teacher_scope_students`；`teacher.py::students`；4 例新测试（46 例全绿） |
-| A02 | 统一 RBAC 与业务守卫 | P2-07、M2-F09 | P2-07 | **已审计未收口**：`rbac_consistency_check.py` 量化 35 处产品守卫 / 28 处深层 `has_action`；差异 3 类（产品更严、深层更宽、bulk_delete 不授予）；收口待独立窗口 | 审计脚本 + 文档 |
+| A02 | 统一 RBAC 与业务守卫 | P2-07、M2-F09 | P2-07 | **已审计 + 试点结论：不收紧** | `rbac_consistency_check.py`：35 处产品守卫 / 28 处深层 `has_action`；试点把 activities/clubs 的 `MANAGER_ROLES` 去掉 `teacher` → R14 立即 22 errors（教师无法发起活动），已回滚。结论：产品端“仅系统管理员”是入口策略，深层“教师/学院管理员可管”是业务语义，二者是分层差异而非权限漏洞；不做破坏性统一 |
 | A03 | 敏感操作安全（MFA/step-up/审计接入） | M22-F06、P1-05 | P1-05 | **IMPLEMENTED（退费双人审批 + MFA）** | 二次口令（重置/授权/导入）；MFA 已接入（默认关闭，env 开启）；**退费双人审批**：`reviewed` 状态 + 复核人/批准人互斥 + 申请人不可批；3 例测试（双人流程、同人拒绝、跳过复核拒绝） |
 | A04 | 数据权威源（Profile/Record/Notification） | 02_Model_Consolidation | P2-05/P2-06 | **IMPLEMENTED（通知外键 + 质量检查）** | `Notification.recipient_account` 外键 + 迁移回填（旧字符串兼容）；通知中心/已读/质量检查按外键优先；数据质量页 5 类检查；3 例测试（外键写入、旧字符串可见、改名后仍可见） |
 
