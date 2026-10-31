@@ -48,23 +48,32 @@
 
 ---
 
-## 2. 精确删除计划（未执行）
+## 2. 精确删除执行记录（已授权并执行）
+
+> 2026-10-31，用户明确授权物理删除数据库 `smass`；
+> 删除前重新核验通过（`p0_verify_pre_drop.json`，`verdict=DELETION_SAFE`）。
 
 ```sql
--- 仅在取得针对数据库 `smass` 的明确物理删除授权后执行
--- 执行前再次运行 legacy_retire_verify.py，确认 verdict=DELETION_SAFE
+-- 已执行；仅删除指定数据库
 DROP DATABASE `smass`;
 ```
 
-| 项 | 内容 |
+| 项 | 实测结果 |
 |---|---|
-| 删除对象 | 仅数据库 `smass`（26 表 / 0 视图 / 0 触发器 / 0 事件 / 0 例程） |
-| 不包含 | MySQL 实例、其他数据库、Git 历史、备份文件、`.env` |
-| 前置条件 | ① 明确授权删除 `smass`；② 核验清单一致；③ 无活动连接/跨库引用；④ 无程序配置引用；⑤ 备份或确认无需备份 |
-| 回退 | 无（不可逆）；如需恢复只能从独立备份 |
+| 目标 | `smass`（MySQL 8.0.18 @ `MSI:3306`） |
+| 删除前对象 | 26 表 / 0 视图 / 0 触发器 / 0 事件 / 0 例程 |
+| 删除前活动连接 | 0（排除核验自身） |
+| 跨库引用 | 0 |
+| 结构快照（不含行数据） | `.local/evidence/retire/schema_snapshot.sql`（12,783 字节，SHA-256 `c27a6b50…42a96`） |
+| 删除结果 | `target_exists=false`；数据库总数 93 → 92 |
+| 其他数据库 | `other_databases_unchanged=true`（仅少 `smass`） |
+| 新版权威库 | 127 表 / 15 账号 / 7 学籍 / 19 组织 / 4 教学班，**前后完全一致** |
+| 删除后冒烟 | PASS |
+| 删除后 E2E | 27 项 PASS |
 
-**本轮未执行 DROP**：用户"数据可舍弃"是数据层面授权，不等于对数据库对象的
-物理删除授权；按 P5 要求停在 `LOGICALLY_RETIRED`。
+**未删除**：MySQL 实例、其他 92 个数据库、Git 历史、备份文件、产品数据。
+
+证据：`.local/evidence/retire/drop_result.json`。
 
 ---
 
@@ -165,7 +174,7 @@ DROP DATABASE `smass`;
 |---|---|---|
 | `RETIREMENT_PREPARED` | ✅ | 可舍弃性核验、对象清点、连接迁出、依赖扫描、新库初始化、全业务回归、删除计划、审计记录齐备 |
 | `LOGICALLY_RETIRED` | ✅ | 产品/测试运行不依赖旧库；旧库不再提供业务服务；新库为唯一权威；旧库隔离待删 |
-| `PHYSICALLY_REMOVED` | ❌ **未执行** | 缺少针对 `smass` 的明确物理删除授权与数据库级备份确认 |
+| `PHYSICALLY_REMOVED` | ✅ **已执行** | 用户明确授权；删除前核验一致；`DROP DATABASE \`smass\``；其他库与产品库未受影响 |
 
 ### 6.1 逻辑退役的具体动作
 
@@ -176,23 +185,29 @@ DROP DATABASE `smass`;
 5. 迁移工具标记为历史工具，不再作为启动流程；
 6. 旧库保持原样、只读、无活动连接。
 
-### 6.2 物理删除剩余条件
+### 6.2 物理删除执行（已完成）
 
 | 条件 | 状态 |
 |---|---|
-| 针对数据库 `smass` 的明确物理删除授权 | ❌ 未取得（"数据可舍弃"不等于"授权 DROP DATABASE"） |
+| 针对数据库 `smass` 的明确物理删除授权 | ✅ 已取得（用户明确授权） |
 | 删除对象与核验清单一致 | ✅ 26 表/0 视图/0 触发器/0 事件/0 例程 |
 | 无程序使用 | ✅ 活动连接 0、跨库引用 0、产品配置 0 |
-| 不影响其他数据库 | ✅ 仅 `smass` |
-| 数据库级备份（或确认无需） | ⚠️ 仅有 Git 备份；测试数据可舍弃，建议仍保留一次结构快照 |
-| 退役审计记录 | ✅ 本文档 + `p0_verify.json` |
+| 不影响其他数据库 | ✅ 93 → 92，仅少 `smass` |
+| 结构快照（不含行数据） | ✅ `schema_snapshot.sql`（SHA-256 `c27a6b50…42a96`） |
+| 退役审计记录 | ✅ 本文档 + `drop_result.json` + `p0_verify_pre_drop.json` |
+| 删除后三端复核 | ✅ 冒烟 PASS、E2E 27 项 PASS |
 
-**下一步（需你一句话授权）**：
+执行命令：
 
-> “授权删除数据库 `smass`”
+```powershell
+& $py scripts\legacy_retire_verify.py --json .local\evidence\retire\p0_verify_pre_drop.json
+& $py scripts\legacy_drop_database.py --confirm smass `
+    --json .local\evidence\retire\drop_result.json `
+    --snapshot .local\evidence\retire\schema_snapshot.sql
+```
 
-授权后执行：再次核验 → 结构快照（`mysqldump --no-data`，不含行数据）→
-`DROP DATABASE \`smass\`` → 复核实例内其余库未受影响 → 记录审计。
+脚本保护：目标名硬编码 `smass`、必须 `--confirm smass`、删除前检查活动连接/
+跨库引用/受保护库、只执行精确 `DROP DATABASE \`smass\``、删除后复核其他库与产品库。
 
 ---
 
@@ -208,5 +223,5 @@ DROP DATABASE `smass`;
 | 6 | 完整回归 | **32 套件 / 1802 例 / 0 失败**；E2E 27 项 PASS |
 | 7 | 旧系统停用与清理 | 分类表见 §3；`.env.example` 已改；默认启动已改 |
 | 8 | 退役状态 | `LOGICALLY_RETIRED` |
-| 9 | 未物理删除的原因 | 缺少针对 `smass` 的明确删除授权（见 §6.2） |
+| 9 | 物理删除 | ✅ 已执行：核验一致后仅删 `smass`；其他 92 库与 `smass_product_dev` 未变；删除后三端 PASS |
 | 10 | Git 与工作区 | 本轮提交见最终回复；工作区干净 |
