@@ -359,6 +359,20 @@ def model_dictionary(models, apps):
     for item in auto:
         lines.append('| {} | {} | {} |'.format(
             item['app_label'], item['model'], item['db_table']))
+    lines += ['', '## Django 内置模型（6 个有效模型）', '',
+              '产品未改写 `AUTH_USER_MODEL`，以下内置表随 Django 迁移创建；'
+              '产品路径只间接使用其中部分。', '',
+              '| App | 模型 | 表 | 用途 | 产品是否使用 | 敏感 |',
+              '|---|---|---|---|---|---|',
+              '| `auth` | `User` | `auth_user` | Django 默认用户（产品中为空置） | 否（认证走 `r21_account.Account`） | 密码哈希 |',
+              '| `auth` | `Group` | `auth_group` | 角色权限组（`r21_*` 组） | 是（`sync_account_groups`） | 否 |',
+              '| `auth` | `Permission` | `auth_permission` | 动作 codename | 是（RBAC 判定） | 否 |',
+              '| `contenttypes` | `ContentType` | `django_content_type` | 权限绑定模型 | 是（间接） | 否 |',
+              '| `sessions` | `Session` | `django_session` | 登录会话 | 是 | 会话键 |',
+              '| `admin` | `LogEntry` | `django_admin_log` | Django 后台操作日志 | 否（未挂载 admin 站点） | 否 |',
+              '',
+              '> 统计：项目有效模型 114 + 内置 6 = 120；自动 M2M 中间表 6 个（见上节）。',
+              '']
     lines += ['', '## 数据关系（文字 ER）', '',
               '- `r21_account.Account` 1:1 `StudentProfile` / `TeacherProfile`；',
               '- `Account` 1:N `StudentRecord`（学籍档案）、`Enrollment`（选课）、'
