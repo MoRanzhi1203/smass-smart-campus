@@ -63,6 +63,9 @@ def password():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--base', default='http://127.0.0.1:8050')
+    parser.add_argument('--scheme', default='light', choices=['light', 'dark'])
+    parser.add_argument('--quick', action='store_true',
+                        help='只跑 390/1366 两档视口与 100%/150% 缩放')
     parser.add_argument('--json', dest='json_path',
                         default=str(OUT / 'ui_visual_check_v2.json'))
     args = parser.parse_args()
@@ -71,13 +74,19 @@ def main():
 
     secret = password()
     OUT.mkdir(parents=True, exist_ok=True)
+    viewports = VIEWPORTS
+    zooms = ZOOMS
+    if args.quick:
+        viewports = [VIEWPORTS[0], VIEWPORTS[2]]
+        zooms = (1.0, 1.5)
     results = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         for role, pages in PAGES.items():
-            for width, height, label in VIEWPORTS:
+            for width, height, label in viewports:
                 context = browser.new_context(
-                    viewport={'width': width, 'height': height})
+                    viewport={'width': width, 'height': height},
+                    color_scheme=args.scheme)
                 page = context.new_page()
                 try:
                     page.goto(args.base + '/login/', wait_until='domcontentloaded')
@@ -86,7 +95,7 @@ def main():
                     page.click('button[type="submit"]')
                     page.wait_for_load_state('networkidle')
                     for url, name in pages:
-                        for zoom in ZOOMS:
+                        for zoom in zooms:
                             page.goto(args.base + url + '?v=2',
                                       wait_until='networkidle')
                             if zoom != 1.0:
@@ -103,8 +112,9 @@ def main():
                                 })""")
                             overflow = (metrics['scrollWidth']
                                         > metrics['clientWidth'] + 2)
-                            shot = '{}-{}-{}-z{}.png'.format(
-                                role, name, width, str(zoom).replace('.', ''))
+                            shot = '{}-{}-{}-z{}-{}.png'.format(
+                                role, name, width,
+                                str(zoom).replace('.', ''), args.scheme)
                             page.screenshot(path=str(OUT / shot))
                             results.append({
                                 'role': role, 'page': name, 'url': url,

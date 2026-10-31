@@ -26,7 +26,7 @@
 | B03 | 布局基线（顶栏 62、侧栏 248、内边距 24–28） | IMPLEMENTED | 折叠侧栏未实现 |
 | B04 | 字体与图标（系统字体栈 + 19 个线性 SVG） | IMPLEMENTED | `base.html` symbols |
 | B05 | 组件体系（AppShell/Header/Sidebar/PageHeader/StatCard/DataTable/FilterBar/Pagination/Modal/…） | **部分完成**：新增 `_empty_state.html` 并替换课程/预约/财务 6 处空状态；`_pagination.html` 已在 3 个列表使用；DataTable/Modal/Toast/Tabs 未统一 | 无 |
-| B06 | 暗色模式 | TODO（仅预留令牌注释） | 未实现 |
+| B06 | 暗色模式 | **IMPLEMENTED** | `prefers-color-scheme: dark` 覆盖 `--ws-*` 令牌 + 三端强调色；9 处硬编码白底改 `var(--ws-surface)`；暗色快速视觉 68 项 0 溢出、11 页 a11y 0 问题（含主按钮对比度）；未做手动主题切换 |
 
 ---
 

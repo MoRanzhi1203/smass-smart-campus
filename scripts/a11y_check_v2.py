@@ -123,6 +123,7 @@ def focus_walk(page, steps=25):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--base', default='http://127.0.0.1:8050')
+    parser.add_argument('--scheme', default='light', choices=['light', 'dark'])
     parser.add_argument('--json', dest='json_path',
                         default=str(OUT / 'a11y_check_v2.json'))
     args = parser.parse_args()
@@ -135,7 +136,9 @@ def main():
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         for role, urls in PAGES.items():
-            context = browser.new_context(viewport={'width': 1366, 'height': 768})
+            context = browser.new_context(
+                viewport={'width': 1366, 'height': 768},
+                color_scheme=args.scheme)
             page = context.new_page()
             try:
                 page.goto(args.base + '/login/', wait_until='domcontentloaded')
