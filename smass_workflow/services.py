@@ -327,6 +327,14 @@ def notify(recipient, title, *, body='', level='info', event_key=''):
         ).first()
 
 
+def notify_account(account, title, *, body='', level='info', event_key=''):
+    """按账号发通知；无登录名时静默跳过（通知是附加能力，不阻塞业务）。"""
+    login_name = getattr(account, 'login_name', '')
+    if not login_name:
+        return None
+    return notify(login_name, title, body=body, level=level, event_key=event_key)
+
+
 def inbox(recipient, unread_only=False):
     queryset = Notification.objects.filter(recipient=recipient).order_by('-created_at')
     if unread_only:

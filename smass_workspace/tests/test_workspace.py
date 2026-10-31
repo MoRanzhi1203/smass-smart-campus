@@ -557,6 +557,38 @@ class StudentAttendanceActionTests(WorkspaceFixture):
         self.assertContains(response, '已销假')
 
 
+class NotificationLinkageTests(WorkspaceFixture):
+    """F02：审批结果写站内通知（幂等 event_key）。"""
+
+    def test_leave_approval_notifies_student(self):
+        from smass_attendance import services as attendance_services
+        from smass_workflow.models import Notification
+
+        attendance_services.approve_leave(self.leave, self.teacher)
+        self.assertTrue(Notification.objects.filter(
+            recipient=self.student.login_name,
+            event_key='leave:{}:approved'.format(self.leave.pk),
+            title='请假已批准').exists())
+
+    def test_booking_approval_notifies_applicant(self):
+        from django.utils import timezone
+
+        from smass_facilities import services as facility_services
+        from smass_facilities.models import RoomBooking
+        from smass_workflow.models import Notification
+
+        start = timezone.now() + timedelta(days=5)
+        booking = RoomBooking.objects.create(
+            room=self.room, account=self.student,
+            start_at=start, end_at=start + timedelta(hours=2),
+            purpose='通知联动测试', status='pending')
+        facility_services.approve_booking(booking, self.admin)
+        self.assertTrue(Notification.objects.filter(
+            recipient=self.student.login_name,
+            event_key='booking:{}:approved'.format(booking.pk),
+            title='场地预约已批准').exists())
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

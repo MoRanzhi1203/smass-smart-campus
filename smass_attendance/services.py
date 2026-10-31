@@ -74,6 +74,20 @@ def _is_self(account, identity):
     return str(getattr(account, 'pk', '')) == str(identity)
 
 
+def _notify_account_safe(account, title, body, event_key):
+    """审批结果通知：通知失败不影响审批事务。"""
+    if account is None:
+        return None
+    try:
+        from smass_workflow.services import notify_account
+    except Exception:  # noqa: BLE001 - 独立配置可能未安装 workflow
+        return None
+    try:
+        return notify_account(account, title, body=body, event_key=event_key)
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def roles_of(account):
     return authz.active_roles(account)
 
@@ -307,6 +321,10 @@ def approve_leave(leave, actor):
     leave.reviewed_at = timezone.now()
     leave.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'updated_at'])
     logger.info('leave_approved id=%s by=%s', leave.pk, _actor_id(actor))
+    _notify_account_safe(
+        getattr(leave.record, 'account', None), '请假已批准',
+        '{} 至 {} 的请假已批准'.format(leave.start_date, leave.end_date),
+        'leave:{}:approved'.format(leave.pk))
     return leave
 
 
@@ -327,6 +345,11 @@ def reject_leave(leave, actor, reason):
     leave.save(update_fields=[
         'status', 'reviewed_by', 'reviewed_at', 'reject_reason', 'updated_at'])
     logger.info('leave_rejected id=%s by=%s', leave.pk, _actor_id(actor))
+    _notify_account_safe(
+        getattr(leave.record, 'account', None), '请假被驳回',
+        '{} 至 {} 的请假被驳回：{}'.format(
+            leave.start_date, leave.end_date, leave.reject_reason),
+        'leave:{}:rejected'.format(leave.pk))
     return leave
 
 
@@ -422,6 +445,11 @@ def approve_makeup(makeup, actor):
     logger.info('makeup_approved id=%s session=%s record=%s by=%s',
                 makeup.pk, makeup.session_id, makeup.record.student_no,
                 _actor_id(actor))
+    _notify_account_safe(
+        getattr(makeup.record, 'account', None), '补签已通过',
+        '{} {} 的补签申请已通过'.format(
+            makeup.session.session_date, makeup.session.period),
+        'makeup:{}:approved'.format(makeup.pk))
     return makeup
 
 
@@ -442,6 +470,12 @@ def reject_makeup(makeup, actor, reason):
     makeup.save(update_fields=[
         'status', 'reviewed_by', 'reviewed_at', 'reject_reason', 'updated_at'])
     logger.info('makeup_rejected id=%s by=%s', makeup.pk, _actor_id(actor))
+    _notify_account_safe(
+        getattr(makeup.record, 'account', None), '补签被驳回',
+        '{} {} 的补签申请被驳回：{}'.format(
+            makeup.session.session_date, makeup.session.period,
+            makeup.reject_reason),
+        'makeup:{}:rejected'.format(makeup.pk))
     return makeup
 
 

@@ -198,6 +198,15 @@ def approve_join(membership, actor):
                                    'reviewed_at'])
     logger.info('club_join_approved club=%s record=%s by=%s',
                 club.pk, membership.record.student_no, _actor_id(actor))
+    try:
+        from smass_workflow.services import notify_account
+
+        notify_account(
+            getattr(membership.record, 'account', None), '社团加入申请已通过',
+            body='你加入「{}」的申请已通过'.format(club.name),
+            event_key='club:{}:approved'.format(membership.pk))
+    except Exception:  # noqa: BLE001 - 通知失败不影响审批
+        pass
     return membership
 
 

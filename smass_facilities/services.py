@@ -253,6 +253,16 @@ def approve_booking(booking, actor, *, request=None):
         booking.save(update_fields=['status', 'approved_by', 'approved_at', 'updated_at'])
 
     logger.info('room_booking_approved id=%s by=%s', booking.pk, _actor_id(actor))
+    try:
+        from smass_workflow.services import notify_account
+
+        notify_account(
+            booking.account, '场地预约已批准',
+            body='{} {}~{} 的预约已批准'.format(
+                booking.room.name, booking.start_at, booking.end_at),
+            event_key='booking:{}:approved'.format(booking.pk))
+    except Exception:  # noqa: BLE001 - 通知失败不影响审批
+        pass
     return booking
 
 
@@ -272,6 +282,16 @@ def reject_booking(booking, actor, reason='', *, request=None):
     booking.released_at = timezone.now()
     booking.save(update_fields=['status', 'cancel_reason', 'released_at', 'updated_at'])
     logger.info('room_booking_rejected id=%s by=%s', booking.pk, _actor_id(actor))
+    try:
+        from smass_workflow.services import notify_account
+
+        notify_account(
+            booking.account, '场地预约被驳回',
+            body='{} 的预约被驳回：{}'.format(
+                booking.room.name, booking.cancel_reason),
+            event_key='booking:{}:rejected'.format(booking.pk))
+    except Exception:  # noqa: BLE001
+        pass
     return booking
 
 
