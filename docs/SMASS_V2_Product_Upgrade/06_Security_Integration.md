@@ -21,7 +21,7 @@
 | 项 | 现状 | 风险 | 建议 |
 |---|---|---|---|
 | A02 统一 RBAC 与业务守卫 | **已审计、未收口**：新增 `scripts/rbac_consistency_check.py` 量化差异——产品视图 35 处 `require_system_admin`、深层代码 28 处 `has_action`；学院管理员在 RBAC 持有 `add/change/import`，但产品端写操作要求系统管理员 | 同一角色在产品页与深层页能力不一致（深层更宽） | 以服务层为唯一判定，深层页分批收口；收口会触及 R4/R5 回归，需独立窗口 |
-| A03 敏感操作安全 | **部分**：重置口令、角色授予/撤销、导入提交已要求二次口令（`require_recent_auth`）；`smass_mfa`/`smass_stepup`（TOTP/双人审批）/`smass_policy`/`smass_privacy`/`smass_uploads`/`smass_audit` 仍未注册产品 | 无 TOTP 与双人审批；导入/财务审批仍单人会签 | 按操作灰度接入 step-up；MFA 先对系统管理员启用 |
+| A03 敏感操作安全 | **部分**：重置口令、角色授予/撤销、导入提交已要求二次口令；MFA 完成**试点验证**（`settings_mfa_pilot` + 独立库 `smass_mfa_pilot`：迁移成功，enroll/confirm/verify/恢复码/错误码拒绝全部通过），但**产品未启用**（路由与中间件未挂载） | 产品登录仍无第二因子；双人审批未接入 | 先对系统管理员灰度 MFA；双人审批优先用于退费与授权 |
 | A04 数据权威源 | **部分**：新增 `services/quality.py` 与 `/admin/data-quality/` 只读一致性检查（学籍绑定、学号/姓名、教师工号、孤立通知、班级上级）；双份字段与通知字符串未迁移 | 双份字段仍可能漂移；通知改名/删号后孤立 | 定期跑数据质量页；通知改 FK 需独立迁移窗口 |
 
 **结论**：V2.0 的权限修复集中在“对象范围一致性”，**不等同于安全加固完成**。
