@@ -287,6 +287,32 @@ def require_system_admin(view):
     return wrapper
 
 
+def require_recent_auth(view):
+    """敏感操作二次认证：要求 POST 中带当前口令。
+
+    这是 step-up 的最小产品化形态：复用现有口令校验，不引入新表；
+    TOTP 与双人审批仍由独立 ``smass_stepup`` 提供，尚未注册到产品配置。
+    """
+
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        from django.contrib import messages
+
+        account = getattr(request, 'user', None)
+        password = (request.POST.get('current_password') or '').strip()
+        if not is_authenticated(account) or not account.check_password(password):
+            messages.error(request, '该操作需要重新输入当前口令确认身份')
+            referer = request.META.get('HTTP_REFERER') or ''
+            if referer and url_has_allowed_host_and_scheme(
+                    referer, allowed_hosts={request.get_host()},
+                    require_https=request.is_secure()):
+                return redirect(referer)
+            return redirect('/')
+        return view(request, *args, **kwargs)
+
+    return wrapper
+
+
 def safe_next(request, default: str) -> str:
     """只接受站内 ``next``，防止开放重定向。"""
     candidate = request.GET.get('next') or request.POST.get('next') or ''

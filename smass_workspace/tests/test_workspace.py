@@ -1184,7 +1184,8 @@ class AdminDataImportTests(WorkspaceFixture):
         self.assertContains(response, 'T2024100')
 
         response = self.client.post(
-            '/admin/data-exchange/commit/', {}, follow=True)
+            '/admin/data-exchange/commit/',
+            {'current_password': self.password}, follow=True)
         self.assertContains(response, '导入完成')
         self.assertTrue(StudentRecord.objects.filter(
             student_no='T2024100').exists())
@@ -1343,6 +1344,40 @@ class NotificationFlowTests(WorkspaceFixture):
             recipient='t_student', is_read=False).exists())
 
 
+class SensitiveReauthTests(WorkspaceFixture):
+    """A03：敏感操作二次认证（当前口令）。"""
+
+    def test_role_change_without_password_rejected(self):
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/users/{}/role/'.format(self.student.pk), {
+                'action': 'grant', 'role': 'teacher'}, follow=True)
+        self.assertContains(response, '重新输入当前口令')
+        self.student.refresh_from_db()
+        self.assertNotIn('teacher', set(self.student.active_roles()))
+
+    def test_role_change_with_wrong_password_rejected(self):
+        self.login(self.admin)
+        self.client.post(
+            '/admin/users/{}/role/'.format(self.student.pk), {
+                'action': 'grant', 'role': 'teacher',
+                'current_password': 'wrong-password'}, follow=True)
+        self.student.refresh_from_db()
+        self.assertNotIn('teacher', set(self.student.active_roles()))
+
+    def test_password_reset_requires_current_password(self):
+        from r21_account.models import Account
+
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/users/{}/reset/'.format(self.student.pk), {
+                'current_password': self.password}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.student.refresh_from_db()
+        self.assertTrue(self.student.must_change_password)
+        self.assertIsNotNone(Account.objects.get(pk=self.student.pk))
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
@@ -1393,7 +1428,8 @@ class AdminConsoleTests(WorkspaceFixture):
     def test_grant_role_changes_landing(self):
         self.login(self.admin)
         self.client.post('/admin/users/{}/role/'.format(self.student.pk), {
-            'action': 'grant', 'role': 'teacher'})
+            'action': 'grant', 'role': 'teacher',
+            'current_password': self.password})
         self.student.refresh_from_db()
         self.assertIn('teacher', set(self.student.active_roles()))
         self.login(self.student)

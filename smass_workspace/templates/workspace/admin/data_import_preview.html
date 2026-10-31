@@ -80,6 +80,11 @@
         <form method="post" action="{% url 'workspace:admin_data_import_commit' %}" data-once>
           {% csrf_token %}
           <input type="hidden" name="token" value="{{ token }}">
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="import-password">当前口令</label>
+            <input class="ws-input" type="password" id="import-password" name="current_password"
+                   required autocomplete="current-password" placeholder="敏感操作需重新确认身份">
+          </div>
           <button class="ws-btn is-primary" type="submit"
                   {% if job.status == 'failed' %}disabled{% endif %}>确认提交（重新校验）</button>
         </form>

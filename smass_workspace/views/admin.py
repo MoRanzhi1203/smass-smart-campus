@@ -81,6 +81,7 @@ def _role_choices():
 @require_POST
 @admin_only
 @perms.require_system_admin
+@perms.require_recent_auth
 def user_role(request, pk):
     from r21_account import services as account_services
     from r21_account.models import Account
@@ -132,6 +133,7 @@ def user_toggle(request, pk):
 @require_POST
 @admin_only
 @perms.require_system_admin
+@perms.require_recent_auth
 def user_reset(request, pk):
     from r21_account import services as account_services
     from r21_account.models import Account
@@ -1280,6 +1282,7 @@ def data_import_preview(request):
 @require_POST
 @admin_only
 @perms.require_system_admin
+@perms.require_recent_auth
 def data_import_commit(request):
     from smass_organization import services as org_services
 

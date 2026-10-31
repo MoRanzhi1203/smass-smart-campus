@@ -59,14 +59,21 @@
                           <option value="college_admin">学院管理员</option>
                           <option value="system_admin">系统管理员</option>
                         </select>
+                        <input class="ws-input" type="password" name="current_password" placeholder="当前口令"
+                               required autocomplete="current-password"
+                               style="width:110px;height:29px;font-size:12px" aria-label="授予或撤销角色需重新输入当前口令">
                         <button class="ws-btn is-sm" name="action" value="grant" type="submit">授予</button>
                         <button class="ws-btn is-sm is-danger" name="action" value="revoke" type="submit">撤销</button>
                       </form>
                       <form method="post" action="{% url 'workspace:admin_user_toggle' row.account.pk %}" data-once>
                         {% csrf_token %}<button class="ws-btn is-sm" type="submit">{% if row.account.is_active %}停用{% else %}启用{% endif %}</button>
                       </form>
-                      <form method="post" action="{% url 'workspace:admin_user_reset' row.account.pk %}" data-once>
-                        {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">重置口令</button>
+                      <form method="post" action="{% url 'workspace:admin_user_reset' row.account.pk %}" style="display:flex;gap:6px" data-once>
+                        {% csrf_token %}
+                        <input class="ws-input" type="password" name="current_password" placeholder="当前口令"
+                               required autocomplete="current-password"
+                               style="width:110px;height:29px;font-size:12px" aria-label="重置口令需重新输入当前口令">
+                        <button class="ws-btn is-sm is-danger" type="submit">重置口令</button>
                       </form>
                     </div>
                   {% else %}
