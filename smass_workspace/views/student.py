@@ -100,13 +100,60 @@ def courses(request):
     attendance = svc.attendance_overview(account)
     rows = [{'item': item, 'teachers': teachers.get(item.section_id, [])}
             for item in enrollments]
+    from smass_academic import services as academic_services
+
+    available = list(academic_services.available_sections(account))
+    available_teachers = svc.section_teachers([item.pk for item in available])
+    available_rows = [{'section': item,
+                       'teachers': available_teachers.get(item.pk, []),
+                       'enrolled': item.enrolled_count}
+                      for item in available]
     return render(request, 'workspace/student/courses.html', _ctx(
         request,
         enrollments=enrollments,
         rows=rows,
         term=svc.current_term(),
         attendance=attendance,
+        available_rows=available_rows,
     ))
+
+
+@require_POST
+@student_only
+def course_enroll(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_academic import services as academic_services
+    from smass_academic.models import TeachingSection
+
+    section = get_object_or_404(
+        TeachingSection.objects.select_related('course'), pk=pk)
+    try:
+        academic_services.enroll_for_student(request.user, section)
+        messages.success(request, '已选上《{}》'.format(section.course.title))
+    except academic_services.AcademicError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_courses')
+
+
+@require_POST
+@student_only
+def course_drop(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_academic import services as academic_services
+    from smass_academic.models import Enrollment
+
+    enrollment = get_object_or_404(
+        Enrollment.objects.select_related('section__course'),
+        pk=pk, account=request.user)
+    try:
+        academic_services.drop(enrollment, actor=request.user.login_name)
+        messages.success(request, '已退选《{}》'.format(
+            enrollment.section.course.title))
+    except academic_services.AcademicError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_courses')
 
 
 @require_GET

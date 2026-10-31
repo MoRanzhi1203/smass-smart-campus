@@ -9,6 +9,7 @@
 from datetime import date
 
 from django.db import IntegrityError, transaction
+from django.db.models import Count, F, Q
 from django.utils import timezone
 
 from smass_academic.models import (
@@ -293,3 +294,51 @@ def section_roster(section, account):
     if can_teach(account, section):
         return Enrollment.objects.filter(section=section)
     raise AccessError('无权查看该教学班名册')
+
+
+# ---------------------------------------------------------------------------
+# 学生选课（产品端）
+# ---------------------------------------------------------------------------
+def available_sections(account, term=None):
+    """当前学期可选教学班：开放、未选、容量未满。"""
+    term = term or current_term()
+    if term is None or account is None:
+        return TeachingSection.objects.none()
+    taken = list(Enrollment.objects.filter(
+        account=account, status=Enrollment.STATUS_ENROLLED).values_list(
+        'section_id', flat=True))
+    return (TeachingSection.objects
+            .filter(term=term, status=TeachingSection.STATUS_OPEN)
+            .exclude(pk__in=taken)
+            .annotate(enrolled_count=Count(
+                'enrollments',
+                filter=Q(enrollments__status=Enrollment.STATUS_ENROLLED)))
+            .filter(Q(capacity=0) | Q(enrolled_count__lt=F('capacity')))
+            .select_related('course', 'term')
+            .order_by('course__title', 'code'))
+
+
+def schedule_conflicts(account, section):
+    """教学班时间冲突检测。
+
+    当前 ``ScheduleEntry`` 绑定 ``LessonRequirement``（cohort/course），
+    尚未与 ``TeachingSection`` 建立时段映射（F01 教学周任务）。
+    在映射落地前返回空列表，避免用猜测的关联误拒选课；
+    容量、重复、学期与状态校验不受影响。
+    """
+    return []
+
+
+def enroll_for_student(account, section):
+    """学生选课入口：校验学期/状态/冲突后调用 ``enroll``。"""
+    if account is None or not getattr(account, 'is_authenticated', False):
+        raise AccessError('请先登录')
+    if section.status != TeachingSection.STATUS_OPEN:
+        raise AcademicError('教学班未开放选课')
+    current = current_term()
+    if current is not None and section.term_id != current.pk:
+        raise AcademicError('只能选当前学期的教学班')
+    conflicts = schedule_conflicts(account, section)
+    if conflicts:
+        raise AcademicError('与已选课程时间冲突：{}'.format('；'.join(conflicts)))
+    return enroll(section, account, actor=getattr(account, 'login_name', ''))

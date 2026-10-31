@@ -425,6 +425,63 @@ class CounselorTeachingOverlapTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class StudentCourseEnrollTests(WorkspaceFixture):
+    """学生选课/退课：容量、持久化、越权。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_academic.models import Course, TeachingSection
+
+        cls.course_b = Course.objects.create(
+            code='T-CS103', title='测试课程三', credit=2)
+        cls.section_b = TeachingSection.objects.create(
+            term=cls.term, course=cls.course_b, code='C', capacity=2)
+        cls.course_c = Course.objects.create(
+            code='T-CS104', title='测试课程四', credit=1)
+        cls.section_c = TeachingSection.objects.create(
+            term=cls.term, course=cls.course_c, code='D', capacity=1)
+        Enrollment.objects.create(section=cls.section_c, account=cls.student2,
+                                  status='enrolled')
+
+    def test_enroll_available_section(self):
+        self.login(self.student)
+        response = self.client.post(
+            '/student/courses/{}/enroll/'.format(self.section_b.pk), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Enrollment.objects.filter(
+            section=self.section_b, account=self.student,
+            status='enrolled').exists())
+        self.assertContains(response, '已选上')
+
+    def test_enroll_capacity_full_shows_error(self):
+        self.login(self.student)
+        response = self.client.post(
+            '/student/courses/{}/enroll/'.format(self.section_c.pk), follow=True)
+        self.assertFalse(Enrollment.objects.filter(
+            section=self.section_c, account=self.student).exists())
+        self.assertContains(response, '容量已满')
+
+    def test_drop_own_enrollment(self):
+        self.login(self.student)
+        enrollment = Enrollment.objects.get(
+            section=self.section, account=self.student)
+        response = self.client.post(
+            '/student/courses/enrollments/{}/drop/'.format(enrollment.pk),
+            follow=True)
+        enrollment.refresh_from_db()
+        self.assertEqual(enrollment.status, 'dropped')
+        self.assertContains(response, '已退选')
+
+    def test_cannot_drop_others_enrollment(self):
+        self.login(self.student)
+        other = Enrollment.objects.get(
+            section=self.section, account=self.student2)
+        response = self.client.post(
+            '/student/courses/enrollments/{}/drop/'.format(other.pk))
+        self.assertEqual(response.status_code, 404)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
