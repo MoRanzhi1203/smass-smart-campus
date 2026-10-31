@@ -85,4 +85,45 @@
     <div class="ws-empty is-compact"><b>暂无学籍状态变更</b><p>休学、复学、退学等异动会出现在这里。</p></div>
   {% endif %}
 </section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>学籍信息变更</h2><span class="ws-hint">学生提交的手机号/住宿/住址变更</span></div>
+  {% if info_changes %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>学生</th><th>字段</th><th>原值</th><th>新值</th><th>理由</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for item in info_changes %}
+            <tr>
+              <td class="is-strong">{{ item.record.name }}<br><span class="is-muted">{{ item.record.student_no }}</span></td>
+              <td>{{ item.get_field_display }}</td>
+              <td class="is-muted">{{ item.old_value|default:"—" }}</td>
+              <td>{{ item.new_value }}</td>
+              <td class="is-muted">{{ item.reason|truncatechars:20|default:"—" }}</td>
+              <td><span class="ws-badge {% if item.status == 'approved' %}is-success{% elif item.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span></td>
+              <td>
+                {% if is_super and item.status == 'submitted' %}
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <form method="post" action="{% url 'workspace:admin_change_request_action' item.pk 'approve' %}" data-once>
+                    {% csrf_token %}
+                    <button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                  </form>
+                  <form method="post" action="{% url 'workspace:admin_change_request_action' item.pk 'reject' %}" style="display:flex;gap:4px" data-once>
+                    {% csrf_token %}
+                    <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                           style="width:110px;height:28px;font-size:12px" aria-label="变更驳回理由">
+                    <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                  </form>
+                </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>暂无信息变更申请</b><p>学生提交后可在本页审批。</p></div>
+  {% endif %}
+</section>
 {% endblock %}

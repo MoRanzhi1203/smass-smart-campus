@@ -12,6 +12,7 @@ urlpatterns = [
     path('courses/enrollments/<int:pk>/drop/', views.course_drop,
          name='student_course_drop'),
     path('record/', views.record, name='student_record'),
+    path('record/change/', views.change_submit, name='student_change_submit'),
     path('attendance/', views.attendance, name='student_attendance'),
     path('attendance/leave/', views.leave_submit, name='student_leave_submit'),
     path('attendance/leave/<int:pk>/cancel/', views.leave_cancel,

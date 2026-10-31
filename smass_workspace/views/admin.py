@@ -348,6 +348,32 @@ def record_changes(request):
 
 @require_POST
 @admin_only
+@perms.require_system_admin
+def change_request_action(request, pk, action):
+    from django.shortcuts import get_object_or_404
+
+    from smass_organization import services as org_services
+    from smass_organization.models import StudentChangeRequest
+
+    request_obj = get_object_or_404(StudentChangeRequest, pk=pk)
+    try:
+        if action == 'approve':
+            org_services.approve_change(request_obj, request.user)
+            messages.success(request, '学籍信息变更已批准并生效')
+        elif action == 'reject':
+            org_services.reject_change(
+                request_obj, request.user,
+                request.POST.get('reason') or '材料不足')
+            messages.success(request, '已驳回变更申请')
+        else:
+            messages.error(request, '未知操作')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_record_changes')
+
+
+@require_POST
+@admin_only
 def transfer_action(request, pk, action):
     from smass_enrollment import services as enrollment_services
     from smass_enrollment.models import MajorTransferRequest

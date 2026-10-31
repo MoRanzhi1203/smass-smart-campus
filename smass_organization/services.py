@@ -494,3 +494,95 @@ def import_commit(text, *, actor='', batch_actor='import'):
     job.save(update_fields=['status', 'committed_at'])
 
     return job, {'created': created, 'updated': updated, 'failed': failed}
+
+
+# ---------------------------------------------------------------------------
+# 学籍信息变更申请（C07）
+# ---------------------------------------------------------------------------
+class ChangeRequestError(Exception):
+    """学籍变更申请错误。"""
+
+
+def _current_field_value(record, field):
+    if field == 'phone':
+        if record.account_id:
+            profile = getattr(record.account, 'student_profile', None)
+            return getattr(profile, 'phone', '') or ''
+        return ''
+    extra = record.extra or {}
+    if field == 'dormitory':
+        dorm = extra.get('dormitory') or {}
+        return dorm.get('room', '') or ''
+    return extra.get('address', '') or ''
+
+
+def submit_change(record, field, new_value, reason, actor):
+    from smass_organization.models import StudentChangeRequest
+
+    if record is None:
+        raise ChangeRequestError('缺少学籍档案')
+    if field not in dict(StudentChangeRequest.FIELD_CHOICES):
+        raise ChangeRequestError('该字段不支持在线变更')
+    new_value = (new_value or '').strip()
+    if not new_value:
+        raise ChangeRequestError('新值不能为空')
+    if StudentChangeRequest.objects.filter(
+            record=record, field=field, status='submitted').exists():
+        raise ChangeRequestError('该字段已有待审批申请')
+    return StudentChangeRequest.objects.create(
+        record=record, field=field,
+        old_value=_current_field_value(record, field),
+        new_value=new_value[:200], reason=(reason or '')[:500],
+        submitted_by=str(getattr(actor, 'pk', '') or actor)[:32],
+    )
+
+
+def approve_change(request_obj, actor):
+    from smass_organization.models import StudentChangeRequest
+
+    if request_obj.status != StudentChangeRequest.STATUS_SUBMITTED:
+        raise ChangeRequestError('只有待审批的申请可以批准')
+    with transaction.atomic():
+        record = StudentRecord.objects.select_for_update().get(
+            pk=request_obj.record_id)
+        extra = dict(record.extra or {})
+        if request_obj.field == 'phone':
+            from r21_account.models import StudentProfile
+
+            profile = StudentProfile.objects.filter(
+                account_id=record.account_id).first()
+            if profile is None:
+                raise ChangeRequestError('该学籍没有关联学生档案，无法更新手机号')
+            profile.phone = request_obj.new_value[:11]
+            profile.save(update_fields=['phone'])
+        elif request_obj.field == 'dormitory':
+            dorm = dict(extra.get('dormitory') or {})
+            dorm['room'] = request_obj.new_value[:64]
+            extra['dormitory'] = dorm
+        else:
+            extra['address'] = request_obj.new_value[:200]
+        record.extra = extra
+        record.save(update_fields=['extra', 'updated_at'])
+        request_obj.status = StudentChangeRequest.STATUS_APPROVED
+        request_obj.reviewed_by = str(getattr(actor, 'pk', '') or actor)[:32]
+        request_obj.reviewed_at = timezone.now()
+        request_obj.applied_at = timezone.now()
+        request_obj.save(update_fields=[
+            'status', 'reviewed_by', 'reviewed_at', 'applied_at', 'updated_at'])
+    return request_obj
+
+
+def reject_change(request_obj, actor, reason):
+    from smass_organization.models import StudentChangeRequest
+
+    if request_obj.status != StudentChangeRequest.STATUS_SUBMITTED:
+        raise ChangeRequestError('只有待审批的申请可以驳回')
+    if not str(reason or '').strip():
+        raise ChangeRequestError('驳回必须填写原因')
+    request_obj.status = StudentChangeRequest.STATUS_REJECTED
+    request_obj.reviewed_by = str(getattr(actor, 'pk', '') or actor)[:32]
+    request_obj.reviewed_at = timezone.now()
+    request_obj.reject_reason = str(reason).strip()[:255]
+    request_obj.save(update_fields=[
+        'status', 'reviewed_by', 'reviewed_at', 'reject_reason', 'updated_at'])
+    return request_obj

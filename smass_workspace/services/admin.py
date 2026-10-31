@@ -168,6 +168,7 @@ def records(account, keyword='', status=''):
 
 def record_changes(account):
     from smass_enrollment.models import MajorTransferRequest, StudentStatusChange
+    from smass_organization.models import StudentChangeRequest
 
     records_qs = scope_records(account)
     transfers = list(
@@ -177,7 +178,11 @@ def record_changes(account):
     changes = list(
         StudentStatusChange.objects.filter(record__in=records_qs)
         .select_related('record').order_by('-created_at')[:60])
-    return {'transfers': transfers, 'changes': changes}
+    info_changes = list(
+        StudentChangeRequest.objects.filter(record__in=records_qs)
+        .select_related('record').order_by('-created_at')[:60])
+    return {'transfers': transfers, 'changes': changes,
+            'info_changes': info_changes}
 
 
 def academics():

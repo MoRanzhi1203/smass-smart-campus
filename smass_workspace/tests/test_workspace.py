@@ -1378,6 +1378,66 @@ class SensitiveReauthTests(WorkspaceFixture):
         self.assertIsNotNone(Account.objects.get(pk=self.student.pk))
 
 
+class StudentChangeRequestTests(WorkspaceFixture):
+    """C07：学籍信息变更申请与审批生效。"""
+
+    def test_submit_and_approve_phone(self):
+        from r21_account.models import StudentProfile
+        from smass_organization.models import StudentChangeRequest
+
+        self.login(self.student)
+        self.client.post('/student/record/change/', {
+            'field': 'phone', 'new_value': '13800009999',
+            'reason': '换号'}, follow=True)
+        request_obj = StudentChangeRequest.objects.get(
+            record=self.record, field='phone', status='submitted')
+        self.login(self.admin)
+        self.client.post(
+            '/admin/record-changes/info/{}/approve/'.format(request_obj.pk),
+            follow=True)
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, 'approved')
+        self.assertEqual(StudentProfile.objects.get(
+            account=self.student).phone, '13800009999')
+
+    def test_duplicate_pending_rejected(self):
+        from smass_organization.models import StudentChangeRequest
+
+        self.login(self.student)
+        self.client.post('/student/record/change/', {
+            'field': 'phone', 'new_value': '13800001111'}, follow=True)
+        response = self.client.post('/student/record/change/', {
+            'field': 'phone', 'new_value': '13800002222'}, follow=True)
+        self.assertContains(response, '已有待审批申请')
+        self.assertEqual(StudentChangeRequest.objects.filter(
+            record=self.record, field='phone').count(), 1)
+
+    def test_reject_with_reason(self):
+        from smass_organization.models import StudentChangeRequest
+
+        request_obj = StudentChangeRequest.objects.create(
+            record=self.record, field='address', new_value='新地址',
+            status='submitted')
+        self.login(self.admin)
+        self.client.post(
+            '/admin/record-changes/info/{}/reject/'.format(request_obj.pk),
+            {'reason': '证明缺失'}, follow=True)
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, 'rejected')
+        self.assertEqual(request_obj.reject_reason, '证明缺失')
+
+    def test_college_admin_cannot_approve(self):
+        from smass_organization.models import StudentChangeRequest
+
+        request_obj = StudentChangeRequest.objects.create(
+            record=self.record, field='dormitory', new_value='B101',
+            status='submitted')
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/record-changes/info/{}/approve/'.format(request_obj.pk))
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

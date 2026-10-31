@@ -26,6 +26,8 @@ urlpatterns = [
     path('records/<str:student_no>/update/', views.record_update,
          name='admin_record_update'),
     path('record-changes/', views.record_changes, name='admin_record_changes'),
+    path('record-changes/info/<int:pk>/<str:action>/', views.change_request_action,
+         name='admin_change_request_action'),
     path('record-changes/transfer/<int:pk>/<str:action>/',
          views.transfer_action, name='admin_transfer_action'),
     path('record-changes/status/<int:pk>/<str:action>/',

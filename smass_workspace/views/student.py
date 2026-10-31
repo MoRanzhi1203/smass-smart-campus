@@ -174,6 +174,12 @@ def record(request):
 
         changes = list(StudentRecordChange.objects.filter(record=record_obj)
                        .order_by('-changed_at')[:20])
+    from smass_organization.models import StudentChangeRequest
+
+    change_requests = []
+    if record_obj is not None:
+        change_requests = list(StudentChangeRequest.objects.filter(
+            record=record_obj).order_by('-created_at')[:20])
     return render(request, 'workspace/student/record.html', _ctx(
         request,
         record=record_obj,
@@ -181,7 +187,26 @@ def record(request):
         profile=svc.profile_of(account),
         changes=changes,
         dormitory=svc.dormitory_of(record_obj),
+        change_requests=change_requests,
+        change_fields=StudentChangeRequest.FIELD_CHOICES,
     ))
+
+
+@require_POST
+@student_only
+def change_submit(request):
+    from smass_organization import services as org_services
+
+    record_obj = svc.student_record(request.user)
+    try:
+        org_services.submit_change(
+            record_obj, request.POST.get('field'),
+            request.POST.get('new_value'), request.POST.get('reason'),
+            request.user)
+        messages.success(request, '变更申请已提交，等待管理员审批')
+    except org_services.ChangeRequestError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_record')
 
 
 # ---------------------------------------------------------------------------

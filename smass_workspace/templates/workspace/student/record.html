@@ -98,5 +98,52 @@
     </section>
   </div>
 </div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>学籍信息变更</h2><span class="ws-hint">手机号/住宿/住址可在线申请，管理员审批后生效</span></div>
+  <div class="ws-card-body">
+    <form method="post" action="{% url 'workspace:student_change_submit' %}" data-once>
+      {% csrf_token %}
+      <div class="ws-form-grid">
+        <div class="ws-field">
+          <label for="change-field">变更字段</label>
+          <select class="ws-select" id="change-field" name="field" required>
+            {% for value, label in change_fields %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field">
+          <label for="change-value">新值</label>
+          <input class="ws-input" id="change-value" name="new_value" maxlength="200" required>
+        </div>
+        <div class="ws-field">
+          <label for="change-reason">理由</label>
+          <input class="ws-input" id="change-reason" name="reason" maxlength="500">
+        </div>
+      </div>
+      <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">提交申请</button></div>
+    </form>
+  </div>
+  {% if change_requests %}
+  <div class="ws-table-wrap">
+    <table class="ws-table">
+      <thead><tr><th>字段</th><th>原值</th><th>新值</th><th>状态</th><th>审批人</th><th>提交时间</th></tr></thead>
+      <tbody>
+        {% for item in change_requests %}
+          <tr>
+            <td>{{ item.get_field_display }}</td>
+            <td class="is-muted">{{ item.old_value|default:"—" }}</td>
+            <td>{{ item.new_value }}</td>
+            <td><span class="ws-badge {% if item.status == 'approved' %}is-success{% elif item.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span>
+              {% if item.reject_reason %}<div class="is-muted" style="font-size:11.5px">{{ item.reject_reason }}</div>{% endif %}
+            </td>
+            <td class="is-muted">{{ item.reviewed_by|default:"—" }}</td>
+            <td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>
 {% endif %}
 {% endblock %}

@@ -249,3 +249,64 @@ class DataImportRowError(models.Model):
     class Meta:
         verbose_name = '导入错误行'
         indexes = [models.Index(fields=['job', 'row_number'])]
+
+
+class StudentChangeRequest(models.Model):
+    """学生学籍信息变更申请（C07）：提交 → 审批 → 生效。
+
+    只允许修改低风险字段；姓名/学号/组织归属仍由管理员通过学籍编辑与异动流程处理。
+    """
+
+    FIELD_PHONE = 'phone'
+    FIELD_DORMITORY = 'dormitory'
+    FIELD_ADDRESS = 'address'
+    FIELD_CHOICES = (
+        (FIELD_PHONE, '手机号'),
+        (FIELD_DORMITORY, '住宿信息'),
+        (FIELD_ADDRESS, '家庭住址'),
+    )
+
+    STATUS_SUBMITTED = 'submitted'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = (
+        (STATUS_SUBMITTED, '待审批'),
+        (STATUS_APPROVED, '已批准'),
+        (STATUS_REJECTED, '已驳回'),
+    )
+
+    record = models.ForeignKey(
+        StudentRecord, verbose_name='学籍档案', on_delete=models.CASCADE,
+        related_name='change_requests')
+    field = models.CharField('变更字段', max_length=16, choices=FIELD_CHOICES)
+    old_value = models.CharField('原值', max_length=200, blank=True, default='')
+    new_value = models.CharField('新值', max_length=200)
+    reason = models.CharField('申请理由', max_length=500, blank=True, default='')
+
+    status = models.CharField('状态', max_length=16, choices=STATUS_CHOICES,
+                              default=STATUS_SUBMITTED)
+    submitted_by = models.CharField('申请人', max_length=32, blank=True, default='')
+    reviewed_by = models.CharField('审批人', max_length=32, blank=True, default='')
+    reviewed_at = models.DateTimeField('审批时间', null=True, blank=True)
+    reject_reason = models.CharField('驳回原因', max_length=255, blank=True,
+                                     default='')
+    applied_at = models.DateTimeField('生效时间', null=True, blank=True)
+
+    created_at = models.DateTimeField('提交时间', auto_now_add=True)
+    updated_at = models.DateTimeField('更新时间', auto_now=True)
+
+    class Meta:
+        verbose_name = '学籍变更申请'
+        indexes = [
+            models.Index(fields=['status', 'created_at']),
+            models.Index(fields=['record', 'status']),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['record', 'field'],
+                condition=models.Q(status='submitted'),
+                name='r4_uniq_pending_change'),
+        ]
+
+    def __str__(self):
+        return '{} {} -> {}'.format(self.record_id, self.field, self.new_value)
