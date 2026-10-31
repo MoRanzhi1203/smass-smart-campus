@@ -76,15 +76,22 @@ def timetable(request):
     entries = svc.student_entries(account)
     term = svc.current_term()
     run = svc.published_run()
-    periods = svc.week_span(entries)
+    current = min(svc.current_teaching_week(term), 20)
+    raw_week = request.GET.get('week', '')
+    week = int(raw_week) if raw_week.isdigit() else current
+    week = max(1, min(week, 20))
+    week_entries = svc.entries_for_week(entries, week)
+    periods = svc.week_span(week_entries)
     return render(request, 'workspace/student/timetable.html', _ctx(
         request,
         term=term,
-        week=svc.term_week_number(term),
+        week=week,
+        current_week=current,
+        weeks=range(1, 21),
         run=run,
-        entries=entries,
-        grid=svc.week_grid(entries, periods=periods),
-        rows=svc.grid_rows(entries, periods),
+        entries=week_entries,
+        grid=svc.week_grid(week_entries, periods=periods),
+        rows=svc.grid_rows(week_entries, periods),
         periods=range(1, periods + 1),
         today=svc.today_index(),
     ))

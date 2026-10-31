@@ -333,6 +333,21 @@ class ScheduleEntry(models.Model):
     #: 该节次属于本次课的"第几次"（1..weekly_sessions），便于展示
     session_index = models.IntegerField('第几次课', default=1)
 
+    #: V2.0 F01 教学周维度：默认覆盖 1..20 周，可按条目收窄
+    WEEK_PATTERN_ALL = 'all'
+    WEEK_PATTERN_ODD = 'odd'
+    WEEK_PATTERN_EVEN = 'even'
+    WEEK_PATTERNS = (
+        (WEEK_PATTERN_ALL, '每周'),
+        (WEEK_PATTERN_ODD, '单周'),
+        (WEEK_PATTERN_EVEN, '双周'),
+    )
+    week_from = models.PositiveSmallIntegerField('起始周', default=1)
+    week_to = models.PositiveSmallIntegerField('结束周', default=20)
+    week_pattern = models.CharField(
+        '周模式', max_length=8, choices=WEEK_PATTERNS,
+        default=WEEK_PATTERN_ALL)
+
     created_at = models.DateTimeField('创建时间', auto_now_add=True)
 
     class Meta:

@@ -74,7 +74,7 @@
 
 | ID | 任务 | 状态 | 说明 |
 |---|---|---|---|
-| F01 | 教学周/单双周/调停课 | TODO | 需改 `ScheduleEntry` + 迁移 |
+| F01 | 教学周/单双周/调停课 | **IMPLEMENTED（周次与单双周）** | `ScheduleEntry` 新增 week_from/week_to/week_pattern（迁移 0002，已回滚再应用验证）；学生/教师课表按周过滤并支持周次切换；3 例测试（单双周、周次计算、查询回落）；调停课例外表待补 |
 | F02 | 业务事件通知（幂等 event_key） | **IMPLEMENTED（4/7 类）** | 已接入：请假批准/驳回、补签通过/驳回、场地预约批准/驳回、社团入社通过；`notify_account` + 事件键幂等；活动/排课/公告待补 |
 | F03 | 列表分页/搜索/排序/导出权限 | **IMPLEMENTED（分页+搜索）** | `services/pagination.py` + `_pagination.html`；用户/学籍支持关键词与状态筛选；排序与导出权限待补 |
 | F04 | 受控后台任务（探针/清理/通知） | TODO | 不引入分布式设施 |

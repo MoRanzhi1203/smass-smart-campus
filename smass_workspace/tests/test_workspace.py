@@ -1242,6 +1242,48 @@ class AdminPaginationTests(WorkspaceFixture):
         self.assertIn('status=enrolled', response.context['querystring'])
 
 
+class TimetableWeekTests(WorkspaceFixture):
+    """F01：教学周、起止周与单双周过滤。"""
+
+    def test_week_pattern_filter(self):
+        from types import SimpleNamespace
+
+        from smass_workspace.services import student as student_svc
+
+        odd = SimpleNamespace(week_from=1, week_to=8, week_pattern='odd')
+        self.assertTrue(student_svc.entry_in_week(odd, 1))
+        self.assertFalse(student_svc.entry_in_week(odd, 2))
+        self.assertFalse(student_svc.entry_in_week(odd, 9))
+        even = SimpleNamespace(week_from=2, week_to=10, week_pattern='even')
+        self.assertTrue(student_svc.entry_in_week(even, 2))
+        self.assertFalse(student_svc.entry_in_week(even, 3))
+        every = SimpleNamespace(week_from=1, week_to=20, week_pattern='all')
+        self.assertTrue(student_svc.entry_in_week(every, 7))
+
+    def test_current_teaching_week(self):
+        from datetime import date
+        from types import SimpleNamespace
+
+        from smass_workspace.services import student as student_svc
+
+        term = SimpleNamespace(start_date=date(2026, 9, 1))
+        self.assertEqual(
+            student_svc.current_teaching_week(term, date(2026, 9, 1)), 1)
+        self.assertEqual(
+            student_svc.current_teaching_week(term, date(2026, 9, 8)), 2)
+        self.assertEqual(
+            student_svc.current_teaching_week(term, date(2026, 8, 20)), 1)
+
+    def test_timetable_week_query(self):
+        self.login(self.student)
+        response = self.client.get('/student/timetable/?week=3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['week'], 3)
+        fallback = self.client.get('/student/timetable/?week=abc')
+        self.assertEqual(fallback.context['week'],
+                         fallback.context['current_week'])
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

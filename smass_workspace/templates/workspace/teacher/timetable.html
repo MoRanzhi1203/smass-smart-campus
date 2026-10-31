@@ -12,6 +12,15 @@
       {% if run %}依据已发布的排课计划生成，共 {{ entries|length }} 个上课时段。{% else %}排课尚未发布。{% endif %}
     </p>
   </div>
+  <div class="ws-page-actions">
+    <form method="get" style="display:flex;gap:6px;align-items:center">
+      <label class="ws-hint" for="week-select">教学周</label>
+      <select class="ws-select" id="week-select" name="week" onchange="this.form.submit();"
+              style="width:140px;height:32px;font-size:12.5px" aria-label="选择教学周">
+        {% for w in weeks %}<option value="{{ w }}" {% if w == week %}selected{% endif %}>第 {{ w }} 周{% if w == current_week %}（本周）{% endif %}</option>{% endfor %}
+      </select>
+    </form>
+  </div>
 </div>
 
 <section class="ws-card">

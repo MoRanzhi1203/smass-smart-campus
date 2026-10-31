@@ -116,6 +116,36 @@ def student_entries(account, run=None):
         .order_by('weekday', 'period'))
 
 
+def current_teaching_week(term=None, today=None):
+    """按学期开始日期计算教学周（1-based，最小 1）。"""
+    from datetime import date
+
+    term = term or current_term()
+    if term is None or getattr(term, 'start_date', None) is None:
+        return 1
+    today = today or date.today()
+    delta = (today - term.start_date).days
+    return max(1, delta // 7 + 1)
+
+
+def entry_in_week(entry, week):
+    """条目是否落在指定教学周（含起止周与单双周）。"""
+    if week < getattr(entry, 'week_from', 1):
+        return False
+    if week > getattr(entry, 'week_to', 20):
+        return False
+    pattern = getattr(entry, 'week_pattern', 'all')
+    if pattern == 'odd':
+        return week % 2 == 1
+    if pattern == 'even':
+        return week % 2 == 0
+    return True
+
+
+def entries_for_week(entries, week):
+    return [entry for entry in entries if entry_in_week(entry, week)]
+
+
 def week_grid(entries, periods=12, days=7):
     """把课表条目转成 ``grid[(weekday, period)] = entry``。"""
     grid = {}

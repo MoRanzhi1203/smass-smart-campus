@@ -88,14 +88,23 @@ def sections(request):
 @teacher_only
 def timetable(request):
     entries = svc.my_entries(request.user)
-    periods = student_svc.week_span(entries)
+    term = student_svc.current_term()
+    current = min(student_svc.current_teaching_week(term), 20)
+    raw_week = request.GET.get('week', '')
+    week = int(raw_week) if raw_week.isdigit() else current
+    week = max(1, min(week, 20))
+    week_entries = student_svc.entries_for_week(entries, week)
+    periods = student_svc.week_span(week_entries)
     return render(request, 'workspace/teacher/timetable.html', _ctx(
         request,
-        entries=entries,
-        rows=student_svc.grid_rows(entries, periods),
+        entries=week_entries,
+        week=week,
+        current_week=current,
+        weeks=range(1, 21),
+        rows=student_svc.grid_rows(week_entries, periods),
         periods=range(1, periods + 1),
         today=student_svc.today_index(),
-        term=student_svc.current_term(),
+        term=term,
         run=student_svc.published_run(),
     ))
 
