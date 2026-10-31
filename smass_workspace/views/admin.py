@@ -628,8 +628,81 @@ def record_update(request, student_no):
 @require_GET
 @admin_only
 def scheduling(request):
+    from smass_academic.models import AcademicTerm
+
+    terms = AcademicTerm.objects.select_related('year').order_by(
+        '-year__start_date', 'semester')
     return render(request, 'workspace/admin/scheduling.html', _ctx(
-        request, **svc.scheduling(request.user)))
+        request, terms=terms, **svc.scheduling(request.user)))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def schedule_create(request):
+    from smass_academic.models import AcademicTerm
+    from smass_scheduling import services as schedule_services
+
+    term = AcademicTerm.objects.filter(pk=request.POST.get('term') or 0).first()
+    try:
+        run = schedule_services.create_run(
+            term, actor=request.user.login_name)
+        messages.success(request, '排课批次已创建（#{}）'.format(run.pk))
+    except schedule_services.ScheduleError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:admin_scheduling')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def schedule_solve(request, pk):
+    from smass_scheduling import services as schedule_services
+    from smass_scheduling.models import ScheduleRun
+
+    run = ScheduleRun.objects.filter(pk=pk).first()
+    if run is None:
+        messages.error(request, '排课批次不存在')
+        return redirect('workspace:admin_scheduling')
+    try:
+        schedule_services.solve_run(run, actor=request.user.login_name)
+        messages.success(request, '求解完成：{}，硬冲突 {} 个'.format(
+            run.get_status_display(), run.hard_conflicts))
+    except schedule_services.ScheduleError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:admin_scheduling')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def schedule_publish(request, pk):
+    from smass_scheduling import services as schedule_services
+    from smass_scheduling.models import ScheduleRun
+
+    run = ScheduleRun.objects.filter(pk=pk).first()
+    if run is None:
+        messages.error(request, '排课批次不存在')
+        return redirect('workspace:admin_scheduling')
+    try:
+        schedule_services.publish_run(run, actor=request.user.login_name)
+        messages.success(request, '课表已发布，学生端与教师端同步更新')
+    except schedule_services.ScheduleError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:admin_scheduling')
+
+
+@require_GET
+@admin_only
+def schedule_conflicts(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_scheduling.models import ScheduleConflict, ScheduleRun
+
+    run = get_object_or_404(ScheduleRun, pk=pk)
+    conflicts = ScheduleConflict.objects.filter(run=run).order_by('pk')[:200]
+    return render(request, 'workspace/admin/schedule_conflicts.html', _ctx(
+        request, run=run, conflicts=conflicts))
 
 
 @require_GET

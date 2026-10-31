@@ -907,6 +907,60 @@ class StudentBookingAndFeeTests(WorkspaceFixture):
         self.assertContains(response, '申请退费')
 
 
+class AdminSchedulingTests(WorkspaceFixture):
+    """E03：排课批次创建、求解、发布门禁。"""
+
+    def test_create_solve_publish(self):
+        from smass_scheduling.models import ScheduleRun
+
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/scheduling/create/', {'term': self.term.pk}, follow=True)
+        self.assertContains(response, '排课批次已创建')
+        run = ScheduleRun.objects.get(term=self.term)
+        self.assertEqual(run.status, 'draft')
+
+        self.client.post(
+            '/admin/scheduling/{}/solve/'.format(run.pk), follow=True)
+        run.refresh_from_db()
+        self.assertIn(run.status, ('solved', 'infeasible'))
+        if run.status == 'solved':
+            self.client.post(
+                '/admin/scheduling/{}/publish/'.format(run.pk), follow=True)
+            run.refresh_from_db()
+            self.assertEqual(run.status, 'published')
+
+    def test_duplicate_unpublished_run_rejected(self):
+        from smass_scheduling.models import ScheduleRun
+
+        ScheduleRun.objects.create(term=self.term, status='draft')
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/scheduling/create/', {'term': self.term.pk}, follow=True)
+        self.assertContains(response, '已有未发布的排课批次')
+        self.assertEqual(ScheduleRun.objects.filter(term=self.term).count(), 1)
+
+    def test_publish_draft_rejected(self):
+        from smass_scheduling.models import ScheduleRun
+
+        run = ScheduleRun.objects.create(term=self.term, status='draft')
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/scheduling/{}/publish/'.format(run.pk), follow=True)
+        self.assertContains(response, '只有已求解的批次可以发布')
+        run.refresh_from_db()
+        self.assertEqual(run.status, 'draft')
+
+    def test_college_admin_cannot_solve_or_publish(self):
+        from smass_scheduling.models import ScheduleRun
+
+        run = ScheduleRun.objects.create(term=self.term, status='draft')
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/scheduling/{}/solve/'.format(run.pk))
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

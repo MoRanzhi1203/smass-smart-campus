@@ -1,0 +1,43 @@
+{% extends "workspace/base.html" %}
+{% block title %}排课冲突{% endblock %}
+{% block topbar_title %}排课冲突{% endblock %}
+{% block topbar_sub %}{{ run.term.year.code }} {{ run.term.get_semester_display }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:admin_scheduling' %}">排课与课表</a><span class="sep">/</span><span>冲突</span></div>
+    <h1>排课冲突</h1>
+    <p class="ws-sub">批次 #{{ run.pk }} · {{ run.get_status_display }} · 硬冲突 {{ run.hard_conflicts }} 个</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:admin_scheduling' %}">返回排课</a>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head"><h2>冲突明细</h2><span class="ws-hint">最多显示 200 条</span></div>
+  {% if conflicts %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>类型</th><th>键</th><th>说明</th></tr></thead>
+        <tbody>
+          {% for conflict in conflicts %}
+            <tr>
+              <td><span class="ws-badge is-danger">{{ conflict.kind }}</span></td>
+              <td class="is-strong">{{ conflict.key|default:"—" }}</td>
+              <td class="is-muted">{{ conflict.detail|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+      <b>没有硬冲突</b>
+      <p>该批次满足教室、教师与群体时段约束，可在满足条件时发布。</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

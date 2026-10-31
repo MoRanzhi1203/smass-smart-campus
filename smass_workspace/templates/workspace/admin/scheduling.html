@@ -8,11 +8,10 @@
   <div>
     <div class="ws-eyebrow">排课与资源</div>
     <h1>排课与课表</h1>
-    <p class="ws-sub">排课结果发布后，学生端与教师端课表同时更新。</p>
+    <p class="ws-sub">创建批次 → 求解 → 查看冲突 → 发布；发布后学生端与教师端课表同时更新。</p>
   </div>
   <div class="ws-page-actions">
     <a class="ws-btn" href="{% url 'workspace:admin_facilities' %}">教室与场地</a>
-    <a class="ws-btn is-primary" href="/r11/plan/">排课求解（专业工具）</a>
   </div>
 </div>
 
@@ -25,22 +24,64 @@
 </div>
 {% endif %}
 
+{% if is_super %}
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>新建排课批次</h2><span class="ws-hint">同一学期同时只允许一个未发布批次</span></div>
+  <div class="ws-card-body">
+    <form method="post" action="{% url 'workspace:admin_schedule_create' %}" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap" data-once>
+      {% csrf_token %}
+      <div class="ws-field" style="min-width:260px">
+        <label for="schedule-term">学期</label>
+        <select class="ws-select" id="schedule-term" name="term" required>
+          {% for term in terms %}
+            <option value="{{ term.pk }}">{{ term.year.code }} {{ term.get_semester_display }}{% if term.is_active %}（当前）{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="ws-btn is-primary" type="submit">创建批次</button>
+    </form>
+    <p class="ws-sub" style="margin-top:10px">课时需求、教师约束与时段仍由专业工具维护；本页负责批次状态机与发布门禁。</p>
+  </div>
+</section>
+{% endif %}
+
 <section class="ws-card" style="margin-top:16px">
   <div class="ws-card-head"><h2>排课运行记录</h2><span class="ws-hint">{{ runs|length }} 次</span></div>
   {% if runs %}
     <div class="ws-table-wrap">
       <table class="ws-table">
-        <thead><tr><th>学期</th><th>状态</th><th class="is-num">已排/所需</th><th class="is-num">硬冲突</th><th class="is-num">条目</th><th>算法</th><th>发布时间</th></tr></thead>
+        <thead><tr><th>学期</th><th>状态</th><th class="is-num">已排/所需</th><th class="is-num">硬冲突</th><th class="is-num">条目</th><th>算法</th><th>发布时间</th><th>操作</th></tr></thead>
         <tbody>
           {% for run in runs %}
             <tr>
               <td class="is-strong">{{ run.term.year.code }} {{ run.term.get_semester_display }}</td>
-              <td><span class="ws-badge {% if run.status == 'published' %}is-success{% elif run.status == 'draft' %}is-warning{% else %}is-neutral{% endif %}">{{ run.get_status_display }}</span></td>
+              <td><span class="ws-badge {% if run.status == 'published' %}is-success{% elif run.status == 'draft' %}is-warning{% elif run.status == 'infeasible' %}is-danger{% else %}is-neutral{% endif %}">{{ run.get_status_display }}</span></td>
               <td class="is-num">{{ run.placed_sessions }} / {{ run.required_sessions }}</td>
               <td class="is-num">{% if run.hard_conflicts %}<span class="ws-badge is-danger">{{ run.hard_conflicts }}</span>{% else %}0{% endif %}</td>
               <td class="is-num">{{ run.entry_count }}</td>
               <td class="is-muted">{{ run.algorithm|default:"—" }}</td>
               <td class="is-muted">{{ run.published_at|date:"Y-m-d H:i"|default:"未发布" }}</td>
+              <td>
+                {% if is_super %}
+                <div class="ws-stack" style="gap:4px">
+                  {% if run.status != 'published' %}
+                    <form method="post" action="{% url 'workspace:admin_schedule_solve' run.pk %}" data-once>
+                      {% csrf_token %}
+                      <button class="ws-btn is-sm" type="submit">求解</button>
+                    </form>
+                  {% endif %}
+                  {% if run.status == 'solved' %}
+                    <form method="post" action="{% url 'workspace:admin_schedule_publish' run.pk %}" data-once>
+                      {% csrf_token %}
+                      <button class="ws-btn is-sm is-primary" type="submit">发布</button>
+                    </form>
+                  {% endif %}
+                  <a class="ws-btn is-sm" href="{% url 'workspace:admin_schedule_conflicts' run.pk %}">冲突</a>
+                </div>
+                {% else %}
+                  <a class="ws-btn is-sm" href="{% url 'workspace:admin_schedule_conflicts' run.pk %}">冲突</a>
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -50,8 +91,7 @@
     <div class="ws-empty">
       <div class="ws-empty-icon"><svg><use href="#ws-i-calendar"></use></svg></div>
       <b>还没有排课运行</b>
-      <p>在排课规划中创建运行并求解。</p>
-      <a class="ws-btn is-primary" href="/r11/plan/">排课求解（专业工具）</a>
+      <p>{% if is_super %}在上方创建批次后求解。{% else %}等待系统管理员创建并发布。{% endif %}</p>
     </div>
   {% endif %}
 </section>
