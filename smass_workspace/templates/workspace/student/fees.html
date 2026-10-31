@@ -30,7 +30,7 @@
         <tbody>
           {% for bill in bills %}
             <tr>
-              <td class="is-strong">{{ bill.bill_no }}</td>
+              <td class="is-strong"><a href="{% url 'workspace:student_fee_detail' bill.pk %}">{{ bill.bill_no }}</a></td>
               <td>{{ bill.term|default:"—" }}</td>
               <td class="is-num">{{ bill.total|floatformat:2 }}</td>
               <td class="is-num">{{ bill.paid|floatformat:2 }}</td>

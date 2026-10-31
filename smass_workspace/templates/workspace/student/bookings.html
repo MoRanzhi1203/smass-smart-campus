@@ -29,12 +29,26 @@
                   <span class="ws-badge {% if booking.status == 'approved' %}is-success{% elif booking.status == 'pending' %}is-warning{% elif booking.status == 'rejected' or booking.status == 'cancelled' %}is-danger{% else %}is-neutral{% endif %}">{{ booking.get_status_display }}</span>
                 </td>
                 <td class="is-num">
-                  {% if booking.status == 'pending' or booking.status == 'approved' %}
-                    <form method="post" action="{% url 'workspace:student_booking_cancel' booking.pk %}" data-once>
-                      {% csrf_token %}
-                      <button class="ws-btn is-sm is-danger" type="submit">取消</button>
-                    </form>
-                  {% endif %}
+                  <div class="ws-stack" style="gap:4px;align-items:flex-end">
+                    {% if booking.status == 'approved' %}
+                      <form method="post" action="{% url 'workspace:student_booking_checkin' booking.pk %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm is-primary" type="submit">签到</button>
+                      </form>
+                    {% endif %}
+                    {% if booking.status == 'approved' or booking.status == 'checked_in' %}
+                      <form method="post" action="{% url 'workspace:student_booking_release' booking.pk %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm" type="submit">释放</button>
+                      </form>
+                    {% endif %}
+                    {% if booking.status == 'pending' or booking.status == 'approved' %}
+                      <form method="post" action="{% url 'workspace:student_booking_cancel' booking.pk %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm is-danger" type="submit">取消</button>
+                      </form>
+                    {% endif %}
+                  </div>
                 </td>
               </tr>
             {% endfor %}

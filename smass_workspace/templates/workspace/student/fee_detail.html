@@ -1,0 +1,112 @@
+{% extends "workspace/base.html" %}
+{% block title %}账单详情{% endblock %}
+{% block topbar_title %}账单详情{% endblock %}
+{% block topbar_sub %}{{ bill.bill_no }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:student_fees' %}">费用与账单</a><span class="sep">/</span><span>账单详情</span></div>
+    <h1>{{ bill.bill_no }}</h1>
+    <p class="ws-sub">{{ bill.term|default:"—" }} · 应缴 {{ bill.total|floatformat:2 }} · 已缴 {{ bill.paid|floatformat:2 }} · 待缴 {{ due|floatformat:2 }}</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>费用明细</h2>
+        <span class="ws-badge {% if bill.status == 'paid' %}is-success{% elif bill.status == 'partial' %}is-warning{% elif bill.status == 'overdue' %}is-danger{% else %}is-neutral{% endif %}">{{ bill.get_status_display }}</span>
+      </div>
+      {% if items %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>收费项</th><th>说明</th><th class="is-num">金额</th></tr></thead>
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td class="is-strong">{{ item.fee_item.name|default:item.fee_item.code|default:"—" }}</td>
+                  <td class="is-muted">{{ item.fee_item.category|default:"—" }}</td>
+                  <td class="is-num">{{ item.amount|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无明细</b><p>账单未拆分收费项。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>缴费记录</h2><span class="ws-hint">{{ payments|length }} 条</span></div>
+      {% if payments %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>时间</th><th>方式</th><th class="is-num">金额</th></tr></thead>
+            <tbody>
+              {% for payment in payments %}
+                <tr>
+                  <td>{{ payment.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ payment.get_method_display|default:payment.method }}</td>
+                  <td class="is-num">{{ payment.amount|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无缴费记录</b><p>可在费用列表页完成缴费。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>退费记录</h2><span class="ws-hint">{{ refunds|length }} 条</span></div>
+      {% if refunds %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>时间</th><th class="is-num">金额</th><th>理由</th><th>状态</th><th>审批人</th></tr></thead>
+            <tbody>
+              {% for refund in refunds %}
+                <tr>
+                  <td>{{ refund.created_at|date:"Y-m-d H:i" }}</td>
+                  <td class="is-num">{{ refund.amount|floatformat:2 }}</td>
+                  <td class="is-muted">{{ refund.reason|truncatechars:24 }}</td>
+                  <td><span class="ws-badge {% if refund.status == 'approved' or refund.status == 'paid' %}is-success{% elif refund.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ refund.get_status_display }}</span></td>
+                  <td class="is-muted">{{ refund.reviewed_by|default:"—" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无退费申请</b><p>如有多缴或需要退费，可在右侧提交申请。</p></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>申请退费</h2></div>
+    <div class="ws-card-body">
+      {% if bill.paid > 0 %}
+        <form method="post" action="{% url 'workspace:student_fee_refund' bill.pk %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="refund-amount">退费金额</label>
+            <input class="ws-input" id="refund-amount" name="amount" type="number" step="0.01"
+                   min="0.01" max="{{ bill.paid }}" required placeholder="不超过已缴 {{ bill.paid|floatformat:2 }}">
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="refund-reason">退费理由</label>
+            <input class="ws-input" id="refund-reason" name="reason" maxlength="255" required placeholder="请说明退费原因">
+          </div>
+          <button class="ws-btn is-primary" type="submit">提交退费申请</button>
+        </form>
+        <p class="ws-sub" style="margin-top:12px">退费由财务审批；当前为校内台账，不含真实支付渠道。</p>
+      {% else %}
+        <div class="ws-empty is-compact"><b>无可退金额</b><p>该账单尚未缴费，无需申请退费。</p></div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

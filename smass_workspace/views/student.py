@@ -334,6 +334,46 @@ def leave_cancel(request, pk):
 # ---------------------------------------------------------------------------
 @require_GET
 @student_only
+def fee_detail(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_finance.models import Bill, BillItem, Payment, RefundRequest
+
+    record_obj = svc.student_record(request.user)
+    bill = get_object_or_404(Bill, pk=pk, record=record_obj)
+    return render(request, 'workspace/student/fee_detail.html', _ctx(
+        request,
+        bill=bill,
+        due=bill.total - bill.paid,
+        items=BillItem.objects.filter(bill=bill).select_related('fee_item'),
+        payments=Payment.objects.filter(bill=bill).order_by('-created_at'),
+        refunds=RefundRequest.objects.filter(bill=bill).order_by('-created_at'),
+    ))
+
+
+@require_POST
+@student_only
+def fee_refund(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_finance import services as finance_services
+    from smass_finance.models import Bill
+    from smass_finance.services import FinanceError
+
+    record_obj = svc.student_record(request.user)
+    bill = get_object_or_404(Bill, pk=pk, record=record_obj)
+    try:
+        finance_services.request_refund(
+            bill, request.POST.get('amount'), request.POST.get('reason'),
+            request.user)
+        messages.success(request, '退费申请已提交，等待财务审批。')
+    except (FinanceError, PermissionError) as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_fee_detail', pk=bill.pk)
+
+
+@require_GET
+@student_only
 def fees(request):
     account = request.user
     bills = svc.bills_of(account)
@@ -411,6 +451,44 @@ def booking_create(request):
             attendees=int(request.POST.get('attendees') or 0),
         )
         messages.success(request, '预约申请已提交。')
+    except (FacilityError, PermissionError) as exc:
+        messages.error(request, str(exc))
+    return redirect('/student/bookings/')
+
+
+@require_POST
+@student_only
+def booking_checkin(request, pk):
+    from smass_facilities import services as facility_services
+    from smass_facilities.models import RoomBooking
+    from smass_facilities.services import FacilityError
+
+    booking = RoomBooking.objects.filter(pk=pk).first()
+    if booking is None or booking.account_id != request.user.pk:
+        messages.error(request, '预约不存在或不属于你。')
+        return redirect('/student/bookings/')
+    try:
+        facility_services.check_in_booking(booking, request.user)
+        messages.success(request, '已签到，使用结束后请及时释放场地。')
+    except (FacilityError, PermissionError) as exc:
+        messages.error(request, str(exc))
+    return redirect('/student/bookings/')
+
+
+@require_POST
+@student_only
+def booking_release(request, pk):
+    from smass_facilities import services as facility_services
+    from smass_facilities.models import RoomBooking
+    from smass_facilities.services import FacilityError
+
+    booking = RoomBooking.objects.filter(pk=pk).first()
+    if booking is None or booking.account_id != request.user.pk:
+        messages.error(request, '预约不存在或不属于你。')
+        return redirect('/student/bookings/')
+    try:
+        facility_services.release_booking(booking, request.user)
+        messages.success(request, '场地已释放。')
     except (FacilityError, PermissionError) as exc:
         messages.error(request, str(exc))
     return redirect('/student/bookings/')

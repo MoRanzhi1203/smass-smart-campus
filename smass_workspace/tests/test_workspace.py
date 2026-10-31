@@ -841,6 +841,72 @@ class StudentClubTests(WorkspaceFixture):
         self.assertContains(response, '只能退出自己的社团')
 
 
+class StudentBookingAndFeeTests(WorkspaceFixture):
+    """C05/C06：场地签到释放与账单退费。"""
+
+    def _booking(self, status='approved', account=None):
+        from django.utils import timezone
+
+        from smass_facilities.models import RoomBooking
+
+        start = timezone.now() + timedelta(days=3)
+        return RoomBooking.objects.create(
+            room=self.room, account=account or self.student,
+            start_at=start, end_at=start + timedelta(hours=1),
+            purpose='V2 测试预约', status=status)
+
+    def test_booking_checkin_and_release(self):
+        booking = self._booking()
+        self.login(self.student)
+        self.client.post(
+            '/student/bookings/{}/checkin/'.format(booking.pk), follow=True)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'checked_in')
+        self.client.post(
+            '/student/bookings/{}/release/'.format(booking.pk), follow=True)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'released')
+
+    def test_booking_checkin_others_rejected(self):
+        booking = self._booking(account=self.student2)
+        self.login(self.student)
+        response = self.client.post(
+            '/student/bookings/{}/checkin/'.format(booking.pk), follow=True)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'approved')
+        self.assertContains(response, '不属于你')
+
+    def test_fee_refund_request(self):
+        from decimal import Decimal
+
+        from smass_finance.models import Bill, RefundRequest
+
+        bill = Bill.objects.create(
+            bill_no='T-BILL-1', record=self.record, term='2024-2025-1',
+            total=Decimal('100.00'), paid=Decimal('100.00'), status='paid')
+        self.login(self.student)
+        response = self.client.post(
+            '/student/fees/{}/refund/'.format(bill.pk),
+            {'amount': '30', 'reason': '多缴退费'}, follow=True)
+        self.assertContains(response, '退费申请已提交')
+        self.assertTrue(RefundRequest.objects.filter(
+            bill=bill, amount=Decimal('30.00'), status='submitted').exists())
+
+    def test_fee_detail_renders(self):
+        from decimal import Decimal
+
+        from smass_finance.models import Bill
+
+        bill = Bill.objects.create(
+            bill_no='T-BILL-2', record=self.record, term='2024-2025-1',
+            total=Decimal('50.00'), paid=Decimal('0.00'), status='unpaid')
+        self.login(self.student)
+        response = self.client.get('/student/fees/{}/'.format(bill.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'T-BILL-2')
+        self.assertContains(response, '申请退费')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
