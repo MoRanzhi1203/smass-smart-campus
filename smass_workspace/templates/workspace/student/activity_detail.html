@@ -1,0 +1,88 @@
+{% extends "workspace/base.html" %}
+{% block title %}{{ activity.title }}{% endblock %}
+{% block topbar_title %}活动详情{% endblock %}
+{% block topbar_sub %}{{ activity.get_category_display }}{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园活动</div>
+    <h1>{{ activity.title }}</h1>
+    <p class="ws-sub">{{ activity.get_category_display }} · {{ activity.start_at|date:"Y-m-d H:i" }} 至 {{ activity.end_at|date:"H:i" }}</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:student_activities' %}">返回活动列表</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>活动信息</h2>
+      <span class="ws-badge {% if activity.status == 'published' %}is-success{% elif activity.status == 'closed' %}is-neutral{% else %}is-warning{% endif %}">{{ activity.get_status_display }}</span>
+    </div>
+    <div class="ws-card-body">
+      <div class="ws-meta">
+        <div><span>时间</span><b>{{ activity.start_at|date:"Y-m-d H:i" }} – {{ activity.end_at|date:"H:i" }}</b></div>
+        <div><span>地点</span><b>{{ activity.location|default:"—" }}</b></div>
+        <div><span>容量</span><b>{% if activity.capacity %}{{ activity.capacity }} 人{% else %}不限{% endif %}</b></div>
+        <div><span>学分</span><b>{{ activity.credit_points }}</b></div>
+        <div><span>报名截止</span><b>{{ activity.registration_deadline|date:"Y-m-d H:i"|default:"—" }}</b></div>
+        <div><span>组织者</span><b>{{ activity.organizer.display_name|default:"校方" }}</b></div>
+      </div>
+      {% if activity.description %}
+        <p class="ws-sub" style="margin-top:16px">{{ activity.description|linebreaksbr }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>我的报名</h2></div>
+    <div class="ws-card-body">
+      {% if registration %}
+        <p style="margin:0 0 12px">
+          状态：
+          <span class="ws-badge {% if registration.status == 'registered' %}is-success{% elif registration.status == 'waitlisted' %}is-warning{% elif registration.status == 'checked_in' %}is-info{% else %}is-neutral{% endif %}">{{ registration.get_status_display }}</span>
+        </p>
+        {% if registration.status == 'waitlisted' %}
+          <p class="ws-sub">当前候补顺位：第 {{ waitlist_position }} 位；有人取消时按顺序递补。</p>
+        {% endif %}
+        {% if registration.checked_in_at %}
+          <p class="ws-sub">签到时间：{{ registration.checked_in_at|date:"Y-m-d H:i" }}</p>
+        {% endif %}
+        {% if can_check_in %}
+          <form method="post" action="{% url 'workspace:student_activity_checkin' registration.pk %}" style="margin-top:12px" data-once>
+            {% csrf_token %}
+            <div class="ws-field">
+              <label for="checkin-code">签到码</label>
+              <div style="display:flex;gap:8px">
+                <input class="ws-input" id="checkin-code" name="code" maxlength="8" required autocomplete="off" placeholder="输入现场公布的签到码">
+                <button class="ws-btn is-primary" type="submit">签到</button>
+              </div>
+            </div>
+          </form>
+        {% elif registration.status == 'registered' %}
+          <p class="ws-sub">活动开始后可在本页输入签到码完成签到。</p>
+        {% endif %}
+        {% if registration.status == 'registered' or registration.status == 'waitlisted' %}
+          <form method="post" action="{% url 'workspace:student_activity_cancel' registration.pk %}" style="margin-top:12px" data-once>
+            {% csrf_token %}
+            <button class="ws-btn is-sm is-danger" type="submit">取消报名</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-megaphone"></use></svg></div>
+          <b>你还没有报名</b>
+          <p>报名成功后可在活动期间签到并累计学分/志愿时长。</p>
+        </div>
+        {% if activity.status == 'published' %}
+          <form method="post" action="{% url 'workspace:student_activity_register' activity.pk %}" style="margin-top:12px" data-once>
+            {% csrf_token %}
+            <button class="ws-btn is-primary" type="submit">立即报名</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

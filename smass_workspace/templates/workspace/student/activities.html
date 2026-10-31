@@ -31,7 +31,7 @@
         <tbody>
           {% for item in items %}
             <tr>
-              <td class="is-strong">{{ item.activity.title }}</td>
+              <td class="is-strong"><a href="{% url 'workspace:student_activity_detail' item.activity.pk %}">{{ item.activity.title }}</a></td>
               <td>{{ item.activity.get_category_display }}</td>
               <td>{{ item.activity.start_at|date:"m-d H:i" }} – {{ item.activity.end_at|date:"H:i" }}</td>
               <td>{{ item.activity.location|default:"—" }}</td>

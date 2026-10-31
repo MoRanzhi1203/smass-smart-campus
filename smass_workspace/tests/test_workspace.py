@@ -589,6 +589,58 @@ class NotificationLinkageTests(WorkspaceFixture):
             title='场地预约已批准').exists())
 
 
+class StudentActivityCheckinTests(WorkspaceFixture):
+    """C03：活动详情与签到。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from django.utils import timezone
+
+        from smass_activities.models import Activity, ActivityRegistration
+
+        now = timezone.now()
+        cls.activity = Activity.objects.create(
+            title='测试活动', category='second_class',
+            start_at=now - timedelta(hours=1), end_at=now + timedelta(hours=1),
+            location='测试教室', capacity=10, credit_points=1,
+            status='published', checkin_code='ACT123', created_by='t_admin')
+        cls.registration = ActivityRegistration.objects.create(
+            activity=cls.activity, record=cls.record, status='registered')
+
+    def test_detail_page_renders(self):
+        self.login(self.student)
+        response = self.client.get(
+            '/student/activities/{}/'.format(self.activity.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '测试活动')
+
+    def test_check_in_success(self):
+        self.login(self.student)
+        response = self.client.post(
+            '/student/activities/registrations/{}/checkin/'.format(
+                self.registration.pk),
+            {'code': 'ACT123'}, follow=True)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.status, 'checked_in')
+        self.assertContains(response, '签到成功')
+
+    def test_check_in_outside_window(self):
+        from django.utils import timezone
+
+        self.activity.start_at = timezone.now() + timedelta(days=1)
+        self.activity.end_at = timezone.now() + timedelta(days=1, hours=2)
+        self.activity.save(update_fields=['start_at', 'end_at'])
+        self.login(self.student)
+        response = self.client.post(
+            '/student/activities/registrations/{}/checkin/'.format(
+                self.registration.pk),
+            {'code': 'ACT123'}, follow=True)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.status, 'registered')
+        self.assertIn('签到时间', response.content.decode('utf-8'))
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

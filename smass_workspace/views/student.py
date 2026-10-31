@@ -515,6 +515,59 @@ def activity_cancel(request, pk):
 
 @require_GET
 @student_only
+def activity_detail(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_activities.models import Activity, ActivityRegistration
+
+    activity = get_object_or_404(Activity, pk=pk)
+    record_obj = svc.student_record(request.user)
+    registration = None
+    waitlist_position = None
+    if record_obj is not None:
+        registration = ActivityRegistration.objects.filter(
+            activity=activity, record=record_obj).first()
+        if registration is not None and registration.status == 'waitlisted':
+            waitlist_position = ActivityRegistration.objects.filter(
+                activity=activity, status='waitlisted',
+                created_at__lte=registration.created_at).count()
+    now = timezone.now()
+    can_check_in = (registration is not None
+                    and registration.status == 'registered'
+                    and activity.start_at <= now <= activity.end_at)
+    return render(request, 'workspace/student/activity_detail.html', _ctx(
+        request,
+        activity=activity,
+        registration=registration,
+        waitlist_position=waitlist_position,
+        can_check_in=can_check_in,
+        now=now,
+    ))
+
+
+@require_POST
+@student_only
+def activity_check_in(request, pk):
+    from smass_activities import services as activity_services
+    from smass_activities.models import ActivityRegistration
+
+    registration = ActivityRegistration.objects.select_related(
+        'activity').filter(pk=pk).first()
+    if registration is None or registration.record.account_id != request.user.pk:
+        messages.error(request, '报名记录不存在。')
+        return redirect('/student/activities/')
+    code = (request.POST.get('code') or '').strip()
+    try:
+        activity_services.check_in(registration, request.user, code)
+        messages.success(request, '签到成功')
+    except activity_services.ActivityError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_activity_detail',
+                    pk=registration.activity_id)
+
+
+@require_GET
+@student_only
 def volunteer(request):
     return render(request, 'workspace/student/volunteer.html', _ctx(
         request,
