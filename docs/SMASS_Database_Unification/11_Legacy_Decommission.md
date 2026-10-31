@@ -141,7 +141,16 @@ DROP DATABASE `smass`;
 | 页面 | **63 个页面全部 200/302**（学生 15、教师 10、辅导员 4、学院管理员 3、超管 22、共用 3） |
 | 写操作 | 8/8 PASS：请假创建 → 教师审批 → 学生端同步；公告创建 → 学生可见；活动创建 → 学生报名；场地预约 → 管理员审批 |
 | 持久化 | 每项写操作均回查数据库确认 |
-| 旧表恢复 | `finally` 恢复，产品库结构复原 |
+| 旧表恢复 | `finally` 恢复，产品库结构复原（复核：无 `_retired_*` 残留、18 张 app01 表、127 表总数） |
+
+补充验收（修复后）：
+
+| 项 | 结果 |
+|---|---|
+| 产品层测试 | **42 例 OK**（新增预约创建/取消 2 例） |
+| 全量回归 | **32 套件 / 1802 例 / 0 失败** |
+| Chromium E2E | 27 项 PASS（无失败，403 为预期越权断言） |
+| 三端冒烟 | PASS（`smoke.json`） |
 
 **本轮发现并修复的真实缺陷**：`smass_workspace/views/student.py` 中
 `from smass_facilities.services import BookingError`（实际类名为 `FacilityError`），
@@ -196,7 +205,7 @@ DROP DATABASE `smass`;
 | 3 | 从零初始化命令与证据 | `db_unify.py init/seed/verify`，`fresh_*.json` |
 | 4 | 旧库运行时依赖扫描 | 0（`db_unify_dependency_scan.py`） |
 | 5 | 三端断库验证 | 63 页 + 8 写操作 PASS（`p3_detached.json`） |
-| 6 | 完整回归 | 见 `09` / 本轮回归日志（代码修复后复跑） |
+| 6 | 完整回归 | **32 套件 / 1802 例 / 0 失败**；E2E 27 项 PASS |
 | 7 | 旧系统停用与清理 | 分类表见 §3；`.env.example` 已改；默认启动已改 |
 | 8 | 退役状态 | `LOGICALLY_RETIRED` |
 | 9 | 未物理删除的原因 | 缺少针对 `smass` 的明确删除授权（见 §6.2） |
