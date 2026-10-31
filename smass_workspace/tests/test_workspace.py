@@ -1015,6 +1015,109 @@ class AdminClubManagementTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class AdminCreditTests(WorkspaceFixture):
+    """E05：活动学分认定。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from decimal import Decimal
+
+        from django.utils import timezone
+
+        from smass_activities.models import Activity, ActivityCredit
+
+        cls.activity = Activity.objects.create(
+            title='学分测试活动', category='second_class',
+            start_at=timezone.now() - timedelta(days=10),
+            end_at=timezone.now() - timedelta(days=9),
+            status='closed', created_by='t_admin')
+        cls.credit = ActivityCredit.objects.create(
+            activity=cls.activity, record=cls.record, category='second_class',
+            points=Decimal('1.00'), hours=Decimal('2.0'), status='pending')
+
+    def test_approve_credit(self):
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/activities/credits/{}/approve/'.format(self.credit.pk),
+            follow=True)
+        self.credit.refresh_from_db()
+        self.assertEqual(self.credit.status, 'approved')
+        self.assertContains(response, '已认定')
+
+    def test_reject_credit_with_reason(self):
+        self.login(self.admin)
+        self.client.post(
+            '/admin/activities/credits/{}/reject/'.format(self.credit.pk),
+            {'reason': '签到记录缺失'}, follow=True)
+        self.credit.refresh_from_db()
+        self.assertEqual(self.credit.status, 'rejected')
+        self.assertEqual(self.credit.reject_reason, '签到记录缺失')
+
+    def test_college_admin_cannot_approve(self):
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/activities/credits/{}/approve/'.format(self.credit.pk))
+        self.assertEqual(response.status_code, 403)
+
+
+class AdminFinanceTests(WorkspaceFixture):
+    """E06：收费项、账单生成与退费审批。"""
+
+    def test_create_fee_item(self):
+        from smass_finance.models import FeeItem
+
+        self.login(self.admin)
+        response = self.client.post('/admin/finance/fee-items/create/', {
+            'code': 'T-FEE-1', 'name': '测试学费', 'category': 'tuition',
+            'amount': '1000'}, follow=True)
+        self.assertContains(response, '收费项已创建')
+        self.assertTrue(FeeItem.objects.filter(code='T-FEE-1').exists())
+
+    def test_create_bill(self):
+        from decimal import Decimal
+
+        from smass_finance.models import Bill, FeeItem
+
+        item = FeeItem.objects.create(
+            code='T-FEE-2', name='测试住宿费', category='accommodation',
+            amount=Decimal('500.00'))
+        self.login(self.admin)
+        response = self.client.post('/admin/finance/bills/create/', {
+            'student_no': 'T2024001', 'term': '2026-2027-1',
+            'due_date': '2026-12-31', 'fee_items': [item.pk]}, follow=True)
+        self.assertContains(response, '账单已生成')
+        bill = Bill.objects.filter(record=self.record).first()
+        self.assertIsNotNone(bill)
+        self.assertEqual(bill.total, Decimal('500.00'))
+
+    def test_approve_refund(self):
+        from decimal import Decimal
+
+        from smass_finance.models import Bill, RefundRequest
+
+        bill = Bill.objects.create(
+            bill_no='T-BILL-R', record=self.record, total=Decimal('100.00'),
+            paid=Decimal('100.00'), status='paid')
+        refund = RefundRequest.objects.create(
+            bill=bill, amount=Decimal('10.00'), reason='测试退费',
+            status='submitted')
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/finance/refunds/{}/approve/'.format(refund.pk),
+            follow=True)
+        refund.refresh_from_db()
+        self.assertEqual(refund.status, 'approved')
+        self.assertContains(response, '退费申请已批准')
+
+    def test_college_admin_cannot_create_fee_item(self):
+        self.login(self.college_admin)
+        response = self.client.post('/admin/finance/fee-items/create/', {
+            'code': 'T-FEE-3', 'name': '越权收费项',
+            'category': 'tuition', 'amount': '1'})
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

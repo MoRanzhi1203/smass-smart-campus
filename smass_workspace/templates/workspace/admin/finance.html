@@ -1,0 +1,170 @@
+{% extends "workspace/base.html" %}
+{% block title %}财务与账单{% endblock %}
+{% block topbar_title %}财务与账单{% endblock %}
+{% block topbar_sub %}收费项、账单与退费审批{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">校园业务</div>
+    <h1>财务与账单</h1>
+    <p class="ws-sub">{{ fee_items|length }} 个收费项 · {{ bills|length }} 张账单 · 待批退费 {{ refund_count }} 条 · 校内台账，不接真实支付</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>收费项</h2></div>
+      {% if fee_items %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>编码</th><th>名称</th><th>类别</th><th class="is-num">金额</th></tr></thead>
+            <tbody>
+              {% for item in fee_items %}
+                <tr>
+                  <td class="is-strong">{{ item.code }}</td>
+                  <td>{{ item.name }}</td>
+                  <td class="is-muted">{{ item.get_category_display|default:item.category }}</td>
+                  <td class="is-num">{{ item.amount|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无收费项</b><p>在右侧创建收费项后可生成账单。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待批退费</h2><span class="ws-hint">{{ refund_count }} 条</span></div>
+      {% if refunds %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>账单</th><th>学生</th><th class="is-num">金额</th><th>理由</th><th>操作</th></tr></thead>
+            <tbody>
+              {% for refund in refunds %}
+                <tr>
+                  <td class="is-strong">{{ refund.bill.bill_no }}</td>
+                  <td>{{ refund.bill.record.name }}</td>
+                  <td class="is-num">{{ refund.amount|floatformat:2 }}</td>
+                  <td class="is-muted">{{ refund.reason|truncatechars:20 }}</td>
+                  <td>
+                    {% if is_super %}
+                    <div style="display:flex;gap:4px;flex-wrap:wrap">
+                      <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'approve' %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                      </form>
+                      <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'reject' %}" style="display:flex;gap:4px" data-once>
+                        {% csrf_token %}
+                        <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                               style="width:110px;height:28px;font-size:12px" aria-label="退费驳回理由">
+                        <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                      </form>
+                    </div>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>没有待批退费</b><p>学生提交退费申请后会出现在这里。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>账单</h2><span class="ws-hint">最近 {{ bills|length }} 张</span></div>
+      {% if bills %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>账单号</th><th>学生</th><th>学期</th><th class="is-num">应缴</th><th class="is-num">已缴</th><th>状态</th></tr></thead>
+            <tbody>
+              {% for bill in bills %}
+                <tr>
+                  <td class="is-strong">{{ bill.bill_no }}</td>
+                  <td>{{ bill.record.name }}<br><span class="is-muted">{{ bill.record.student_no }}</span></td>
+                  <td class="is-muted">{{ bill.term|default:"—" }}</td>
+                  <td class="is-num">{{ bill.total|floatformat:2 }}</td>
+                  <td class="is-num">{{ bill.paid|floatformat:2 }}</td>
+                  <td><span class="ws-badge {% if bill.status == 'paid' %}is-success{% elif bill.status == 'partial' %}is-warning{% elif bill.status == 'overdue' %}is-danger{% else %}is-neutral{% endif %}">{{ bill.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无账单</b><p>生成账单后显示在这里。</p></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    {% if is_super %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>新建收费项</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_fee_item_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="fee-code">编码</label>
+            <input class="ws-input" id="fee-code" name="code" maxlength="32" required placeholder="如 TUITION-2026">
+          </div>
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="fee-name">名称</label>
+            <input class="ws-input" id="fee-name" name="name" maxlength="100" required>
+          </div>
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="fee-category">类别</label>
+            <select class="ws-select" id="fee-category" name="category" required>
+              {% for value, label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="fee-amount">金额</label>
+            <input class="ws-input" id="fee-amount" name="amount" type="number" step="0.01" min="0.01" required>
+          </div>
+          <button class="ws-btn is-primary" type="submit">创建收费项</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>生成账单</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_bill_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="bill-student">学生学号</label>
+            <input class="ws-input" id="bill-student" name="student_no" required placeholder="输入学号">
+          </div>
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="bill-term">学年学期</label>
+            <input class="ws-input" id="bill-term" name="term" placeholder="如 2026-2027-1">
+          </div>
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="bill-due">截止日期</label>
+            <input class="ws-input" id="bill-due" name="due_date" type="date">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label>收费项</label>
+            {% for item in fee_items %}
+              <label style="display:flex;gap:6px;align-items:center;font-size:12.5px">
+                <input type="checkbox" name="fee_items" value="{{ item.pk }}"> {{ item.name }}（{{ item.amount|floatformat:2 }}）
+              </label>
+            {% empty %}
+              <span class="ws-hint">请先创建收费项</span>
+            {% endfor %}
+          </div>
+          <button class="ws-btn is-primary" type="submit">生成账单</button>
+        </form>
+        <p class="ws-sub" style="margin-top:10px">账单生成后可通知学生缴费；缴费为台账登记，未接真实支付网关。</p>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

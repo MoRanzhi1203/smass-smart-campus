@@ -283,9 +283,12 @@ def activities(account):
         Activity.objects.select_related('organizer')
         .annotate(reg_count=Count('registrations'))
         .order_by('-start_at')[:60])
-    return {'activities': items,
-            'credits_pending': ActivityCredit.objects.filter(
-                status='pending').count()}
+    credits = list(
+        ActivityCredit.objects.filter(status='pending')
+        .select_related('activity', 'record')
+        .order_by('-pk')[:50])
+    return {'activities': items, 'credits': credits,
+            'credits_pending': len(credits)}
 
 
 def clubs(account):
@@ -474,3 +477,24 @@ def update_teacher(profile, *, name='', college_name='', actor=''):
         account.display_name = profile.name
         account.save(update_fields=['display_name'])
     return profile
+
+
+# ---------------------------------------------------------------------------
+# 财务（E06）
+# ---------------------------------------------------------------------------
+def finance(account):
+    """收费项、账单与待审退费（系统管理员全局；学院管理员只读本院）。"""
+    from smass_finance.models import Bill, FeeItem, RefundRequest
+
+    fee_items = list(FeeItem.objects.order_by('-pk')[:50])
+    bills = list(Bill.objects.select_related('record').order_by('-pk')[:60])
+    refunds = list(
+        RefundRequest.objects.filter(status='submitted')
+        .select_related('bill', 'bill__record')
+        .order_by('-pk')[:50])
+    return {
+        'fee_items': fee_items,
+        'bills': bills,
+        'refunds': refunds,
+        'refund_count': len(refunds),
+    }

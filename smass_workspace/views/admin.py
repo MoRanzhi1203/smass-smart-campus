@@ -951,6 +951,32 @@ def clubs(request):
 @require_POST
 @admin_only
 @perms.require_system_admin
+def credit_action(request, pk, action):
+    from django.shortcuts import get_object_or_404
+
+    from smass_activities import services as activity_services
+    from smass_activities.models import ActivityCredit
+
+    credit = get_object_or_404(ActivityCredit, pk=pk)
+    try:
+        if action == 'approve':
+            activity_services.approve_credit(credit, request.user)
+            messages.success(request, '学分/志愿时长已认定')
+        elif action == 'reject':
+            activity_services.reject_credit(
+                credit, request.user,
+                request.POST.get('reason') or '材料不足')
+            messages.success(request, '已驳回认定申请')
+        else:
+            messages.error(request, '未知操作')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_activities')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
 def club_membership_action(request, pk, action):
     from django.shortcuts import get_object_or_404
 
@@ -1068,6 +1094,83 @@ def announcement_publish(request, pk):
 # ---------------------------------------------------------------------------
 # 数据治理 / 运维 / 审计 / 配置
 # ---------------------------------------------------------------------------
+@require_GET
+@admin_only
+def finance(request):
+    from smass_finance.models import FeeItem
+
+    return render(request, 'workspace/admin/finance.html', _ctx(
+        request,
+        categories=FeeItem._meta.get_field('category').choices
+        if hasattr(FeeItem._meta.get_field('category'), 'choices') else (),
+        **svc.finance(request.user)))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def fee_item_create(request):
+    from smass_finance import services as finance_services
+
+    try:
+        finance_services.create_fee_item(
+            request.user, request.POST.get('code'), request.POST.get('name'),
+            request.POST.get('category'), request.POST.get('amount'),
+            request.POST.get('term') or '')
+        messages.success(request, '收费项已创建')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_finance')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def bill_create(request):
+    from smass_finance import services as finance_services
+    from smass_finance.models import FeeItem
+    from smass_organization.models import StudentRecord
+
+    record = StudentRecord.objects.filter(
+        student_no=(request.POST.get('student_no') or '').strip()).first()
+    items = list(FeeItem.objects.filter(
+        pk__in=request.POST.getlist('fee_items')))
+    try:
+        bill = finance_services.create_bill(
+            record, request.POST.get('term') or '', items, request.user,
+            due_date=request.POST.get('due_date') or None)
+        messages.success(request, '账单已生成：{}'.format(bill.bill_no))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '生成失败：{}'.format(exc))
+    return redirect('workspace:admin_finance')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def refund_action(request, pk, action):
+    from django.shortcuts import get_object_or_404
+
+    from smass_finance import services as finance_services
+    from smass_finance.models import RefundRequest
+
+    refund = get_object_or_404(RefundRequest, pk=pk)
+    try:
+        if action == 'approve':
+            finance_services.approve_refund(refund, request.user)
+            messages.success(request, '退费申请已批准')
+        elif action == 'reject':
+            finance_services.reject_refund(
+                refund, request.user,
+                request.POST.get('reason') or '不符合退费条件')
+            messages.success(request, '退费申请已驳回')
+        else:
+            messages.error(request, '未知操作')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_finance')
+
+
 @require_GET
 @admin_only
 def data_exchange(request):

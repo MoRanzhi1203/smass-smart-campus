@@ -110,4 +110,43 @@
   </section>
   {% endif %}
 </div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>待认定学分</h2><span class="ws-hint">{{ credits_pending }} 条</span></div>
+  {% if credits %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>活动</th><th>学生</th><th class="is-num">学分</th><th class="is-num">志愿时长</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for credit in credits %}
+            <tr>
+              <td class="is-strong">{{ credit.activity.title }}</td>
+              <td>{{ credit.record.name }}<br><span class="is-muted">{{ credit.record.student_no }}</span></td>
+              <td class="is-num">{{ credit.points }}</td>
+              <td class="is-num">{{ credit.hours }}</td>
+              <td>
+                {% if is_super %}
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <form method="post" action="{% url 'workspace:admin_credit_action' credit.pk 'approve' %}" data-once>
+                    {% csrf_token %}
+                    <button class="ws-btn is-sm is-primary" type="submit">认定</button>
+                  </form>
+                  <form method="post" action="{% url 'workspace:admin_credit_action' credit.pk 'reject' %}" style="display:flex;gap:4px" data-once>
+                    {% csrf_token %}
+                    <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                           style="width:110px;height:28px;font-size:12px" aria-label="学分驳回理由">
+                    <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                  </form>
+                </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty is-compact"><b>没有待认定记录</b><p>活动结束后生成学分/时长，会出现在这里。</p></div>
+  {% endif %}
+</section>
 {% endblock %}

@@ -114,8 +114,8 @@ ADMIN_SECTIONS = (
         NavItem('流程定义', 'workspace:admin_workflows', icon='settings'),
     )),
     NavSection('校园业务', (
-        NavItem('活动管理', 'workspace:admin_activities', icon='megaphone'),
-        NavItem('社团与学生组织', 'workspace:admin_clubs', icon='users'),
+        NavItem('活动管理', 'workspace:admin_activities', icon='megaphone'),        NavItem('社团与学生组织', 'workspace:admin_clubs', icon='users'),
+        NavItem('财务与账单', 'workspace:admin_finance', icon='wallet'),
         NavItem('通知公告', 'workspace:admin_notices', icon='bell'),
     )),
     NavSection('数据治理', (
