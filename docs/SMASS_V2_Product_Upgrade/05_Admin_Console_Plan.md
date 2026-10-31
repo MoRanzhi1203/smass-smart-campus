@@ -26,7 +26,7 @@
 | 社团与学生组织 | `/admin/clubs/` | **入社审批/任命/卸任**（E05） | IMPLEMENTED |
 | 财务与账单 | `/admin/finance/` | **收费项/账单生成/退费审批**（E06） | IMPLEMENTED |
 | 通知公告 | `/admin/notices/` | 创建/发布 | 已有 |
-| 数据导入导出 | `/admin/data-exchange/` | **CSV 预检/提交/历史**（E07） | IMPLEMENTED |
+| 数据导入导出 | `/admin/data-exchange/` | **CSV 预检/提交/历史 + 受控导出（学籍/账单/账号）**（E07） | IMPLEMENTED |
 | 运行监控 | `/admin/monitoring/` | 请求、探针、告警 | 已有 |
 | 安全审计 | `/admin/audit/` | 操作日志/登录尝试；**分页** | IMPLEMENTED |
 | 系统配置 | `/admin/settings/` | 动作、字段策略、密码策略 | 已有（只读） |

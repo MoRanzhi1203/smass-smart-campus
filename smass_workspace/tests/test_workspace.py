@@ -1650,6 +1650,34 @@ class ScheduleExceptionTests(WorkspaceFixture):
         self.assertFalse(ScheduleException.objects.exists())
 
 
+class DataExportTests(WorkspaceFixture):
+    """E07：受控 CSV 导出（字段白名单 + 注入中和 + 权限）。"""
+
+    def test_export_records_csv(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/data-exchange/export/records/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('text/csv', response['Content-Type'])
+        body = response.content.decode('utf-8-sig')
+        self.assertIn('T2024001', body)
+        self.assertNotIn('password', body.lower())
+
+    def test_export_neutralizes_formula(self):
+        from smass_organization.models import StudentRecord
+
+        StudentRecord.objects.filter(pk=self.record.pk).update(
+            name='=HYPERLINK("x")')
+        self.login(self.admin)
+        body = self.client.get(
+            '/admin/data-exchange/export/records/').content.decode('utf-8-sig')
+        self.assertIn("'=HYPERLINK", body)
+
+    def test_export_requires_system_admin(self):
+        self.login(self.college_admin)
+        response = self.client.get('/admin/data-exchange/export/records/')
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

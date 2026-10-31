@@ -1291,6 +1291,40 @@ def refund_action(request, pk, action):
 @require_GET
 @admin_only
 @perms.require_system_admin
+def data_export(request, kind):
+    from django.http import Http404
+    from django.utils import timezone
+
+    from ..services import export as export_svc
+
+    spec = export_svc.EXPORTS.get(kind)
+    if spec is None:
+        raise Http404('未知导出类型')
+    if kind == 'records':
+        items = svc.records(request.user, '', '')[:2000]
+    elif kind == 'bills':
+        from smass_finance.models import Bill
+
+        items = list(Bill.objects.select_related('record').order_by(
+            '-created_at')[:2000])
+    else:
+        from r21_account.models import Account
+
+        items = list(Account.objects.order_by('-created_at')[:2000])
+    rows = spec['rows'](items)
+    import logging
+
+    logging.getLogger(__name__).info(
+        'data_export kind=%s rows=%s by=%s', kind, len(rows),
+        getattr(request.user, 'login_name', ''))
+    filename = '{}-{}'.format(
+        spec['filename'], timezone.now().strftime('%Y%m%d%H%M'))
+    return export_svc.csv_response(spec['headers'], rows, filename)
+
+
+@require_GET
+@admin_only
+@perms.require_system_admin
 def data_quality(request):
     from ..services import quality
 

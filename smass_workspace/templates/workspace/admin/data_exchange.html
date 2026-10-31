@@ -89,9 +89,14 @@
     </section>
 
     <section class="ws-card">
-      <div class="ws-card-head"><h2>受控导出</h2></div>
+      <div class="ws-card-head"><h2>受控导出</h2><span class="ws-hint">字段白名单 · 公式注入中和</span></div>
       <div class="ws-card-body">
-        <p class="ws-sub" style="margin:0">导出按字段级权限裁剪并做公式注入中和；当前版本请使用数据交换专业工具执行导出，产品端导出入口将在下一批开放。</p>
+        <p class="ws-sub" style="margin:0 0 10px">导出不含手机号、身份证等敏感字段；以 `=` `+` `-` `@` 开头的值会被中和。</p>
+        <div class="ws-stack" style="gap:8px">
+          <a class="ws-btn is-sm" href="{% url 'workspace:admin_data_export' 'records' %}">导出学籍档案（CSV）</a>
+          <a class="ws-btn is-sm" href="{% url 'workspace:admin_data_export' 'bills' %}">导出账单（CSV）</a>
+          <a class="ws-btn is-sm" href="{% url 'workspace:admin_data_export' 'users' %}">导出账号（CSV）</a>
+        </div>
       </div>
     </section>
     {% endif %}
