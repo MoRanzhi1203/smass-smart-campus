@@ -1755,6 +1755,36 @@ class NotificationForeignKeyTests(WorkspaceFixture):
         self.assertContains(response, '改名后可见')
 
 
+class ProfileSyncTests(WorkspaceFixture):
+    """A04：学籍变更同步学生档案（消除双份字段漂移）。"""
+
+    def test_record_change_syncs_profile(self):
+        from r21_account.models import StudentProfile
+
+        self.record.name = '新姓名'
+        self.record.save(update_fields=['name'])
+        profile = StudentProfile.objects.get(account=self.student)
+        self.assertEqual(profile.name, '新姓名')
+
+    def test_quality_no_mismatch_after_sync(self):
+        from smass_workspace.services import quality
+
+        self.record.name = '同步姓名'
+        self.record.save(update_fields=['name'])
+        result = quality.check_all()
+        self.assertNotIn('profile_mismatch',
+                         [item['kind'] for item in result['issues']])
+
+    def test_long_student_no_skipped(self):
+        from r21_account.models import StudentProfile
+
+        before = StudentProfile.objects.get(account=self.student).student_no
+        self.record.student_no = 'LONG-STUDENT-NO-2026'
+        self.record.save(update_fields=['student_no'])
+        profile = StudentProfile.objects.get(account=self.student)
+        self.assertEqual(profile.student_no, before)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
