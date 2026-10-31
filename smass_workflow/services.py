@@ -300,8 +300,13 @@ def complete_task(task, *, actor=''):
 # ---------------------------------------------------------------------------
 # R6-04 通知
 # ---------------------------------------------------------------------------
-def notify(recipient, title, *, body='', level='info', event_key=''):
-    """写站内通知（幂等：同 recipient+event_key 只落一条）。"""
+def notify(recipient, title, *, body='', level='info', event_key='',
+           account=None):
+    """写站内通知（幂等：同 recipient+event_key 只落一条）。
+
+    ``account`` 可用时同时写权威外键 ``recipient_account``；未传则按
+    ``login_name`` 尝试解析，解析不到仍保留字符串（兼容旧数据）。
+    """
     if not recipient:
         raise WorkflowError('接收人不能为空')
 
@@ -314,11 +319,19 @@ def notify(recipient, title, *, body='', level='info', event_key=''):
     if existing is not None:
         return existing
 
+    account_id = getattr(account, 'pk', None)
+    if account_id is None:
+        from r21_account.models import Account
+
+        account_id = Account.objects.filter(
+            login_name=recipient).values_list('pk', flat=True).first()
+
     try:
         # savepoint：IntegrityError 后事务仍可用，才能回查已有记录
         with transaction.atomic():
             return Notification.objects.create(
-                recipient=recipient, title=title[:128], body=body[:512],
+                recipient=recipient, recipient_account_id=account_id,
+                title=title[:128], body=body[:512],
                 level=level, event_key=event_key,
             )
     except IntegrityError:
@@ -332,11 +345,19 @@ def notify_account(account, title, *, body='', level='info', event_key=''):
     login_name = getattr(account, 'login_name', '')
     if not login_name:
         return None
-    return notify(login_name, title, body=body, level=level, event_key=event_key)
+    return notify(login_name, title, body=body, level=level,
+                  event_key=event_key, account=account)
 
 
 def inbox(recipient, unread_only=False):
-    queryset = Notification.objects.filter(recipient=recipient).order_by('-created_at')
+    from django.db.models import Q
+
+    if hasattr(recipient, 'login_name'):
+        query = (Q(recipient_account=recipient)
+                 | Q(recipient=recipient.login_name))
+    else:
+        query = Q(recipient=str(recipient))
+    queryset = Notification.objects.filter(query).order_by('-created_at')
     if unread_only:
         queryset = queryset.filter(is_read=False)
     return queryset

@@ -11,6 +11,8 @@
 |---|---|---|
 | `ScheduleEntry.week_from/week_to/week_pattern` | 教学周与单双周（F01） | `smass_scheduling/0002`，已回滚再应用验证 |
 | `ScheduleException` | 调停课例外：section + date + kind（停课/调课），可选新日期/节次/教室 | `smass_scheduling/0003`，已回滚再应用验证 |
+| `RefundRequest.reviewed` + 复核人字段 | A03 退费双人审批 | `smass_finance/0002`，已回滚再应用验证 |
+| `Notification.recipient_account` | A04 通知接收账号外键 + 回填 | `smass_workflow/0004`，已回滚再应用验证 |
 | 无其他模型变更 | V2.0 其余为服务/视图/模板层 | — |
 
 ---

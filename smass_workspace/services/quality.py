@@ -63,12 +63,15 @@ def check_all():
     for detail in teacher_mismatch[:MAX_SAMPLES]:
         add('teacher_no_mismatch', '教师工号与登录名不一致', detail)
 
-    recipients = set(
+    recipients = list(
         Notification.objects.order_by('-pk').values_list(
-            'recipient', flat=True)[:SCAN_LIMIT])
+            'recipient', 'recipient_account_id')[:SCAN_LIMIT])
     orphan = []
-    for recipient in recipients:
-        if recipient and not Account.objects.filter(login_name=recipient).exists():
+    for recipient, account_id in recipients:
+        if account_id is not None:
+            continue
+        if recipient and not Account.objects.filter(
+                login_name=recipient).exists():
             orphan.append(recipient)
     for detail in orphan[:MAX_SAMPLES]:
         add('orphan_notification', '通知接收人已不存在', detail)

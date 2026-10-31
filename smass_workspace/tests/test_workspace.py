@@ -1725,6 +1725,36 @@ class RefundDualApprovalTests(WorkspaceFixture):
             finance.finalize_refund(refund, self.college_admin)
 
 
+class NotificationForeignKeyTests(WorkspaceFixture):
+    """A04：通知接收账号外键（兼容旧字符串）。"""
+
+    def test_notify_account_sets_fk(self):
+        from smass_workflow.services import notify_account
+
+        note = notify_account(self.student, '外键测试', event_key='fk:1')
+        note.refresh_from_db()
+        self.assertEqual(note.recipient_account_id, self.student.pk)
+
+    def test_legacy_string_notification_visible(self):
+        from smass_workflow.models import Notification
+
+        Notification.objects.create(
+            recipient='t_student', title='旧通知', event_key='fk:2')
+        self.login(self.student)
+        response = self.client.get('/notifications/')
+        self.assertContains(response, '旧通知')
+
+    def test_fk_visible_after_login_rename(self):
+        from smass_workflow.services import notify_account
+
+        notify_account(self.student, '改名后可见', event_key='fk:3')
+        self.student.login_name = 't_student_renamed'
+        self.student.save(update_fields=['login_name'])
+        self.login(self.student)
+        response = self.client.get('/notifications/')
+        self.assertContains(response, '改名后可见')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

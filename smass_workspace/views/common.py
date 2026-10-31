@@ -66,9 +66,12 @@ def notifications(request):
     }.get(kind, 'student')
 
     items = []
-    # 1) 站内通知（工作流引擎产生，定向到人）
-    for note in Notification.objects.filter(
-            recipient=account.login_name).order_by('-created_at')[:80]:
+    # 1) 站内通知（工作流引擎产生，定向到人；账号外键优先，兼容旧字符串）
+    from django.db.models import Q
+
+    note_query = (Q(recipient_account=account)
+                  | Q(recipient=account.login_name))
+    for note in Notification.objects.filter(note_query).order_by('-created_at')[:80]:
         items.append({
             'id': note.pk,
             'title': note.title,
@@ -97,7 +100,7 @@ def notifications(request):
     items.sort(key=lambda item: item['time'] or timezone.now(), reverse=True)
 
     unread_count = Notification.objects.filter(
-        recipient=account.login_name, is_read=False).count()
+        note_query, is_read=False).count()
 
     return render(request, 'workspace/notifications.html', {
         'workspace_kind': kind,
@@ -114,8 +117,11 @@ def notification_read(request, pk):
     account = getattr(request, 'user', None)
     if not perms.is_authenticated(account):
         return redirect('/login/?next=/notifications/')
+    from django.db.models import Q
+
     note = Notification.objects.filter(
-        pk=pk, recipient=account.login_name).first()
+        pk=pk).filter(
+        Q(recipient_account=account) | Q(recipient=account.login_name)).first()
     if note is not None and not note.is_read:
         note.is_read = True
         note.save(update_fields=['is_read'])
@@ -129,8 +135,11 @@ def notifications_read_all(request):
     account = getattr(request, 'user', None)
     if not perms.is_authenticated(account):
         return redirect('/login/?next=/notifications/')
+    from django.db.models import Q
+
     Notification.objects.filter(
-        recipient=account.login_name, is_read=False).update(is_read=True)
+        Q(recipient_account=account) | Q(recipient=account.login_name),
+        is_read=False).update(is_read=True)
     return redirect('workspace:notifications')
 
 

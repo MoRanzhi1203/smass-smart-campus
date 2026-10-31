@@ -253,6 +253,10 @@ class Notification(models.Model):
     LEVEL_CHOICES = ((LEVEL_INFO, '提示'), (LEVEL_WARNING, '警告'))
 
     recipient = models.CharField('接收人', max_length=32)
+    #: A04：权威外键（改登录名后仍能定位）；旧数据通过字符串 recipient 兼容
+    recipient_account = models.ForeignKey(
+        'r21_account.Account', verbose_name='接收账号', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='notifications')
     title = models.CharField('标题', max_length=128)
     body = models.CharField('内容', max_length=512, blank=True, default='')
     level = models.CharField('级别', max_length=16, choices=LEVEL_CHOICES,
