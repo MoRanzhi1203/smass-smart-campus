@@ -218,7 +218,10 @@ def academics():
 
 
 def scheduling(account):
-    from smass_scheduling.models import ScheduleEntry, ScheduleRun
+    from smass_academic.models import TeachingSection
+    from smass_scheduling.models import (
+        ScheduleEntry, ScheduleException, ScheduleRun,
+    )
 
     runs = list(
         ScheduleRun.objects.select_related('term', 'term__year')
@@ -228,7 +231,15 @@ def scheduling(account):
     entries = 0
     if latest is not None:
         entries = ScheduleEntry.objects.filter(run=latest).count()
-    return {'runs': runs, 'latest': latest, 'latest_entries': entries}
+    sections = list(
+        TeachingSection.objects.select_related('course', 'term')
+        .order_by('-term__year__start_date', 'course__code')[:60])
+    exceptions = list(
+        ScheduleException.objects.select_related(
+            'section', 'section__course', 'new_room')
+        .order_by('-date', 'section__course__title')[:20])
+    return {'runs': runs, 'latest': latest, 'latest_entries': entries,
+            'sections': sections, 'exceptions': exceptions}
 
 
 def facilities(account):

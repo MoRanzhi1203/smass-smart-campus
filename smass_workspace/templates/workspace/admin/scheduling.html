@@ -95,4 +95,64 @@
     </div>
   {% endif %}
 </section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>调停课</h2><span class="ws-hint">停课 / 调课记录</span></div>
+  {% if is_super %}
+  <div class="ws-card-body">
+    <form method="post" action="{% url 'workspace:admin_schedule_exception_create' %}" data-once>
+      {% csrf_token %}
+      <div class="ws-form-grid">
+        <div class="ws-field">
+          <label for="exc-section">教学班</label>
+          <select class="ws-select" id="exc-section" name="section" required>
+            {% for section in sections %}<option value="{{ section.pk }}">{{ section.term.name }} · {{ section.course.title }}（{{ section.code }}）</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field">
+          <label for="exc-date">原日期</label>
+          <input class="ws-input" type="date" id="exc-date" name="date" required>
+        </div>
+        <div class="ws-field">
+          <label for="exc-kind">类型</label>
+          <select class="ws-select" id="exc-kind" name="kind">
+            <option value="cancel">停课</option>
+            <option value="change">调课</option>
+          </select>
+        </div>
+        <div class="ws-field">
+          <label for="exc-newdate">调整日期（调课必填）</label>
+          <input class="ws-input" type="date" id="exc-newdate" name="new_date">
+        </div>
+        <div class="ws-field">
+          <label for="exc-reason">原因</label>
+          <input class="ws-input" id="exc-reason" name="reason" maxlength="255">
+        </div>
+      </div>
+      <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">保存</button></div>
+    </form>
+  </div>
+  {% endif %}
+  {% if exceptions %}
+  <div class="ws-table-wrap">
+    <table class="ws-table">
+      <thead><tr><th>日期</th><th>教学班</th><th>类型</th><th>调整</th><th>原因</th><th>操作人</th></tr></thead>
+      <tbody>
+        {% for item in exceptions %}
+          <tr>
+            <td class="is-strong">{{ item.date|date:"Y-m-d" }}</td>
+            <td>{{ item.section.course.title }}<br><span class="is-muted">{{ item.section.code }}</span></td>
+            <td><span class="ws-badge {% if item.kind == 'cancel' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_kind_display }}</span></td>
+            <td class="is-muted">{% if item.new_date %}{{ item.new_date|date:"Y-m-d" }}{% if item.new_period %} 第{{ item.new_period }}节{% endif %}{% if item.new_room %} · {{ item.new_room.name }}{% endif %}{% else %}—{% endif %}</td>
+            <td class="is-muted">{{ item.reason|truncatechars:24|default:"—" }}</td>
+            <td class="is-muted">{{ item.created_by|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    {% include "workspace/_empty_state.html" with compact=True icon="calendar" title="暂无调停课记录" desc="停课或调课后会出现在这里，并在学生/教师课表提示。" %}
+  {% endif %}
+</section>
 {% endblock %}

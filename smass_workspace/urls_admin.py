@@ -41,6 +41,8 @@ urlpatterns = [
     path('sections/<int:pk>/roster/', views.section_roster,
          name='admin_section_roster'),
     path('scheduling/', views.scheduling, name='admin_scheduling'),
+    path('scheduling/exceptions/create/', views.schedule_exception_create,
+         name='admin_schedule_exception_create'),
     path('scheduling/create/', views.schedule_create, name='admin_schedule_create'),
     path('scheduling/<int:pk>/solve/', views.schedule_solve,
          name='admin_schedule_solve'),

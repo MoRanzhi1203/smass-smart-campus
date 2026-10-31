@@ -12,6 +12,7 @@ from smass_scheduling.models import (
     RUN_DRAFT,
     RUN_PUBLISHED,
     RUN_SOLVED,
+    ScheduleException,
     ScheduleRun,
 )
 
@@ -72,3 +73,42 @@ def publish_run(run, *, actor=''):
     except Exception:  # noqa: BLE001 - 通知失败不影响发布
         pass
     return run
+
+
+# ---------------------------------------------------------------------------
+# F01 调停课例外
+# ---------------------------------------------------------------------------
+def add_exception(section, date, kind=ScheduleException.KIND_CANCEL, *,
+                  reason='', actor='', new_date=None, new_period=None,
+                  new_room=None):
+    if section is None:
+        raise ScheduleError('缺少教学班')
+    if date is None:
+        raise ScheduleError('缺少日期')
+    if kind not in dict(ScheduleException.KIND_CHOICES):
+        raise ScheduleError('非法例外类型')
+    if kind == ScheduleException.KIND_CHANGE and new_date is None:
+        raise ScheduleError('调课需要填写调整日期')
+    if ScheduleException.objects.filter(
+            section=section, date=date, kind=kind).exists():
+        raise ScheduleError('该日期已有同类型记录')
+    return ScheduleException.objects.create(
+        section=section, date=date, kind=kind, reason=(reason or '')[:255],
+        created_by=str(getattr(actor, 'pk', '') or actor or '')[:32],
+        new_date=new_date, new_period=new_period, new_room=new_room)
+
+
+def exceptions_on(date):
+    return list(
+        ScheduleException.objects.filter(date=date)
+        .select_related('section', 'section__course', 'new_room')
+        .order_by('section__course__title'))
+
+
+def exceptions_for_sections(section_ids, date):
+    if not section_ids:
+        return []
+    return list(
+        ScheduleException.objects.filter(
+            section_id__in=list(section_ids), date=date)
+        .select_related('section', 'section__course', 'new_room'))

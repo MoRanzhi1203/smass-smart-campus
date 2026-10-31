@@ -95,12 +95,24 @@ def timetable(request):
     week = max(1, min(week, 20))
     week_entries = student_svc.entries_for_week(entries, week)
     periods = student_svc.week_span(week_entries)
+    from django.utils import timezone
+
+    from smass_academic.models import TeachingAssignment
+    from smass_scheduling.services import exceptions_for_sections
+
+    section_ids = list(
+        TeachingAssignment.objects
+        .filter(account=request.user, revoked_at__isnull=True)
+        .values_list('section_id', flat=True))
+    today_exceptions = exceptions_for_sections(
+        section_ids, timezone.localdate())
     return render(request, 'workspace/teacher/timetable.html', _ctx(
         request,
         entries=week_entries,
         week=week,
         current_week=current,
         weeks=range(1, 21),
+        today_exceptions=today_exceptions,
         rows=student_svc.grid_rows(week_entries, periods),
         periods=range(1, periods + 1),
         today=student_svc.today_index(),

@@ -407,3 +407,46 @@ class ScheduleConflict(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.kind, self.detail)
+
+
+class ScheduleException(models.Model):
+    """调停课例外（F01）：某教学班在某个日期的停课或调课。"""
+
+    KIND_CANCEL = 'cancel'
+    KIND_CHANGE = 'change'
+    KIND_CHOICES = (
+        (KIND_CANCEL, '停课'),
+        (KIND_CHANGE, '调课'),
+    )
+
+    section = models.ForeignKey(
+        'smass_academic.TeachingSection', verbose_name='教学班',
+        on_delete=models.CASCADE, related_name='schedule_exceptions')
+    date = models.DateField('原日期')
+    kind = models.CharField('类型', max_length=8, choices=KIND_CHOICES,
+                            default=KIND_CANCEL)
+
+    new_date = models.DateField('调整后日期', null=True, blank=True)
+    new_period = models.SmallIntegerField('调整后节次', null=True, blank=True)
+    new_room = models.ForeignKey(
+        'smass_facilities.Room', verbose_name='调整后教室',
+        null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='schedule_exceptions')
+
+    reason = models.CharField('原因', max_length=255, blank=True, default='')
+    created_by = models.CharField('创建人', max_length=32, blank=True, default='')
+    created_at = models.DateTimeField('创建时间', auto_now_add=True)
+
+    class Meta:
+        db_table = 'smass_scheduling_exception'
+        verbose_name = '调停课'
+        verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(
+                fields=['section', 'date', 'kind'],
+                name='r11_uniq_section_date_kind'),
+        ]
+        indexes = [models.Index(fields=['date', 'kind'])]
+
+    def __str__(self):
+        return '{} {} {}'.format(self.section_id, self.date, self.kind)

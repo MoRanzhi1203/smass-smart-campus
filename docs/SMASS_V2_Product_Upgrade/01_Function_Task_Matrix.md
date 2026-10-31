@@ -74,7 +74,7 @@
 
 | ID | 任务 | 状态 | 说明 |
 |---|---|---|---|
-| F01 | 教学周/单双周/调停课 | **IMPLEMENTED（周次与单双周）** | `ScheduleEntry` 新增 week_from/week_to/week_pattern（迁移 0002，已回滚再应用验证）；学生/教师课表按周过滤并支持周次切换；3 例测试（单双周、周次计算、查询回落）；调停课例外表待补 |
+| F01 | 教学周/单双周/调停课 | **IMPLEMENTED** | `ScheduleEntry` week_from/week_to/week_pattern（迁移 0002）+ `ScheduleException`（迁移 0003，停课/调课，唯一约束 section+date+kind）；学生/教师课表按周过滤并显示“今日调停课”；管理端可登记；6 例测试（单双周、周次、查询回落、登记、学生提示、越权 403） |
 | F02 | 业务事件通知（幂等 event_key） | **IMPLEMENTED（7/7 类）** | 已接入：请假、补签、场地、社团、**活动报名/候补**、**排课发布（任课教师）**、**公告发布（按受众）**；`notify_account` + 事件键幂等；通知失败不影响主业务 |
 | C07 | 学籍变更申请/通知已读 | **IMPLEMENTED** | 通知中心逐条/全部已读；新增 `StudentChangeRequest`（手机号/住宿/住址）提交→审批→生效，同字段去重约束；4 例测试（提交+生效、重复拒绝、驳回理由、越权 403） |
 | F03 | 列表分页/搜索/排序/导出权限 | **IMPLEMENTED（分页+搜索）** | `services/pagination.py` + `_pagination.html`；用户/学籍支持关键词与状态筛选；排序与导出权限待补 |

@@ -1611,6 +1611,45 @@ class CourseConflictTests(WorkspaceFixture):
             academic.enroll_for_student(self.student, other)
 
 
+class ScheduleExceptionTests(WorkspaceFixture):
+    """F01：调停课例外（停课/调课）。"""
+
+    def test_admin_creates_cancel(self):
+        from smass_scheduling.models import ScheduleException
+
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/scheduling/exceptions/create/', {
+                'section': self.section.pk,
+                'date': timezone.localdate().isoformat(),
+                'kind': 'cancel', 'reason': '教师出差'}, follow=True)
+        self.assertContains(response, '调停课记录已保存')
+        self.assertTrue(ScheduleException.objects.filter(
+            section=self.section, kind='cancel').exists())
+
+    def test_student_sees_today_exception(self):
+        from smass_scheduling.models import ScheduleException
+
+        ScheduleException.objects.create(
+            section=self.section, date=timezone.localdate(),
+            kind='cancel', reason='停电')
+        self.login(self.student)
+        response = self.client.get('/student/timetable/')
+        self.assertContains(response, '今日调停课')
+        self.assertContains(response, '停电')
+
+    def test_college_admin_cannot_create(self):
+        from smass_scheduling.models import ScheduleException
+
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/scheduling/exceptions/create/', {
+                'section': self.section.pk,
+                'date': timezone.localdate().isoformat(), 'kind': 'cancel'})
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(ScheduleException.objects.exists())
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

@@ -25,6 +25,17 @@
   </div>
 </div>
 
+{% if today_exceptions %}
+<div class="ws-alert is-warning" style="margin-bottom:16px">
+  <div>
+    <b>今日调停课</b>
+    {% for item in today_exceptions %}
+      <div class="ws-sub">{{ item.section.course.title }}：{{ item.get_kind_display }}{% if item.reason %}（{{ item.reason }}）{% endif %}{% if item.new_date %} → {{ item.new_date|date:"m-d" }}{% if item.new_period %} 第{{ item.new_period }}节{% endif %}{% endif %}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 <section class="ws-card">
   <div class="ws-card-head">
     <h2>{{ term.year.code|default:"" }} 学年 {{ term.get_semester_display|default:"" }}</h2>

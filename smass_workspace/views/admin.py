@@ -677,6 +677,44 @@ def scheduling(request):
 @require_POST
 @admin_only
 @perms.require_system_admin
+def schedule_exception_create(request):
+    from datetime import date
+
+    from smass_academic.models import TeachingSection
+    from smass_scheduling import services as schedule_services
+
+    section = TeachingSection.objects.filter(
+        pk=request.POST.get('section') or 0).first()
+
+    def parse_date(value):
+        try:
+            return date.fromisoformat((value or '').strip())
+        except ValueError:
+            return None
+
+    room = None
+    if request.POST.get('new_room'):
+        from smass_facilities.models import Room
+
+        room = Room.objects.filter(pk=request.POST.get('new_room')).first()
+    try:
+        schedule_services.add_exception(
+            section, parse_date(request.POST.get('date')),
+            kind=request.POST.get('kind') or 'cancel',
+            reason=request.POST.get('reason') or '',
+            actor=request.user.login_name,
+            new_date=parse_date(request.POST.get('new_date')),
+            new_period=request.POST.get('new_period') or None,
+            new_room=room)
+        messages.success(request, '调停课记录已保存')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '保存失败：{}'.format(exc))
+    return redirect('workspace:admin_scheduling')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
 def schedule_create(request):
     from smass_academic.models import AcademicTerm
     from smass_scheduling import services as schedule_services
