@@ -78,7 +78,7 @@
 | F02 | 业务事件通知（幂等 event_key） | **IMPLEMENTED（7/7 类）** | 已接入：请假、补签、场地、社团、**活动报名/候补**、**排课发布（任课教师）**、**公告发布（按受众）**；`notify_account` + 事件键幂等；通知失败不影响主业务 |
 | C07 | 学籍变更申请/通知已读 | **IMPLEMENTED** | 通知中心逐条/全部已读；新增 `StudentChangeRequest`（手机号/住宿/住址）提交→审批→生效，同字段去重约束；4 例测试（提交+生效、重复拒绝、驳回理由、越权 403） |
 | F03 | 列表分页/搜索/排序/导出权限 | **IMPLEMENTED（分页+搜索）** | `services/pagination.py` + `_pagination.html`；用户/学籍支持关键词与状态筛选；排序与导出权限待补 |
-| F04 | 受控后台任务（探针/清理/通知） | TODO | 不引入分布式设施 |
+| F04 | 受控后台任务（探针/清理/通知） | **IMPLEMENTED（命令式）** | `manage.py smass_probe` 写就绪探针（数据库/迁移/缓存/存储）；`smass_housekeeping` 默认 dry-run，`--apply` 清理过期导入临时文件/通知/登录尝试/探针；2 例测试；未引入 Celery/Redis |
 | F05 | 性能（N+1/索引/聚合/慢请求） | **IMPLEMENTED（基准+一轮优化）** | `perf_baseline_v2.py` 临时库基准；用户列表 N+1（202→3 queries，199→53.6ms）；导入 500 行 preview 2.4s/commit 11s/峰值 4.2MB；索引与慢查询持续监控 |
 | F06 | 键盘/焦点/标签/对比度/WCAG | **IMPLEMENTED（自研检查）** | `a11y_check_v2.py` 11 页 0 问题（按钮名/表单标签/h1/跳过导航/lang/主按钮对比度/焦点轮廓）；用户筛选补 `aria-label`；未接 axe 与屏幕阅读器实测 |
 

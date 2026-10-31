@@ -1482,6 +1482,40 @@ class DataQualityTests(WorkspaceFixture):
         self.assertEqual(denied.status_code, 403)
 
 
+class OpsCommandTests(WorkspaceFixture):
+    """F04：受控探针与清理命令。"""
+
+    def test_probe_command_writes_records(self):
+        from django.core.management import call_command
+
+        from smass_operations.models import ReadinessProbe
+
+        call_command('smass_probe', verbosity=0)
+        self.assertTrue(ReadinessProbe.objects.filter(
+            name='database', ok=True).exists())
+        self.assertTrue(ReadinessProbe.objects.filter(
+            name='migrations', ok=True).exists())
+
+    def test_housekeeping_dry_run_then_apply(self):
+        from datetime import timedelta
+
+        from django.core.management import call_command
+        from django.utils import timezone
+
+        from smass_workflow.models import Notification
+        from smass_workflow.services import notify
+
+        note = notify('t_student', '过期通知', event_key='hk:1')
+        Notification.objects.filter(pk=note.pk).update(
+            created_at=timezone.now() - timedelta(days=400))
+
+        call_command('smass_housekeeping', verbosity=0)
+        self.assertTrue(Notification.objects.filter(pk=note.pk).exists())
+
+        call_command('smass_housekeeping', apply=True, verbosity=0)
+        self.assertFalse(Notification.objects.filter(pk=note.pk).exists())
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
