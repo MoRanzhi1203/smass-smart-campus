@@ -1,0 +1,17 @@
+{% if page_info and page_info.page_count > 1 %}
+<div class="ws-pagination">
+  <span class="ws-hint">共 {{ page_info.total }} 条 · 第 {{ page_info.page }}/{{ page_info.page_count }} 页</span>
+  <div class="ws-pagination-actions">
+    {% if page_info.has_prev %}
+      <a class="ws-btn is-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_info.page|add:-1 }}">上一页</a>
+    {% else %}
+      <span class="ws-btn is-sm" aria-disabled="true">上一页</span>
+    {% endif %}
+    {% if page_info.has_next %}
+      <a class="ws-btn is-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_info.page|add:1 }}">下一页</a>
+    {% else %}
+      <span class="ws-btn is-sm" aria-disabled="true">下一页</span>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

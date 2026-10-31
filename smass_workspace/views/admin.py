@@ -54,9 +54,14 @@ def users(request):
     role = request.GET.get('role', '')
     person_type = request.GET.get('type', '')
     rows = svc.users(request.user, keyword, role, person_type)
+    from ..services import pagination as pagination_svc
+
+    page_info = pagination_svc.paginate(rows, request.GET.get('page'))
     return render(request, 'workspace/admin/users.html', _ctx(
         request,
-        rows=rows,
+        rows=page_info['items'],
+        page_info=page_info,
+        querystring=pagination_svc.querystring_without_page(request),
         keyword=keyword,
         role=role,
         person_type=person_type,
@@ -316,9 +321,14 @@ def records(request):
     keyword = request.GET.get('q', '')
     status = request.GET.get('status', '')
     rows = svc.records(request.user, keyword, status)
+    from ..services import pagination as pagination_svc
+
+    page_info = pagination_svc.paginate(rows, request.GET.get('page'))
     return render(request, 'workspace/admin/records.html', _ctx(
         request,
-        rows=rows,
+        rows=page_info['items'],
+        page_info=page_info,
+        querystring=pagination_svc.querystring_without_page(request),
         keyword=keyword,
         status=status,
         statuses=(('', '全部状态'), ('enrolled', '在读'), ('suspended', '休学'),
@@ -1299,8 +1309,15 @@ def monitoring(request):
 @require_GET
 @admin_only
 def audit(request):
+    from ..services import pagination as pagination_svc
+
+    data = svc.audit(request.user)
+    page_info = pagination_svc.paginate(data['logs'], request.GET.get('page'))
+    data['logs'] = page_info['items']
     return render(request, 'workspace/admin/audit.html', _ctx(
-        request, **svc.audit(request.user)))
+        request, page_info=page_info,
+        querystring=pagination_svc.querystring_without_page(request),
+        **data))
 
 
 @require_GET

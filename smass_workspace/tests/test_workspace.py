@@ -1206,6 +1206,42 @@ class AdminDataImportTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class AdminPaginationTests(WorkspaceFixture):
+    """F03：管理端列表分页。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from r21_account.models import Account
+
+        for index in range(25):
+            Account.objects.create_user(
+                'pg_user_{:02d}'.format(index), 'Test#2026pass',
+                display_name='分页用户{}'.format(index), person_type='student')
+
+    def test_users_pagination_pages(self):
+        self.login(self.admin)
+        first = self.client.get('/admin/users/?page=1')
+        total = first.context['page_info']['total']
+        self.assertGreater(total, 20)
+        self.assertEqual(first.context['page_info']['page'], 1)
+        second = self.client.get('/admin/users/?page=2')
+        self.assertEqual(second.context['page_info']['page'], 2)
+        self.assertEqual(len(second.context['page_info']['items']), total - 20)
+
+    def test_invalid_page_falls_back_to_last(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/users/?page=999')
+        info = response.context['page_info']
+        self.assertEqual(info['page'], info['page_count'])
+
+    def test_records_pagination_keeps_filters(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/records/?status=enrolled&page=1')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('status=enrolled', response.context['querystring'])
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
