@@ -21,6 +21,8 @@ _ENTRY_NAMES = {
 #: 由产品自己提供的入口（必须排在旧路由之前）
 _ENTRY_PATTERNS = [
     path('', include('smass_workspace.urls')),
+    # MFA 绑定/验证（默认关闭，由 settings_product.MFA_ENABLED 控制是否强制）
+    path('s09/', include('smass_mfa.urls')),
     # 研发期入口统一收敛到产品首页
     path('hub/', RedirectView.as_view(url='/', permanent=False),
          name='legacy_hub'),

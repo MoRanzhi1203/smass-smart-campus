@@ -29,7 +29,13 @@ DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_product_dev'
 
 INSTALLED_APPS = list(INSTALLED_APPS) + [
     'smass_workspace.apps.SmassWorkspaceConfig',
+    'smass_mfa.apps.SmassMfaConfig',
 ]
+
+# MFA：默认关闭；设置 SMASS_MFA_ENABLED=1 后对系统管理员强制绑定与二次验证
+MFA_ENABLED = os.environ.get('SMASS_MFA_ENABLED', '0') == '1'
+MFA_REQUIRED_ROLES = ['system_admin']
+MIDDLEWARE = list(MIDDLEWARE) + ['smass_mfa.middleware.MfaRequiredMiddleware']
 
 ROOT_URLCONF = 'smass.urls_product'
 

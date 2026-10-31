@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from r21_account import services as account_services
@@ -1514,6 +1514,44 @@ class OpsCommandTests(WorkspaceFixture):
 
         call_command('smass_housekeeping', apply=True, verbosity=0)
         self.assertFalse(Notification.objects.filter(pk=note.pk).exists())
+
+
+class MfaEnforcementTests(WorkspaceFixture):
+    """A03：MFA 灰度（默认关闭；开启后系统管理员强制绑定与验证）。"""
+
+    def test_disabled_by_default(self):
+        self.login(self.admin)
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+
+    @override_settings(MFA_ENABLED=True, MFA_REQUIRED_ROLES=['system_admin'])
+    def test_privileged_redirected_to_setup(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/s09/setup/', response.headers['Location'])
+
+    @override_settings(MFA_ENABLED=True, MFA_REQUIRED_ROLES=['system_admin'])
+    def test_setup_verify_and_new_session(self):
+        from smass_mfa.models import MfaDevice
+        from smass_mfa.services import totp
+
+        self.login(self.admin)
+        setup = self.client.get('/s09/setup/')
+        self.assertEqual(setup.status_code, 200)
+        device = MfaDevice.objects.get(account=self.admin)
+        confirm = self.client.post('/s09/setup/', {'code': totp(device.secret)})
+        self.assertEqual(confirm.status_code, 200)
+        device.refresh_from_db()
+        self.assertEqual(device.status, 'active')
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+
+        self.client.logout()
+        self.login(self.admin)
+        blocked = self.client.get('/admin/')
+        self.assertEqual(blocked.status_code, 302)
+        self.assertIn('/s09/verify/', blocked.headers['Location'])
+        self.client.post('/s09/verify/', {'code': totp(device.secret)})
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
 
 
 class AdminConsoleTests(WorkspaceFixture):

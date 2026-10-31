@@ -12,6 +12,8 @@ ALLOW_PREFIXES = (
     '/s09/',
     '/r21/login/',
     '/r21/logout/',
+    '/login/',
+    '/logout/',
     '/static/',
     '/media/',
 )
