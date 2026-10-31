@@ -90,7 +90,34 @@
 
 ---
 
-## 7. 复现命令
+## 7. 性能基准（F05）
+
+脚本：`scripts/perf_baseline_v2.py`（临时测试库：创建 → 测量 → 销毁，不触碰产品库）。
+
+数据规模：1000 账号 / 500 学籍 / 50 教学班 / 500 选课；导入 500 行 CSV。
+
+| 路径 | 优化前 | 优化后 |
+|---|---|---|
+| 管理端用户列表（第 1 页） | 199.0 ms / **202 queries** | **53.6 ms / 3 queries** |
+| 管理端学籍列表 | 47–101 ms / 2 queries | 2 queries |
+| 管理总览聚合 | 22–56 ms / 22 queries | 22 queries |
+| 学生课表查询 | 6.5–14 ms / 3 queries | 3 queries |
+| 教师学生范围 | 3.5–5.6 ms / 2 queries | 2 queries |
+| 导入 500 行 | preview 2.4 s / commit 11.0 s / 峰值 4.2 MB | 同 |
+
+**发现与修复**：`services/admin.py::users` 对每个账号调用 `active_roles()`，产生 N+1（202 次查询）；
+改为一次批量查询 `AccountRole` 后按账号分组，查询降到 3 次，耗时降约 73%。
+
+**未优化但记录**：
+
+- 导入 `import_commit` 每行独立事务（单行失败不阻断其他行），500 行约 11 s；若需更快可改分批事务，但会改变“单行失败隔离”语义；
+- 学生课表在无发布排课时返回空（3 queries），有数据时的多表 join 未单独压测。
+
+阈值（脚本内）：列表 ≤500 ms、总览 ≤1500 ms、课表 ≤500 ms、导入提交 ≤60 s。
+
+---
+
+## 8. 复现命令
 
 ```powershell
 $py = "C:\Users\MSIPC\.conda\envs\smass\python.exe"

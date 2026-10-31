@@ -102,9 +102,18 @@ def users(account, keyword='', role='', person_type=''):
                        | Q(display_name__icontains=keyword))
     if person_type:
         qs = qs.filter(person_type=person_type)
+    items = list(qs[:200])
+    from r21_account.models import AccountRole
+
+    role_map = {}
+    for account_id, role_code in (AccountRole.objects
+                                  .filter(account_id__in=[item.pk for item in items],
+                                          revoked_at__isnull=True)
+                                  .values_list('account_id', 'role')):
+        role_map.setdefault(account_id, set()).add(role_code)
     rows = []
-    for item in qs[:200]:
-        roles = sorted(perms.active_roles(item))
+    for item in items:
+        roles = sorted(role_map.get(item.pk, set()))
         if role and role not in roles:
             continue
         rows.append({'account': item, 'roles': roles})
