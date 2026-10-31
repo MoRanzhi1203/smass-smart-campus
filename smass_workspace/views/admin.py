@@ -948,6 +948,74 @@ def clubs(request):
         request, **svc.clubs(request.user)))
 
 
+@require_POST
+@admin_only
+@perms.require_system_admin
+def club_membership_action(request, pk, action):
+    from django.shortcuts import get_object_or_404
+
+    from smass_clubs import services as club_services
+    from smass_clubs.models import ClubMembership
+
+    membership = get_object_or_404(ClubMembership, pk=pk)
+    try:
+        if action == 'approve':
+            club_services.approve_join(membership, request.user)
+            messages.success(request, '已通过「{}」的入社申请'.format(
+                membership.record.name))
+        elif action == 'reject':
+            club_services.reject_join(
+                membership, request.user,
+                request.POST.get('reason') or '不符合入社条件')
+            messages.success(request, '已驳回入社申请')
+        else:
+            messages.error(request, '未知操作')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_clubs')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def club_appoint(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_clubs import services as club_services
+    from smass_clubs.models import Club
+    from smass_organization.models import StudentRecord
+
+    club = get_object_or_404(Club, pk=pk)
+    record = StudentRecord.objects.filter(
+        student_no=(request.POST.get('record_no') or '').strip()).first()
+    try:
+        club_services.appoint_post(
+            club, record, request.POST.get('title'),
+            request.POST.get('term'), request.user)
+        messages.success(request, '任职已创建')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '任命失败：{}'.format(exc))
+    return redirect('workspace:admin_clubs')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def club_post_end(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_clubs import services as club_services
+    from smass_clubs.models import ClubPost
+
+    post = get_object_or_404(ClubPost, pk=pk)
+    try:
+        club_services.end_post(post, request.user)
+        messages.success(request, '已卸任')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '卸任失败：{}'.format(exc))
+    return redirect('workspace:admin_clubs')
+
+
 @require_GET
 @admin_only
 def notices(request):

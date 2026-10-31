@@ -289,7 +289,9 @@ def activities(account):
 
 
 def clubs(account):
-    from smass_clubs.models import Club, ClubMembership
+    from smass_clubs.models import (
+        POST_TITLES, Club, ClubMembership, ClubPost,
+    )
     from smass_organization.models import OrganizationUnit
 
     items = list(
@@ -301,9 +303,18 @@ def clubs(account):
         OrganizationUnit.objects.filter(unit_type='department')
         .annotate(member_count=Count('memberships'))
         .order_by('sort_order', 'code'))
+    pending = list(
+        ClubMembership.objects.filter(status='pending')
+        .select_related('club', 'record')
+        .order_by('applied_at')[:50])
+    posts = list(
+        ClubPost.objects.filter(ended_at__isnull=True)
+        .select_related('club', 'record')
+        .order_by('club__name', 'title')[:50])
     return {'clubs': items, 'departments': organizations,
-            'pending_memberships': ClubMembership.objects.filter(
-                status='pending').count()}
+            'pending_list': pending, 'posts': posts,
+            'post_titles': POST_TITLES,
+            'pending_memberships': len(pending)}
 
 
 def notices(account):

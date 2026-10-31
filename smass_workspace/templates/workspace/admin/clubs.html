@@ -13,47 +13,153 @@
 </div>
 
 <div class="ws-grid ws-grid-main">
-  <section class="ws-card">
-    <div class="ws-card-head"><h2>社团</h2></div>
-    {% if clubs %}
-      <div class="ws-table-wrap">
-        <table class="ws-table">
-          <thead><tr><th>社团</th><th>类别</th><th>指导教师</th><th class="is-num">成员</th><th>状态</th></tr></thead>
-          <tbody>
-            {% for club in clubs %}
-              <tr>
-                <td class="is-strong">{{ club.name }}<br><span class="is-muted">{{ club.code }}</span></td>
-                <td>{{ club.get_category_display }}</td>
-                <td>{{ club.advisor.display_name|default:"—" }}</td>
-                <td class="is-num">{{ club.member_count }}</td>
-                <td><span class="ws-badge {% if club.status == 'active' %}is-success{% else %}is-neutral{% endif %}">{{ club.get_status_display }}</span></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="ws-empty is-compact"><b>暂无社团</b><p>社团注册后显示在这里。</p></div>
-    {% endif %}
-  </section>
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>社团</h2></div>
+      {% if clubs %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>社团</th><th>类别</th><th>指导教师</th><th class="is-num">成员</th><th>状态</th></tr></thead>
+            <tbody>
+              {% for club in clubs %}
+                <tr>
+                  <td class="is-strong">{{ club.name }}<br><span class="is-muted">{{ club.code }}</span></td>
+                  <td>{{ club.get_category_display }}</td>
+                  <td>{{ club.advisor.display_name|default:"—" }}</td>
+                  <td class="is-num">{{ club.member_count }}</td>
+                  <td><span class="ws-badge {% if club.status == 'active' %}is-success{% else %}is-neutral{% endif %}">{{ club.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无社团</b><p>社团注册后显示在这里。</p></div>
+      {% endif %}
+    </section>
 
-  <section class="ws-card">
-    <div class="ws-card-head"><h2>学生组织</h2></div>
-    {% if departments %}
-      <div class="ws-list">
-        {% for unit in departments %}
-          <div class="ws-list-item">
-            <div class="ws-list-main">
-              <b>{{ unit.name }}</b>
-              <span>{{ unit.code }}{% if unit.parent %} · 上级 {{ unit.parent.name }}{% endif %}</span>
-            </div>
-            <span class="ws-badge is-neutral">{{ unit.member_count }} 人</span>
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待批入社</h2><span class="ws-hint">{{ pending_memberships }} 条</span></div>
+      {% if pending_list %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>社团</th><th>学生</th><th>申请时间</th><th>操作</th></tr></thead>
+            <tbody>
+              {% for item in pending_list %}
+                <tr>
+                  <td class="is-strong">{{ item.club.name }}</td>
+                  <td>{{ item.record.name }}<br><span class="is-muted">{{ item.record.student_no }}</span></td>
+                  <td class="is-muted">{{ item.applied_at|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    {% if is_super %}
+                    <div style="display:flex;gap:4px;flex-wrap:wrap">
+                      <form method="post" action="{% url 'workspace:admin_club_membership_action' item.pk 'approve' %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm is-primary" type="submit">通过</button>
+                      </form>
+                      <form method="post" action="{% url 'workspace:admin_club_membership_action' item.pk 'reject' %}" style="display:flex;gap:4px" data-once>
+                        {% csrf_token %}
+                        <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                               style="width:110px;height:28px;font-size:12px" aria-label="入社驳回理由">
+                        <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                      </form>
+                    </div>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>没有待批入社</b><p>学生提交入社申请后会出现在这里。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>社团任职</h2><span class="ws-hint">{{ posts|length }} 条在任</span></div>
+      {% if posts %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>社团</th><th>学生</th><th>职务</th><th>任期</th><th></th></tr></thead>
+            <tbody>
+              {% for post in posts %}
+                <tr>
+                  <td class="is-strong">{{ post.club.name }}</td>
+                  <td>{{ post.record.name }}<br><span class="is-muted">{{ post.record.student_no }}</span></td>
+                  <td>{{ post.get_title_display }}</td>
+                  <td class="is-muted">{{ post.term }}</td>
+                  <td class="is-num">
+                    {% if is_super %}
+                    <form method="post" action="{% url 'workspace:admin_club_post_end' post.pk %}" data-once>
+                      {% csrf_token %}
+                      <button class="ws-btn is-sm is-danger" type="submit">卸任</button>
+                    </form>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无在任干部</b><p>可在右侧为社团任命会长、部长等职务。</p></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    {% if is_super and clubs %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>任命社团职务</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_club_appoint' clubs.0.pk %}" id="ws-appoint-form" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="appoint-club">社团</label>
+            <select class="ws-select" id="appoint-club" name="club"
+                    onchange="document.getElementById('ws-appoint-form').action='/admin/clubs/'+this.value+'/appoint/';">
+              {% for club in clubs %}<option value="{{ club.pk }}">{{ club.name }}</option>{% endfor %}
+            </select>
           </div>
-        {% endfor %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="appoint-record">学生学号</label>
+            <input class="ws-input" id="appoint-record" name="record_no" required placeholder="输入学号">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="appoint-title">职务</label>
+            <select class="ws-select" id="appoint-title" name="title" required>
+              {% for value, label in post_titles %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="appoint-term">任期</label>
+            <input class="ws-input" id="appoint-term" name="term" required placeholder="如 2026-2027 学年">
+          </div>
+          <button class="ws-btn is-primary" type="submit">任命</button>
+        </form>
       </div>
-    {% else %}
-      <div class="ws-empty is-compact"><b>暂无学生组织</b><p>组织架构中未建立部门类单元。</p></div>
+    </section>
     {% endif %}
-  </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>学生组织</h2></div>
+      {% if departments %}
+        <div class="ws-list">
+          {% for unit in departments %}
+            <div class="ws-list-item">
+              <div class="ws-list-main">
+                <b>{{ unit.name }}</b>
+                <span>{{ unit.code }}{% if unit.parent %} · 上级 {{ unit.parent.name }}{% endif %}</span>
+              </div>
+              <span class="ws-badge is-neutral">{{ unit.member_count }} 人</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>暂无学生组织</b><p>组织架构中未建立部门类单元。</p></div>
+      {% endif %}
+    </section>
+  </div>
 </div>
 {% endblock %}

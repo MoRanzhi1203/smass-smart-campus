@@ -961,6 +961,60 @@ class AdminSchedulingTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class AdminClubManagementTests(WorkspaceFixture):
+    """E05：入社审批、驳回理由与社团任职。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_clubs.models import Club, ClubMembership
+
+        cls.club = Club.objects.create(
+            code='T-CLUB-A', name='管理测试社团', category='academic',
+            status='active')
+        cls.pending = ClubMembership.objects.create(
+            club=cls.club, record=cls.record, status='pending')
+
+    def test_approve_membership(self):
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/clubs/memberships/{}/approve/'.format(self.pending.pk),
+            follow=True)
+        self.pending.refresh_from_db()
+        self.assertEqual(self.pending.status, 'active')
+        self.assertContains(response, '已通过')
+
+    def test_reject_membership_with_reason(self):
+        self.login(self.admin)
+        self.client.post(
+            '/admin/clubs/memberships/{}/reject/'.format(self.pending.pk),
+            {'reason': '名额已满'}, follow=True)
+        self.pending.refresh_from_db()
+        self.assertEqual(self.pending.status, 'rejected')
+        self.assertEqual(self.pending.reject_reason, '名额已满')
+
+    def test_appoint_post(self):
+        from smass_clubs.models import POST_TITLES, ClubPost
+
+        self.pending.status = 'active'
+        self.pending.save(update_fields=['status'])
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/clubs/{}/appoint/'.format(self.club.pk), {
+                'record_no': 'T2024001', 'title': POST_TITLES[0][0],
+                'term': '2026-2027 学年'}, follow=True)
+        self.assertContains(response, '任职已创建')
+        self.assertTrue(ClubPost.objects.filter(
+            club=self.club, record=self.record, title=POST_TITLES[0][0],
+            ended_at__isnull=True).exists())
+
+    def test_college_admin_cannot_approve(self):
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/clubs/memberships/{}/approve/'.format(self.pending.pk))
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
