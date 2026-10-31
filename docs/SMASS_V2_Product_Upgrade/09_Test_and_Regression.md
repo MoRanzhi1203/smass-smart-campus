@@ -83,15 +83,15 @@
 | 项 | 结果 |
 |---|---|
 | 套件 | **32** |
-| 用例总数 | **1896** |
-| 失败 | **0**（exit 0） |
-| 产品层 | **136 例** |
+| 用例总数 | **1896** → 交付前重跑 **1902**（新增档案同步等 6 例） |
+| 失败 | **0**（两次均 exit 0） |
+| 产品层 | **142 例** |
 | 明色视觉 | **204 项 / 0 溢出 / 0 空页 / PASS** |
 | 暗色视觉 | **68 项 / 0 溢出 / PASS** |
 | 无障碍（明/暗） | 各 **11 页 / 0 问题 / PASS** |
 | Git 准入 | PASS |
 
-证据：`.local/evidence/v2/regression_final.log`、`.local/evidence/v2/final/{visual_light,visual_dark,a11y_light,a11y_dark}.json`。
+证据：`.local/evidence/v2/regression_final.log`（1896）、`regression_delivery.log`（1902）、`.local/evidence/v2/final/*.json`。
 
 ---
 
