@@ -83,15 +83,15 @@
 | 项 | 结果 |
 |---|---|
 | 套件 | **32** |
-| 用例总数 | **1896** → 交付前重跑 **1902**（新增档案同步等 6 例） |
-| 失败 | **0**（两次均 exit 0） |
-| 产品层 | **142 例** |
-| 明色视觉 | **204 项 / 0 溢出 / 0 空页 / PASS** |
-| 暗色视觉 | **68 项 / 0 溢出 / PASS** |
+| 用例总数 | 1896 → 1902 → **1905**（交付最终） |
+| 失败 | **0**（三次均 exit 0） |
+| 产品层 | **145 例** |
+| 明色视觉 | **216 项**（18 页 × 4 视口 × 3 缩放）/ 0 溢出 / PASS |
+| 暗色视觉 | **72 项** / 0 溢出 / PASS |
 | 无障碍（明/暗） | 各 **11 页 / 0 问题 / PASS** |
 | Git 准入 | PASS |
 
-证据：`.local/evidence/v2/regression_final.log`（1896）、`regression_delivery.log`（1902）、`.local/evidence/v2/final/*.json`。
+证据：`regression_final.log`（1896）、`regression_delivery.log`（1902）、`regression_v2_final.log`（1905）、`.local/evidence/v2/final2/*.json`。
 
 ---
 
