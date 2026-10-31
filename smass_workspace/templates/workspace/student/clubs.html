@@ -37,7 +37,7 @@
         <tbody>
           {% for row in rows %}
             <tr>
-              <td class="is-strong">{{ row.club.name }}<br><span class="is-muted">{{ row.club.code }}</span></td>
+              <td class="is-strong"><a href="{% url 'workspace:student_club_detail' row.club.pk %}">{{ row.club.name }}</a><br><span class="is-muted">{{ row.club.code }}</span></td>
               <td>{{ row.club.get_category_display }}</td>
               <td>{% if row.club.advisor %}{{ row.club.advisor.display_name }}{% else %}—{% endif %}</td>
               <td class="is-muted">{{ row.club.description|truncatechars:40|default:"—" }}</td>

@@ -615,6 +615,51 @@ def club_apply(request, pk):
 
 @require_GET
 @student_only
+def club_detail(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_clubs.models import Club, ClubMembership
+
+    club = get_object_or_404(Club, pk=pk)
+    overview = svc.clubs_overview(request.user)
+    membership = overview['memberships'].get(club.id)
+    post = overview['posts'].get(club.id)
+    members = list(ClubMembership.objects.filter(
+        club=club, status='active').select_related('record')[:20])
+    return render(request, 'workspace/student/club_detail.html', _ctx(
+        request,
+        club=club,
+        membership=membership,
+        post=post,
+        members=members,
+    ))
+
+
+@require_POST
+@student_only
+def club_leave(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_clubs import services as club_services
+    from smass_clubs.models import ClubMembership
+    from smass_clubs.services import ClubError
+
+    membership = get_object_or_404(
+        ClubMembership.objects.select_related('club'), pk=pk)
+    if membership.record.account_id != request.user.pk:
+        messages.error(request, '只能退出自己的社团成员关系。')
+        return redirect('workspace:student_clubs')
+    try:
+        club_services.leave_club(membership, request.user)
+        messages.success(request, '已退出「{}」'.format(membership.club.name))
+    except (ClubError, PermissionError) as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_club_detail',
+                    pk=membership.club_id)
+
+
+@require_GET
+@student_only
 def organizations(request):
     return render(request, 'workspace/student/organizations.html', _ctx(
         request,

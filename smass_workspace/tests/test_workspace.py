@@ -794,6 +794,53 @@ class AdminTeacherTests(WorkspaceFixture):
         self.assertEqual(profile.account.display_name, '教师改名')
 
 
+class StudentClubTests(WorkspaceFixture):
+    """C04：社团详情、申请与退社。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_clubs.models import Club
+
+        cls.club = Club.objects.create(
+            code='T-CLUB-1', name='测试社团', category='academic',
+            status='active', description='用于测试的社团')
+
+    def test_detail_page_renders(self):
+        self.login(self.student)
+        response = self.client.get('/student/clubs/{}/'.format(self.club.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '测试社团')
+
+    def test_apply_then_leave(self):
+        from smass_clubs.models import ClubMembership
+
+        self.login(self.student)
+        self.client.post(
+            '/student/clubs/{}/apply/'.format(self.club.pk), follow=True)
+        membership = ClubMembership.objects.get(
+            club=self.club, record=self.record)
+        self.assertEqual(membership.status, 'pending')
+        self.client.post(
+            '/student/clubs/memberships/{}/leave/'.format(membership.pk),
+            follow=True)
+        membership.refresh_from_db()
+        self.assertEqual(membership.status, 'left')
+
+    def test_cannot_leave_others_membership(self):
+        from smass_clubs.models import ClubMembership
+
+        other = ClubMembership.objects.create(
+            club=self.club, record=self.record2, status='active')
+        self.login(self.student)
+        response = self.client.post(
+            '/student/clubs/memberships/{}/leave/'.format(other.pk),
+            follow=True)
+        other.refresh_from_db()
+        self.assertEqual(other.status, 'active')
+        self.assertContains(response, '只能退出自己的社团')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
