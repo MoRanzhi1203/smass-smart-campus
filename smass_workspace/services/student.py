@@ -48,7 +48,11 @@ def profile_of(account):
 
 
 def dormitory_of(record):
-    """寝室信息：优先统一学籍扩展字段，其次历史 app01 档案（只读桥接）。"""
+    """寝室信息只读 ``StudentRecord.extra.dormitory``（统一模型唯一权威源）。
+
+    历史 app01 住宿表已由迁移脚本写入本字段；产品运行链路不再查询旧库，
+    旧表仅在迁移工具与隔离验证中保留。
+    """
     if record is None:
         return None
     extra = record.extra or {}
@@ -60,20 +64,6 @@ def dormitory_of(record):
             'bed': dorm.get('bed', ''),
             'roommates': dorm.get('roommates') or [],
             'source': '学籍档案',
-        }
-    try:
-        from app01.models import Student
-
-        legacy = Student.objects.filter(id=record.student_no).first()
-    except Exception:  # noqa: BLE001 - 历史表缺失时按无数据处理
-        legacy = None
-    if legacy is not None and (legacy.building or legacy.dormitory):
-        return {
-            'building': legacy.building or '',
-            'room': legacy.dormitory or '',
-            'bed': '',
-            'roommates': [],
-            'source': '历史学籍档案',
         }
     return None
 

@@ -34,6 +34,7 @@ SETTINGS = 'smass.settings_product'
 PRODUCT_DB = os.environ.get('PRODUCT_DB', 'smass_product_dev')
 SOURCE_DB = 'smass'
 MANIFEST = ROOT / '.local/evidence/migration/legacy_migration_manifest.json'
+ALLOWED_TARGET_PREFIXES = ('smass_product_dev', 'smass_unified_verify')
 
 LEGACY_PREFIX = 'LEGACY-'
 
@@ -49,8 +50,10 @@ def product_setup():
     django.setup()
     from django.conf import settings
 
-    if not PRODUCT_DB.startswith('smass_product_dev'):
-        raise SystemExit('拒绝写入非产品隔离库：{}'.format(PRODUCT_DB))
+    global PRODUCT_DB
+    PRODUCT_DB = settings.DATABASES['default']['NAME']
+    if not PRODUCT_DB.startswith(ALLOWED_TARGET_PREFIXES):
+        raise SystemExit('拒绝写入非隔离目标库：{}'.format(PRODUCT_DB))
     return settings
 
 
@@ -199,6 +202,11 @@ def run_apply(data):
         'created_accounts': [], 'created_records': [],
         'created_memberships': [], 'links': [],
         'pii_policy': ('real_pii' if allow_real_pii() else 'masked'),
+        'stats': {
+            'migrated': 0, 'transformed': 0, 'merged': 0,
+            'regenerated': 0, 'rejected': 0, 'unresolved': 0,
+            'discard_candidates': 0, 'verify_failures': 0,
+        },
     }
 
     def link_account(login_name, display_name, person_type, password_hash,
@@ -206,6 +214,7 @@ def run_apply(data):
         link = LegacyAccountLink.objects.filter(
             source_table=source_table, source_pk=str(source_pk)).first()
         if link is not None:
+            manifest['stats']['merged'] += 1
             return link.account, False
         account = Account.objects.filter(login_name=login_name).first()
         if account is None:
@@ -222,6 +231,7 @@ def run_apply(data):
             manifest['created_accounts'].append(account.pk)
         else:
             manifest['reused_units'].append('account:{}'.format(account.pk))
+            manifest['stats']['merged'] += 1
         account_services.grant_role(account, role, granted_by='legacy-migration')
         checksum = hashlib.sha256(
             '{}|{}|{}'.format(source_table, source_pk, login_name).encode('utf-8')
@@ -231,6 +241,7 @@ def run_apply(data):
             source_pk=str(source_pk), checksum=checksum)
         manifest['links'].append({'table': source_table, 'pk': str(source_pk),
                                   'account': account.pk})
+        manifest['stats']['migrated'] += 1
         return account, True
 
     # 组织
@@ -375,6 +386,21 @@ def run_apply(data):
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2),
                         encoding='utf-8')
+    # 七类统计：转换（掩码）、舍弃候选（源头空表）
+    masked_pii_count = 0 if allow_real_pii() else (
+        len([row for row in data['students'] if row.get('phone')])
+        + len([row for row in data['teachers'] if row.get('phone')]))
+    manifest['stats']['transformed'] = masked_pii_count
+    manifest['stats']['discard_candidates'] = len(
+        [key for key in ('building', 'dormitory', 'nation') if not data.get(key)])
+    manifest['stats']['regenerated'] = 0
+    manifest['stats']['rejected'] = 0
+    manifest['stats']['unresolved'] = 0
+    manifest['stats']['verify_failures'] = 0
+
+    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2),
+                        encoding='utf-8')
     return {
         'mode': 'apply',
         'created_units': len(manifest['created_units']),
@@ -383,6 +409,7 @@ def run_apply(data):
         'created_memberships': len(manifest['created_memberships']),
         'links': len(manifest['links']),
         'pii_policy': manifest['pii_policy'],
+        'stats': manifest['stats'],
         'manifest': str(MANIFEST),
     }
 
@@ -524,13 +551,18 @@ def run_rollback():
 
 
 def main():
+    global SETTINGS
     parser = argparse.ArgumentParser(description='app01 历史数据隔离迁移')
     parser.add_argument('--preview', action='store_true')
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--verify', action='store_true')
     parser.add_argument('--rollback', action='store_true')
+    parser.add_argument('--settings', default=SETTINGS,
+                        help='目标配置（默认 smass.settings_product）')
     parser.add_argument('--json', dest='json_path', default='')
     args = parser.parse_args()
+
+    SETTINGS = args.settings
 
     if args.rollback:
         product_setup()
@@ -558,6 +590,7 @@ def main():
         report['source_fingerprint_after'] = after
         report['source_unchanged'] = before == after
 
+    report['target_db'] = PRODUCT_DB
     text = json.dumps(report, ensure_ascii=False, indent=2)
     if args.json_path:
         path = Path(args.json_path)
