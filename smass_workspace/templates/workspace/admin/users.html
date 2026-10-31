@@ -17,11 +17,11 @@
     <div class="ws-card-head">
       <h2>账号列表</h2>
       <form method="get" class="ws-inline-form">
-        <input class="ws-input" type="search" name="q" value="{{ keyword }}" placeholder="登录名 / 姓名" style="width:170px">
-        <select class="ws-select" name="role" style="width:120px">
+        <input class="ws-input" type="search" name="q" value="{{ keyword }}" placeholder="登录名 / 姓名" aria-label="搜索登录名或姓名" style="width:170px">
+        <select class="ws-select" name="role" aria-label="按角色筛选" style="width:120px">
           {% for value, label in role_choices %}<option value="{{ value }}" {% if value == role %}selected{% endif %}>{{ label }}</option>{% endfor %}
         </select>
-        <select class="ws-select" name="type" style="width:110px">
+        <select class="ws-select" name="type" aria-label="按人员类型筛选" style="width:110px">
           {% for value, label in person_choices %}<option value="{{ value }}" {% if value == person_type %}selected{% endif %}>{{ label }}</option>{% endfor %}
         </select>
         <button class="ws-btn is-sm" type="submit">筛选</button>
@@ -53,7 +53,7 @@
                     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
                       <form method="post" action="{% url 'workspace:admin_user_role' row.account.pk %}" class="ws-inline-form" data-once>
                         {% csrf_token %}
-                        <select class="ws-select" name="role" style="width:118px;height:29px;font-size:12px">
+                        <select class="ws-select" name="role" aria-label="{{ row.account.login_name }} 的角色" style="width:118px;height:29px;font-size:12px">
                           <option value="teacher">教师</option>
                           <option value="student">学生</option>
                           <option value="college_admin">学院管理员</option>
