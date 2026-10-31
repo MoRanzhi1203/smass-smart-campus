@@ -1,4 +1,5 @@
 {% extends "workspace/base.html" %}
+{% load badges %}
 {% block title %}财务与账单{% endblock %}
 {% block topbar_title %}财务与账单{% endblock %}
 {% block topbar_sub %}收费项、账单与退费审批{% endblock %}
@@ -97,7 +98,7 @@
                   <td class="is-muted">{{ bill.term|default:"—" }}</td>
                   <td class="is-num">{{ bill.total|floatformat:2 }}</td>
                   <td class="is-num">{{ bill.paid|floatformat:2 }}</td>
-                  <td><span class="ws-badge {% if bill.status == 'paid' %}is-success{% elif bill.status == 'partial' %}is-warning{% elif bill.status == 'overdue' %}is-danger{% else %}is-neutral{% endif %}">{{ bill.get_status_display }}</span></td>
+                  <td><span class="ws-badge {{ bill.status|badge_class }}">{{ bill.get_status_display }}</span></td>
                 </tr>
               {% endfor %}
             </tbody>

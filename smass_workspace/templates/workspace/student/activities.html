@@ -1,4 +1,5 @@
 {% extends "workspace/base.html" %}
+{% load badges %}
 {% block title %}活动与志愿{% endblock %}
 {% block topbar_title %}活动与志愿{% endblock %}
 {% block topbar_sub %}第二课堂、志愿与报名{% endblock %}
@@ -38,7 +39,7 @@
               <td class="is-num">{% if item.activity.capacity %}{{ item.activity.capacity }}{% else %}不限{% endif %}</td>
               <td>
                 {% if item.registration %}
-                  <span class="ws-badge is-success">{{ item.registration.get_status_display }}</span>
+                  <span class="ws-badge {{ item.registration.status|badge_class }}">{{ item.registration.get_status_display }}</span>
                 {% elif item.deadline_passed %}
                   <span class="ws-badge is-neutral">报名截止</span>
                 {% else %}
@@ -78,7 +79,7 @@
             <tr>
               <td class="is-strong">{{ registration.activity.title }}</td>
               <td>{{ registration.registered_at|date:"Y-m-d H:i" }}</td>
-              <td><span class="ws-badge {% if registration.status == 'registered' %}is-success{% elif registration.status == 'waitlisted' %}is-warning{% else %}is-neutral{% endif %}">{{ registration.get_status_display }}</span></td>
+              <td><span class="ws-badge {{ registration.status|badge_class }}">{{ registration.get_status_display }}</span></td>
               <td class="is-muted">{% if registration.checked_in_at %}{{ registration.checked_in_at|date:"Y-m-d H:i" }}{% else %}未签到{% endif %}</td>
               <td class="is-num">
                 {% if registration.status == 'registered' or registration.status == 'waitlisted' %}

@@ -106,7 +106,8 @@ V2.0 组件化进度：
 |---|---|
 | `_pagination.html` | 已用于用户/学籍/审计列表 |
 | `_empty_state.html` | 已替换课程（2）、预约（1）、财务（3）共 6 处 |
-| 状态徽章 / DataTable / Modal / Toast | 未统一（各页状态映射差异大，收益低于风险） |
+| `badges.badge_class`（模板过滤器） | 已用于账单状态、报名状态、社团状态共 4 处；未收录状态回落 `is-neutral` |
+| 状态徽章 / DataTable / Modal / Toast | DataTable/Modal/Toast 未统一（各页状态映射差异大，收益低于风险） |
 
 组件化后复跑 `ui_visual_check_v2.py`：**204 项 / 0 溢出 / 0 空页 / PASS**，视觉无回归。
 

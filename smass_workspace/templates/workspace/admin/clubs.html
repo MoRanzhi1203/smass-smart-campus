@@ -1,4 +1,5 @@
 {% extends "workspace/base.html" %}
+{% load badges %}
 {% block title %}社团与学生组织{% endblock %}
 {% block topbar_title %}社团与学生组织{% endblock %}
 {% block topbar_sub %}社团、任职与组织单元{% endblock %}
@@ -27,7 +28,7 @@
                   <td>{{ club.get_category_display }}</td>
                   <td>{{ club.advisor.display_name|default:"—" }}</td>
                   <td class="is-num">{{ club.member_count }}</td>
-                  <td><span class="ws-badge {% if club.status == 'active' %}is-success{% else %}is-neutral{% endif %}">{{ club.get_status_display }}</span></td>
+                  <td><span class="ws-badge {{ club.status|badge_class }}">{{ club.get_status_display }}</span></td>
                 </tr>
               {% endfor %}
             </tbody>
