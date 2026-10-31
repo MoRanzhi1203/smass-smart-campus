@@ -25,7 +25,7 @@ from smass_attendance import services as attendance_services
 from smass_attendance.models import LEAVE_SUBMITTED, LeaveRequest
 from smass_forum import services as forum_services
 from smass_forum.models import Announcement
-from smass_facilities.models import Building
+from smass_facilities.models import Building, Room
 from smass_organization.models import (
     OrganizationMembership, OrganizationUnit, StudentRecord,
 )
@@ -130,6 +130,10 @@ class WorkspaceFixture(TestCase):
 
         cls.building = Building.objects.create(
             code='T-B-A', name='测试教学楼', campus='主校区')
+        cls.room = Room.objects.create(
+            code='T-ROOM-1', name='测试研讨室', building=cls.building,
+            room_type='meeting', capacity=20, status='open',
+            requires_approval=True, is_active=True)
 
         cls.announcement = forum_services.create_announcement(
             cls.admin, '测试公告', '测试公告正文', 'student')
@@ -252,6 +256,40 @@ class StudentWorkspaceTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(LeaveRequest.objects.filter(
             record=self.record, reason='产品层测试请假').exists())
+
+    def test_student_creates_room_booking(self):
+        from smass_facilities.models import RoomBooking
+
+        self.login(self.student)
+        response = self.client.post('/student/bookings/create/', {
+            'room': self.room.pk,
+            'start_at': '2027-03-01T14:00',
+            'end_at': '2027-03-01T16:00',
+            'purpose': '产品层测试预约',
+            'attendees': '5',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(RoomBooking.objects.filter(
+            account=self.student, purpose='产品层测试预约').exists())
+
+    def test_student_cancels_own_booking(self):
+        from smass_facilities.models import RoomBooking
+
+        self.login(self.student)
+        self.client.post('/student/bookings/create/', {
+            'room': self.room.pk,
+            'start_at': '2027-03-02T14:00',
+            'end_at': '2027-03-02T16:00',
+            'purpose': '产品层测试取消',
+        })
+        booking = RoomBooking.objects.filter(
+            account=self.student, purpose='产品层测试取消').first()
+        self.assertIsNotNone(booking)
+        response = self.client.post(
+            '/student/bookings/{}/cancel/'.format(booking.pk), {'reason': '测试取消'})
+        self.assertEqual(response.status_code, 302)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'cancelled')
 
     def test_student_cannot_cancel_others_leave(self):
         other_leave = attendance_services.submit_leave(

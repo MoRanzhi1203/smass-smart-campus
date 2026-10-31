@@ -17,11 +17,11 @@
 $py = "C:\Users\MSIPC\.conda\envs\smass\python.exe"
 cd E:\PythonWeb\smass\.local\clean-dev
 
-# 首次或重建：隔离库 smass_product_dev + 合成数据
+# 首次或重建：唯一权威库 smass_product_dev + 合成演示数据（幂等）
 & $py scripts\product_bootstrap.py
 
-# 启动产品
-& $py manage.py runserver 127.0.0.1:8050 --settings=smass.settings_product
+# 启动产品（manage.py 默认即产品配置，可省略 --settings）
+& $py manage.py runserver 127.0.0.1:8050
 ```
 
 | 入口 | 说明 |
@@ -32,18 +32,23 @@ cd E:\PythonWeb\smass\.local\clean-dev
 | `/admin/` | 管理控制台（超管全局 / 学院管理员受限） |
 | `/notifications/`、`/profile/` | 三端共用的通知中心与个人中心 |
 
+> **数据库权威**：产品与测试只使用 `smass_product_dev`（测试库
+> `test_smass_product_dev`）。历史库 `smass` 已 **LOGICALLY_RETIRED**
+> （产品运行零依赖、无活动连接），等待物理删除授权；
+> 新环境不要把它写进 `DB_NAME`。
+
 - 三端页面清单与操作手册：[`docs/SMASS_Product_Workspaces.md`](docs/SMASS_Product_Workspaces.md)
-- 历史数据迁移与回滚：[`docs/SMASS_Legacy_Migration_Report.md`](docs/SMASS_Legacy_Migration_Report.md)
-- 正式库 `smass` **只读**；产品使用独立隔离库。
+- 旧库退役与新版数据库正式化：[`docs/SMASS_Database_Unification/11_Legacy_Decommission.md`](docs/SMASS_Database_Unification/11_Legacy_Decommission.md)
+- 历史数据迁移（仅历史工具，不是启动必需）：[`docs/SMASS_Legacy_Migration_Report.md`](docs/SMASS_Legacy_Migration_Report.md)
 
 ### 验收命令
 
 ```powershell
-& $py manage.py test smass_workspace --settings=smass.settings_product   # 产品层 40 例
+& $py manage.py test smass_workspace --settings=smass.settings_product   # 产品层 42 例
 & $py scripts\product_smoke.py                                           # 三端页面冒烟
 & $py scripts\product_e2e.py --base http://127.0.0.1:8050                # Chromium 27 项
-& $py scripts\product_grant_check.py                                     # 角色授予生效
-& $py scripts\product_consistency.py                                     # 跨端状态一致
+& $py scripts\product_detached_full_test.py                              # 断库全业务验证
+& $py scripts\db_unify_dependency_scan.py                                # 旧库运行时依赖
 ```
 
 ---
@@ -54,7 +59,7 @@ cd E:\PythonWeb\smass\.local\clean-dev
 |---|---|---|
 | Python | 3.12 | 推荐用 Conda 独立环境 |
 | Django | 5.2.13 | 单体架构，无前后端分离 |
-| MySQL | 8.0 | 正式库 `smass`；产品隔离库 `smass_product_dev` |
+| MySQL | 8.0 | 唯一权威库 `smass_product_dev`；历史库 `smass` 已逻辑退役 |
 | 驱动 | PyMySQL（默认）/ mysqlclient | 见 `smass/__init__.py` 的适配逻辑 |
 | 前端 | 产品层自建统一设计系统（`static/workspace/app.css`）；历史功能页保留 Bootstrap | 三端同一 shell，仅切换强调色 |
 | Excel | openpyxl | 批量导入 / 模版下载 |

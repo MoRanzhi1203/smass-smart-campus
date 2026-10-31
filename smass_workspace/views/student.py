@@ -259,7 +259,7 @@ def bookings(request):
 def booking_create(request):
     from smass_facilities import services as facility_services
     from smass_facilities.models import Room
-    from smass_facilities.services import BookingError
+    from smass_facilities.services import FacilityError
 
     room = Room.objects.filter(pk=request.POST.get('room') or 0).first()
     start_at = parse_datetime(request.POST.get('start_at', '') or '')
@@ -291,7 +291,7 @@ def booking_create(request):
 def booking_cancel(request, pk):
     from smass_facilities import services as facility_services
     from smass_facilities.models import RoomBooking
-    from smass_facilities.services import BookingError
+    from smass_facilities.services import FacilityError
 
     booking = RoomBooking.objects.filter(pk=pk).first()
     if booking is None:
