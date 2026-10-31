@@ -28,7 +28,8 @@
 **硬约束**：
 
 - 本轮所有脚本对正式库只建立只读连接，执行前后比对指纹
-  （`940a687d…`），实测未变；
+  （迁移工具源指纹 `940a687d…`，`db_fingerprint.py` 正式库指纹
+`b914b39c…`；两套算法各自前后一致），实测未变；
 - 任何写操作的目标库必须命中 `smass_product_dev` 或
   `smass_unified_verify` 前缀，且从 Django `settings.DATABASES` 读取实际库名
   （不依赖环境变量名称推断）；
@@ -180,4 +181,4 @@ contenttypes/auth → r21_account → r22_account → smass_organization
 | 断库运行 | PASS（重命名 16 张旧表后三端 13 页全部 200/302） |
 | 回滚→再迁移→校验 | PASS |
 | 运行时旧库依赖 | 0（`scripts/db_unify_dependency_scan.py`） |
-| 正式库指纹 | `940a687d…` 未变 |
+| 正式库指纹 | `940a687d`（迁移算法）/ `b914b39c`（db_fingerprint）均未变 |
