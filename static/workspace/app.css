@@ -928,6 +928,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .ws-table td:last-child.is-num {
   font-variant-numeric: tabular-nums;
   text-align: right;
+  white-space: nowrap;
 }
 
 .ws-badge {
@@ -1039,6 +1040,12 @@ ul { margin: 0; padding: 0; list-style: none; }
   .ws-page-head h1 { font-size: 20px; }
   .ws-card-head { padding: 12px 14px; }
   .ws-btn { min-height: 36px; }
+}
+
+@media (max-width: 480px) {
+  .ws-topbar-title { min-width: 0; }
+  .ws-topbar-title span { display: none; }
+  .ws-topbar-title strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 
 @media (prefers-reduced-motion: reduce) {
