@@ -1,7 +1,8 @@
 """教师工作台视图（含辅导员扩展）。
 
 对象级范围由 ``permissions.scoped_student_records`` 统一判定：
-教师只能看到自己教学班的学生，辅导员只能看到自己负责班级的学生。
+教师看任课教学班学生；辅导员在此基础上叠加负责班级学生（并集），
+列表、详情、审批共用同一范围。
 """
 from __future__ import annotations
 
@@ -238,7 +239,8 @@ def attendance_close(request, pk):
 @require_GET
 @teacher_only
 def students(request):
-    students_list = svc.my_students(request.user)
+    students_list = perms.scoped_student_records(request.user).select_related(
+        'unit', 'unit__parent').order_by('student_no')
     section_map = svc.student_section_map(request.user)
     rows = [{'student': student,
              'sections': section_map.get(student.account_id, [])}
@@ -247,6 +249,7 @@ def students(request):
         request,
         rows=rows,
         student_count=len(rows),
+        is_counselor=perms.is_counselor(request.user),
         counselor=svc.counselor_overview(request.user),
     ))
 

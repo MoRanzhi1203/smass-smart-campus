@@ -1,0 +1,95 @@
+# 01 功能任务矩阵
+
+> 状态：`TODO` / `IN_PROGRESS` / `IMPLEMENTED` / `VERIFIED` / `BLOCKED`
+> `VERIFIED` 必须有：代码改动 + 测试证据 + 页面证据（必要时截图）。
+> 审计映射：`docs/SMASS_System_Function_Audit/` 的功能 ID / 问题 ID。
+
+---
+
+## A 安全与数据一致性
+
+| ID | 任务 | 审计映射 | 缺口 | 状态 | 证据 |
+|---|---|---|---|---|---|
+| A01 | 兼课辅导员对象范围（教学班 ∪ 负责班级） | M5-F03/F04、P1-01 | P1-01 | **VERIFIED** | `permissions.teacher_scope_students`；`teacher.py::students`；4 例新测试（46 例全绿） |
+| A02 | 统一 RBAC 与业务守卫 | P2-07、M2-F09 | P2-07 | TODO | — |
+| A03 | 敏感操作安全（MFA/step-up/审计接入） | M22-F06、P1-05 | P1-05 | TODO | — |
+| A04 | 数据权威源（Profile/Record/Notification） | 02_Model_Consolidation | P2-05/P2-06 | TODO | 设计已定，代码未改 |
+
+---
+
+## B UI 设计系统
+
+| ID | 任务 | 状态 | 证据 |
+|---|---|---|---|
+| B01 | 视觉方向（Modern Campus SaaS） | IMPLEMENTED | `app.css` 顶部注释与令牌 |
+| B02 | 设计令牌统一（品牌/语义/间距/圆角） | **VERIFIED** | `:root` 全量令牌；12 视口截图 |
+| B03 | 布局基线（顶栏 62、侧栏 248、内边距 24–28） | IMPLEMENTED | 折叠侧栏未实现 |
+| B04 | 字体与图标（系统字体栈 + 19 个线性 SVG） | IMPLEMENTED | `base.html` symbols |
+| B05 | 组件体系（AppShell/Header/Sidebar/PageHeader/StatCard/DataTable/FilterBar/Pagination/Modal/…） | IN_PROGRESS | 已有 Shell/Header/Sidebar/PageHeader/StatCard/Badge/Empty/Alert；DataTable/分页/Modal/Toast/ConfirmDialog/Tabs 待补 |
+| B06 | 暗色模式 | TODO | 预留 `--smass-*`，未实现 |
+
+---
+
+## C 学生端闭环
+
+| ID | 任务 | 审计映射 | 状态 | 说明 |
+|---|---|---|---|---|
+| C01 | 选课/退课 | M7、P1-04 | TODO | 服务已存在（R5），产品无入口 |
+| C02 | 签到/补签/销假/审批通知 | M9-F02/F08/F11 | TODO | 服务存在 |
+| C03 | 活动详情/候补/签到/学分 | M12-F05/F08 | TODO | 部分已有 |
+| C04 | 社团详情/退社/任职 | M13-F03/F04 | TODO | 服务存在 |
+| C05 | 场地签到/释放 | M14-F06 | TODO | 服务存在 |
+| C06 | 账单详情/退费申请 | M16-F03/F04 | TODO | 服务存在 |
+| C07 | 学籍变更申请/寝室/通知已读 | M4-F06、M11 | TODO | 需先补模型/约束 |
+
+---
+
+## D 教师端
+
+| ID | 任务 | 审计映射 | 状态 | 说明 |
+|---|---|---|---|---|
+| D01 | 今日课程/教学班/名单/导出/周次 | M5、M8 | IN_PROGRESS | 周次依赖 F01 |
+| D02 | 批量登记/缺勤/补签审批/统计 | M9 | TODO | 服务存在 |
+| D03 | 审批分类/驳回理由/已办/历史 | M10 | TODO | 需补表单 |
+| D04 | 辅导员扩展一致性 | A01 | **VERIFIED（范围）** | 班级活动/组织信息待补 |
+
+---
+
+## E 管理端
+
+| ID | 任务 | 审计映射 | 状态 | 说明 |
+|---|---|---|---|---|
+| E01 | 组织 CRUD/移动/停用 | M3 | TODO | R4 服务可复用 |
+| E02 | 教师档案 CRUD/任课/组织 | M5-F06、M23-F03 | TODO | 需新服务 |
+| E03 | 排课产品化（求解/冲突/发布） | M8-F05/F06 | TODO | R11 求解器复用 |
+| E04 | 工作流定义/节点/实例 | M10 | TODO | R6 服务复用 |
+| E05 | 社团审批/任职/活动管理 | M12/M13 | TODO | — |
+| E06 | 财务收费项/账单/退费 | M16 | TODO | — |
+| E07 | 数据导入导出产品化 | M18 | TODO | S25 复用 |
+| E08 | 统计筛选/分页/监控/审计查询 | M19/M21 | TODO | — |
+
+---
+
+## F 联动/性能/无障碍
+
+| ID | 任务 | 状态 | 说明 |
+|---|---|---|---|
+| F01 | 教学周/单双周/调停课 | TODO | 需改 `ScheduleEntry` + 迁移 |
+| F02 | 业务事件通知（幂等 event_key） | TODO | 请假/补签/活动/社团/场地/排课 |
+| F03 | 列表分页/搜索/排序/导出权限 | TODO | 管理端列表当前有上限 |
+| F04 | 受控后台任务（探针/清理/通知） | TODO | 不引入分布式设施 |
+| F05 | 性能（N+1/索引/聚合/慢请求） | TODO | 需基准数据 |
+| F06 | 键盘/焦点/标签/对比度/WCAG | IN_PROGRESS | focus-visible 已统一；扫描未接入产品 |
+
+---
+
+## 本轮新增测试
+
+| 测试 | 内容 | 结果 |
+|---|---|---|
+| `test_counselor_sees_teaching_section_student` | 兼课辅导员访问教学班学生详情 | 200 |
+| `test_list_merges_teaching_and_counselor_scope` | 列表同时含两类学生 | PASS |
+| `test_unrelated_student_still_403` | 无关学生仍 403 | PASS |
+| `test_revoked_counselor_loses_class_scope` | 撤销任职后失去班级范围 | 403 |
+
+产品层合计 **46 例**（原 42 + 4），全部通过。

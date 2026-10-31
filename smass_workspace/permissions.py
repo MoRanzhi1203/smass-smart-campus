@@ -187,8 +187,36 @@ def college_unit_ids(account) -> list:
     return list(collected)
 
 
+def teaching_students(account):
+    """本人任课教学班内的学生（教师范围的唯一实现）。"""
+    from smass_academic.models import Enrollment, TeachingAssignment
+
+    section_ids = list(TeachingAssignment.objects.filter(
+        account=account, revoked_at__isnull=True).values_list(
+        'section_id', flat=True))
+    if not section_ids:
+        return StudentRecord.objects.none()
+    account_ids = list(Enrollment.objects.filter(
+        section_id__in=section_ids).exclude(
+        status='dropped').values_list('account_id', flat=True))
+    if not account_ids:
+        return StudentRecord.objects.none()
+    return StudentRecord.objects.filter(account_id__in=account_ids)
+
+
+def teacher_scope_students(account):
+    """教师端学生范围：任课教学班 ∪ 辅导员负责班级（复合身份取并集）。
+
+    兼课辅导员过去只命中辅导员分支，导致教学班学生在列表可见、
+    详情却 403；统一取并集后列表、详情、审批使用同一范围。
+    """
+    if is_counselor(account):
+        return (counselor_students(account) | teaching_students(account)).distinct()
+    return teaching_students(account)
+
+
 def scoped_student_records(account):
-    """当前账号可见的学籍集合。"""
+    """当前账号可见的学籍集合（所有对象级校验的唯一入口）。"""
     if not is_authenticated(account):
         return StudentRecord.objects.none()
     if is_system_admin(account):
@@ -196,18 +224,7 @@ def scoped_student_records(account):
     if is_college_admin(account):
         ids = college_unit_ids(account)
         return StudentRecord.objects.filter(unit_id__in=ids)
-    if is_counselor(account):
-        return counselor_students(account)
-    # 教师：本人教学班内的学生
-    from smass_academic.models import Enrollment, TeachingAssignment
-
-    section_ids = list(TeachingAssignment.objects.filter(
-        account=account, revoked_at__isnull=True).values_list(
-        'section_id', flat=True))
-    account_ids = list(Enrollment.objects.filter(
-        section_id__in=section_ids).exclude(
-        status='dropped').values_list('account_id', flat=True))
-    return StudentRecord.objects.filter(account_id__in=account_ids)
+    return teacher_scope_students(account)
 
 
 # ---------------------------------------------------------------------------

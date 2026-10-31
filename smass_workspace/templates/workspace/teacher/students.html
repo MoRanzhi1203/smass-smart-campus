@@ -1,19 +1,19 @@
 {% extends "workspace/base.html" %}
 {% block title %}学生事务{% endblock %}
 {% block topbar_title %}学生事务{% endblock %}
-{% block topbar_sub %}我的授课学生{% endblock %}
+{% block topbar_sub %}我的授课与负责学生{% endblock %}
 
 {% block content %}
 <div class="ws-page-head">
   <div>
     <div class="ws-eyebrow">学生事务</div>
     <h1>学生事务</h1>
-    <p class="ws-sub">共 {{ student_count }} 名学生 · 仅展示本人教学班内的学生</p>
+    <p class="ws-sub">共 {{ student_count }} 名学生 · 范围：任课教学班{% if is_counselor %} + 负责班级{% endif %}</p>
   </div>
 </div>
 
 <section class="ws-card">
-  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">数据范围由教学班决定</span></div>
+  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">列表、详情与审批使用同一数据范围</span></div>
   {% if rows %}
     <div class="ws-table-wrap">
       <table class="ws-table">

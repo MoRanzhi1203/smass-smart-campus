@@ -364,6 +364,67 @@ class CounselorScopeTests(WorkspaceFixture):
         self.assertContains(response, '测试学生')
 
 
+class CounselorTeachingOverlapTests(WorkspaceFixture):
+    """兼课辅导员：教学班与负责班级取并集，列表/详情一致。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_academic.models import (
+            Course, Enrollment, TeachingAssignment, TeachingSection,
+        )
+
+        cls.course2 = Course.objects.create(
+            code='T-CS102', title='测试课程二', credit=2)
+        cls.section2 = TeachingSection.objects.create(
+            term=cls.term, course=cls.course2, code='B', capacity=20)
+        TeachingAssignment.objects.create(section=cls.section2,
+                                         account=cls.counselor)
+        Enrollment.objects.create(section=cls.section2, account=cls.outsider)
+
+        cls.stranger = Account.objects.create_user(
+            't_stranger', cls.password, display_name='无关学生',
+            person_type='student')
+        cls.stranger.must_change_password = False
+        cls.stranger.save()
+        StudentProfile.objects.create(
+            account=cls.stranger, student_no='T2024099', name='无关学生',
+            college_name='其他学院', classes_name='机械2401')
+        cls.stranger_record = StudentRecord.objects.create(
+            student_no='T2024099', name='无关学生', account=cls.stranger,
+            unit=cls.other_class, status='enrolled', enrolled_at=date(2024, 9, 1))
+
+    def test_counselor_sees_teaching_section_student(self):
+        self.login(self.counselor)
+        response = self.client.get(
+            '/teacher/students/{}/'.format(self.outsider_record.pk))
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_merges_teaching_and_counselor_scope(self):
+        self.login(self.counselor)
+        body = self.client.get('/teacher/students/').content.decode('utf-8')
+        self.assertIn('T2024003', body)  # 教学班学生（外院）
+        self.assertIn('T2024001', body)  # 负责班级学生
+
+    def test_unrelated_student_still_403(self):
+        self.login(self.counselor)
+        response = self.client.get(
+            '/teacher/students/{}/'.format(self.stranger_record.pk))
+        self.assertEqual(response.status_code, 403)
+
+    def test_revoked_counselor_loses_class_scope(self):
+        from django.utils import timezone
+
+        from smass_organization.models import OrganizationMembership
+
+        OrganizationMembership.objects.filter(
+            account=self.counselor).update(ended_at=timezone.now())
+        self.login(self.counselor)
+        response = self.client.get(
+            '/teacher/students/{}/'.format(self.record.pk))
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
