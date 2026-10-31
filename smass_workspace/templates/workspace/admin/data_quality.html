@@ -1,0 +1,67 @@
+{% extends "workspace/base.html" %}
+{% block title %}数据质量{% endblock %}
+{% block topbar_title %}数据质量{% endblock %}
+{% block topbar_sub %}权威源一致性检查（只读）{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">数据治理</div>
+    <h1>数据质量</h1>
+    <p class="ws-sub">检查学籍、档案、教师工号、通知接收人与组织层级的一致性；只读，不修改数据。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:admin_data_exchange' %}">数据导入导出</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">问题总数</div><div class="ws-stat-value">{{ total_issues }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">学籍</div><div class="ws-stat-value">{{ counts.records }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">学生档案</div><div class="ws-stat-value">{{ counts.profiles }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">通知</div><div class="ws-stat-value">{{ counts.notifications }}</div></div>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>问题明细</h2><span class="ws-hint">最多展示 {{ issues|length }} 条</span></div>
+  {% if issues %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>类型</th><th>说明</th><th>详情</th></tr></thead>
+        <tbody>
+          {% for item in issues %}
+            <tr>
+              <td><span class="ws-badge is-warning">{{ item.title }}</span></td>
+              <td class="is-muted">{{ item.kind }}</td>
+              <td>{{ item.detail }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="ws-empty">
+      <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+      <b>未发现一致性问题</b>
+      <p>学籍与档案一致、教师工号匹配、通知接收人存在、班级上级为专业。</p>
+    </div>
+  {% endif %}
+</section>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>检查口径</h2></div>
+  <div class="ws-card-body">
+    <table class="ws-table">
+      <thead><tr><th>类别</th><th>检查内容</th></tr></thead>
+      <tbody>
+        <tr><td>学籍绑定</td><td>StudentRecord 是否关联 Account</td></tr>
+        <tr><td>学号/姓名</td><td>StudentProfile 与 StudentRecord 是否一致</td></tr>
+        <tr><td>教师工号</td><td>TeacherProfile.teacher_no 与登录名是否一致</td></tr>
+        <tr><td>通知</td><td>Notification.recipient 是否仍能匹配账号</td></tr>
+        <tr><td>组织层级</td><td>班级上级是否为专业</td></tr>
+      </tbody>
+    </table>
+    <p class="ws-sub" style="margin-top:12px">通知 recipient 仍为 login_name 字符串；改为账号外键需要独立迁移窗口与数据回填，不在本页处理。</p>
+  </div>
+</section>
+{% endblock %}

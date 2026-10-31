@@ -1438,6 +1438,50 @@ class StudentChangeRequestTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class DataQualityTests(WorkspaceFixture):
+    """A04：数据权威源一致性检查。"""
+
+    def test_detects_profile_mismatch(self):
+        from r21_account.models import StudentProfile
+        from smass_workspace.services import quality
+
+        profile = StudentProfile.objects.get(account=self.student)
+        profile.student_no = 'T9999999'
+        profile.save(update_fields=['student_no'])
+        result = quality.check_all()
+        kinds = [item['kind'] for item in result['issues']]
+        self.assertIn('profile_mismatch', kinds)
+
+    def test_detects_orphan_notification(self):
+        from smass_workspace.services import quality
+        from smass_workflow.services import notify
+
+        notify('ghost_user', '孤立通知', event_key='quality:1')
+        result = quality.check_all()
+        self.assertIn('orphan_notification',
+                      [item['kind'] for item in result['issues']])
+
+    def test_detects_bad_class_parent(self):
+        from smass_organization.models import OrganizationUnit
+        from smass_workspace.services import quality
+
+        OrganizationUnit.objects.create(
+            code='T-BAD-CLS', name='非法班级', unit_type='class',
+            parent=self.college)
+        result = quality.check_all()
+        self.assertIn('class_parent',
+                      [item['kind'] for item in result['issues']])
+
+    def test_page_render_and_scope(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/data-quality/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '数据质量')
+        self.login(self.college_admin)
+        denied = self.client.get('/admin/data-quality/')
+        self.assertEqual(denied.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

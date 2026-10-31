@@ -90,6 +90,7 @@ urlpatterns = [
     path('finance/bills/create/', views.bill_create, name='admin_bill_create'),
     path('finance/refunds/<int:pk>/<str:action>/', views.refund_action,
          name='admin_refund_action'),
+    path('data-quality/', views.data_quality, name='admin_data_quality'),
     path('data-exchange/', views.data_exchange, name='admin_data_exchange'),
     path('data-exchange/preview/', views.data_import_preview,
          name='admin_data_import_preview'),

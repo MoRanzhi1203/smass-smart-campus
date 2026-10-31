@@ -1252,6 +1252,16 @@ def refund_action(request, pk, action):
 
 @require_GET
 @admin_only
+@perms.require_system_admin
+def data_quality(request):
+    from ..services import quality
+
+    return render(request, 'workspace/admin/data_quality.html', _ctx(
+        request, **quality.check_all()))
+
+
+@require_GET
+@admin_only
 def data_exchange(request):
     return render(request, 'workspace/admin/data_exchange.html', _ctx(
         request, **svc.data_exchange(request.user)))

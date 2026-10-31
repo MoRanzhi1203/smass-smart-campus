@@ -119,6 +119,7 @@ ADMIN_SECTIONS = (
         NavItem('通知公告', 'workspace:admin_notices', icon='bell'),
     )),
     NavSection('数据治理', (
+        NavItem('数据质量', 'workspace:admin_data_quality', icon='shield'),
         NavItem('数据导入导出', 'workspace:admin_data_exchange', icon='file'),
     )),
     NavSection('运维与安全', (

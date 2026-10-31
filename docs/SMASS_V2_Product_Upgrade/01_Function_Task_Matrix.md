@@ -13,7 +13,7 @@
 | A01 | 兼课辅导员对象范围（教学班 ∪ 负责班级） | M5-F03/F04、P1-01 | P1-01 | **VERIFIED** | `permissions.teacher_scope_students`；`teacher.py::students`；4 例新测试（46 例全绿） |
 | A02 | 统一 RBAC 与业务守卫 | P2-07、M2-F09 | P2-07 | TODO | — |
 | A03 | 敏感操作安全（MFA/step-up/审计接入） | M22-F06、P1-05 | P1-05 | **部分完成**：重置口令/角色授予撤销/导入提交已要求二次当前口令；TOTP、双人审批、策略引擎仍未注册产品 | 3 例测试（无口令拒绝、错误口令拒绝、正确口令通过） |
-| A04 | 数据权威源（Profile/Record/Notification） | 02_Model_Consolidation | P2-05/P2-06 | TODO | 设计已定，代码未改 |
+| A04 | 数据权威源（Profile/Record/Notification） | 02_Model_Consolidation | P2-05/P2-06 | **部分完成**：新增只读一致性检查（学籍绑定、学号/姓名、教师工号、孤立通知、班级上级）与管理端数据质量页；Notification 外键迁移未实施 | 4 例测试（不一致检出、孤立通知、层级异常、页面与越权） |
 
 ---
 
