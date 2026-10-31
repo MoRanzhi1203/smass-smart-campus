@@ -31,8 +31,11 @@
                     <form method="post" action="{% url 'workspace:teacher_leave_action' leave.pk 'approve' %}" data-once>
                       {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
                     </form>
-                    <form method="post" action="{% url 'workspace:teacher_leave_action' leave.pk 'reject' %}" data-once>
-                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    <form method="post" action="{% url 'workspace:teacher_leave_action' leave.pk 'reject' %}" style="display:flex;gap:6px" data-once>
+                      {% csrf_token %}
+                      <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                             style="width:130px;height:30px;font-size:12px" aria-label="请假驳回理由">
+                      <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
                     </form>
                   </div>
                 </td>
@@ -67,8 +70,11 @@
                     <form method="post" action="{% url 'workspace:teacher_makeup_action' makeup.pk 'approve' %}" data-once>
                       {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
                     </form>
-                    <form method="post" action="{% url 'workspace:teacher_makeup_action' makeup.pk 'reject' %}" data-once>
-                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    <form method="post" action="{% url 'workspace:teacher_makeup_action' makeup.pk 'reject' %}" style="display:flex;gap:6px" data-once>
+                      {% csrf_token %}
+                      <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
+                             style="width:130px;height:30px;font-size:12px" aria-label="补签驳回理由">
+                      <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
                     </form>
                   </div>
                 </td>
@@ -120,8 +126,11 @@
                     <form method="post" action="{% url 'workspace:teacher_booking_action' booking.pk 'approve' %}" data-once>
                       {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
                     </form>
-                    <form method="post" action="{% url 'workspace:teacher_booking_action' booking.pk 'reject' %}" data-once>
-                      {% csrf_token %}<button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    <form method="post" action="{% url 'workspace:teacher_booking_action' booking.pk 'reject' %}" style="display:flex;gap:6px" data-once>
+                      {% csrf_token %}
+                      <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="200"
+                             style="width:130px;height:30px;font-size:12px" aria-label="场地驳回理由">
+                      <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
                     </form>
                   </div>
                 </td>

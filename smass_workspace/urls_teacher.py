@@ -15,6 +15,8 @@ urlpatterns = [
          name='teacher_attendance_detail'),
     path('attendance/<int:pk>/mark/', views.attendance_mark,
          name='teacher_attendance_mark'),
+    path('attendance/<int:pk>/bulk/', views.attendance_bulk_mark,
+         name='teacher_attendance_bulk_mark'),
     path('attendance/<int:pk>/close/', views.attendance_close,
          name='teacher_attendance_close'),
     path('students/', views.students, name='teacher_students'),

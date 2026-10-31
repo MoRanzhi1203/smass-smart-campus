@@ -214,6 +214,44 @@ def attendance_mark(request, pk):
 
 @require_POST
 @teacher_only
+def attendance_bulk_mark(request, pk):
+    from django.db import transaction
+
+    from smass_attendance import services as attendance_services
+    from smass_attendance.models import AttendanceSession
+    from smass_attendance.services import AttendanceError
+    from smass_organization.models import StudentRecord
+
+    session = AttendanceSession.objects.filter(pk=pk).first()
+    if session is None:
+        messages.error(request, '考勤场次不存在。')
+        return redirect('/teacher/attendance/')
+    my_class_ids = set(svc.my_classes(request.user).values_list('pk', flat=True))
+    if session.created_by != request.user.login_name \
+            and session.unit_id not in my_class_ids:
+        messages.error(request, '当前账号无权登记该考勤。')
+        return redirect('/teacher/attendance/')
+
+    students = StudentRecord.objects.filter(unit=session.unit)
+    updated = 0
+    try:
+        with transaction.atomic():
+            for student in students:
+                status = (request.POST.get(
+                    'status_{}'.format(student.pk)) or '').strip()
+                if status not in ('present', 'late', 'absent', 'leave'):
+                    continue
+                attendance_services.teacher_mark(
+                    session, student, status, request.user)
+                updated += 1
+        messages.success(request, '已批量登记 {} 人。'.format(updated))
+    except (AttendanceError, PermissionError) as exc:
+        messages.error(request, '批量登记失败：{}'.format(exc))
+    return redirect('/teacher/attendance/{}/'.format(pk))
+
+
+@require_POST
+@teacher_only
 def attendance_close(request, pk):
     from smass_attendance import services as attendance_services
     from smass_attendance.models import AttendanceSession

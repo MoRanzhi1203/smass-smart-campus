@@ -641,6 +641,58 @@ class StudentActivityCheckinTests(WorkspaceFixture):
         self.assertIn('签到时间', response.content.decode('utf-8'))
 
 
+class TeacherBulkAttendanceTests(WorkspaceFixture):
+    """D02：教师批量登记与对象级权限。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_attendance.models import AttendanceSession
+
+        cls.session = AttendanceSession.objects.create(
+            unit=cls.klass, session_date=date.today(), period='第1-2节',
+            status='open', code='BULK01', created_by=cls.teacher.login_name)
+
+    def test_bulk_mark_records_all_students(self):
+        from smass_attendance.models import AttendanceRecord
+
+        self.login(self.teacher)
+        response = self.client.post(
+            '/teacher/attendance/{}/bulk/'.format(self.session.pk), {
+                'status_{}'.format(self.record.pk): 'present',
+                'status_{}'.format(self.record2.pk): 'absent',
+            }, follow=True)
+        self.assertContains(response, '已批量登记 2 人')
+        self.assertEqual(AttendanceRecord.objects.get(
+            session=self.session, record=self.record).status, 'present')
+        self.assertEqual(AttendanceRecord.objects.get(
+            session=self.session, record=self.record2).status, 'absent')
+
+    def test_other_teacher_cannot_bulk_mark(self):
+        from smass_attendance.models import AttendanceRecord
+
+        self.login(self.teacher2)
+        self.client.post(
+            '/teacher/attendance/{}/bulk/'.format(self.session.pk), {
+                'status_{}'.format(self.record.pk): 'present'})
+        self.assertFalse(AttendanceRecord.objects.filter(
+            session=self.session).exists())
+
+
+class TeacherApprovalReasonTests(WorkspaceFixture):
+    """D03：驳回理由必须落库并同步学生端。"""
+
+    def test_reject_leave_with_reason(self):
+        self.login(self.teacher)
+        response = self.client.post(
+            '/teacher/approvals/leave/{}/reject/'.format(self.leave.pk),
+            {'reason': '材料不齐'}, follow=True)
+        self.leave.refresh_from_db()
+        self.assertEqual(self.leave.status, 'rejected')
+        self.assertEqual(self.leave.reject_reason, '材料不齐')
+        self.assertContains(response, '请假已驳回')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

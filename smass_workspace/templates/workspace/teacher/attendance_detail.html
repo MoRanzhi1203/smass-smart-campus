@@ -26,8 +26,10 @@
 </div>
 
 <section class="ws-card">
-  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">共 {{ rows|length }} 人</span></div>
+  <div class="ws-card-head"><h2>学生名单</h2><span class="ws-hint">共 {{ rows|length }} 人 · 可一次提交全部登记</span></div>
   {% if rows %}
+  <form method="post" action="{% url 'workspace:teacher_attendance_bulk_mark' session.pk %}" data-once>
+    {% csrf_token %}
     <div class="ws-table-wrap">
       <table class="ws-table">
         <thead><tr><th>学号</th><th>姓名</th><th>当前状态</th><th>登记</th></tr></thead>
@@ -45,17 +47,13 @@
               </td>
               <td>
                 {% if session.status == 'open' %}
-                  <form method="post" action="{% url 'workspace:teacher_attendance_mark' session.pk %}" class="ws-inline-form" data-once>
-                    {% csrf_token %}
-                    <input type="hidden" name="record" value="{{ row.student.pk }}">
-                    <select class="ws-select" name="status" style="width:110px;height:30px;font-size:12px">
-                      <option value="present">出勤</option>
-                      <option value="late">迟到</option>
-                      <option value="absent">缺勤</option>
-                      <option value="leave">请假</option>
-                    </select>
-                    <button class="ws-btn is-sm" type="submit">登记</button>
-                  </form>
+                  <select class="ws-select" name="status_{{ row.student.pk }}" style="width:120px"
+                          aria-label="{{ row.student.name }} 的考勤状态">
+                    <option value="present" {% if not row.record or row.record.status == 'present' %}selected{% endif %}>出勤</option>
+                    <option value="late" {% if row.record.status == 'late' %}selected{% endif %}>迟到</option>
+                    <option value="absent" {% if row.record.status == 'absent' %}selected{% endif %}>缺勤</option>
+                    <option value="leave" {% if row.record.status == 'leave' %}selected{% endif %}>请假</option>
+                  </select>
                 {% else %}
                   <span class="is-muted">场次已结束</span>
                 {% endif %}
@@ -65,6 +63,13 @@
         </tbody>
       </table>
     </div>
+    {% if session.status == 'open' %}
+      <div class="ws-form-actions" style="padding:12px 18px">
+        <button class="ws-btn is-primary" type="submit">批量保存</button>
+        <span class="ws-hint">将按上方选择为全部学生写入（未登记的默认出勤）</span>
+      </div>
+    {% endif %}
+  </form>
   {% else %}
     <div class="ws-empty"><b>该班级暂无学生</b><p>学籍档案中尚未有学生归属此班级。</p></div>
   {% endif %}
