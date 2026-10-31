@@ -69,24 +69,29 @@
 
 ## 6. 本轮实测结果
 
+### 6.1 阶段验收（第 16 轮，基线较早）
+
 | 项 | 结果 |
 |---|---|
 | 套件 | 32 |
-| 用例总数 | **1868**（原 1802 + V2.0 新增 66） |
+| 用例总数 | 1868 |
 | 通过套件 | 31 / 32 |
-| 失败 | `tests_e2e` 1 例（全量运行中） |
-| 产品层 | 108 例，exit 0 |
-| 视觉 | 204 项，0 溢出 |
+| 失败 | `tests_e2e` 1 例（偶发，单独重跑 16/16 OK） |
+
+### 6.2 最终验收（V2.0 收尾）
+
+| 项 | 结果 |
+|---|---|
+| 套件 | **32** |
+| 用例总数 | **1896** |
+| 失败 | **0**（exit 0） |
+| 产品层 | **136 例** |
+| 明色视觉 | **204 项 / 0 溢出 / 0 空页 / PASS** |
+| 暗色视觉 | **68 项 / 0 溢出 / PASS** |
+| 无障碍（明/暗） | 各 **11 页 / 0 问题 / PASS** |
 | Git 准入 | PASS |
 
-**关于 `tests_e2e` 的唯一失败**：
-
-- 该套件走 legacy 配置 `smass.settings`，覆盖旧 app01 页面，**与本轮 V2.0 改动无代码交集**；
-- 单独重跑：`python manage.py test tests_e2e --settings=smass.settings` → **16/16 OK**；
-- 判定为已知非确定性（历史上该套件曾出现偶发），不作为 V2.0 回归失败；
-- 未修改该套件以“消除失败”，保持其独立证据价值。
-
-证据：`.local/evidence/v2/regression_v2.log`、`ui_visual_check_v2.json`、`phase/*.png`。
+证据：`.local/evidence/v2/regression_final.log`、`.local/evidence/v2/final/{visual_light,visual_dark,a11y_light,a11y_dark}.json`。
 
 ---
 
