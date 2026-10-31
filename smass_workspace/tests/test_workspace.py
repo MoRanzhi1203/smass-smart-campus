@@ -1118,6 +1118,50 @@ class AdminFinanceTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class AdminWorkflowTests(WorkspaceFixture):
+    """E04：流程创建、发布与实例发起。"""
+
+    def test_create_and_publish_flow(self):
+        from smass_workflow.models import WorkflowDefinition, WorkflowVersion
+
+        self.login(self.admin)
+        response = self.client.post('/admin/workflows/create/', {
+            'code': 'T-FLOW', 'name': '测试审批流程',
+            'description': 'V2 测试'}, follow=True)
+        self.assertContains(response, '流程已创建并发布')
+        definition = WorkflowDefinition.objects.get(code='T-FLOW')
+        self.assertTrue(WorkflowVersion.objects.filter(
+            definition=definition, status='active').exists())
+
+    def test_start_instance_creates_task(self):
+        from smass_workflow import blueprints
+        from smass_workflow.models import ApprovalTask, WorkflowInstance
+
+        definition, _version = blueprints.create_single_approval_flow(
+            'T-FLOW-2', '测试流程二')
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/workflows/instances/start/', {
+                'definition': definition.pk, 'subject_id': '测试事项'}, follow=True)
+        self.assertContains(response, '流程已发起')
+        instance = WorkflowInstance.objects.filter(
+            version__definition=definition).first()
+        self.assertIsNotNone(instance)
+        self.assertIn(instance.status, ('pending', 'running'))
+        self.assertTrue(ApprovalTask.objects.filter(
+            instance=instance, status='open').exists())
+
+    def test_college_admin_cannot_create_flow(self):
+        from smass_workflow.models import WorkflowDefinition
+
+        self.login(self.college_admin)
+        response = self.client.post('/admin/workflows/create/', {
+            'code': 'T-FLOW-X', 'name': '越权流程'})
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(WorkflowDefinition.objects.filter(
+            code='T-FLOW-X').exists())
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

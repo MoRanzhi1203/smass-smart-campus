@@ -13,6 +13,57 @@
   <div class="ws-page-actions"><a class="ws-btn" href="/r6/definitions/">流程编辑（专业工具）</a></div>
 </div>
 
+{% if is_super %}
+<div class="ws-grid ws-grid-2" style="margin-bottom:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>新建流程</h2><span class="ws-hint">单级审批模板：开始 → 审批 → 结束</span></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_workflow_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:8px">
+          <label for="wf-code">流程编码</label>
+          <input class="ws-input" id="wf-code" name="code" maxlength="32" required placeholder="如 LEAVE-EXTRA">
+        </div>
+        <div class="ws-field" style="margin-bottom:8px">
+          <label for="wf-name">流程名称</label>
+          <input class="ws-input" id="wf-name" name="name" maxlength="100" required>
+        </div>
+        <div class="ws-field" style="margin-bottom:10px">
+          <label for="wf-desc">说明</label>
+          <input class="ws-input" id="wf-desc" name="description" maxlength="200">
+        </div>
+        <button class="ws-btn is-primary" type="submit">创建并发布</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>发起流程实例</h2><span class="ws-hint">仅列出已有已发布版本的流程</span></div>
+    <div class="ws-card-body">
+      {% if published_definitions %}
+      <form method="post" action="{% url 'workspace:admin_workflow_instance_start' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:8px">
+          <label for="wf-def">流程</label>
+          <select class="ws-select" id="wf-def" name="definition" required>
+            {% for item in published_definitions %}<option value="{{ item.pk }}">{{ item.name }}（{{ item.code }}）</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ws-field" style="margin-bottom:10px">
+          <label for="wf-subject">业务对象</label>
+          <input class="ws-input" id="wf-subject" name="subject_id" maxlength="64" required placeholder="如 2026 年实验室借用申请">
+        </div>
+        <button class="ws-btn is-primary" type="submit">发起并提交审批</button>
+      </form>
+      <p class="ws-sub" style="margin-top:10px">发起后进入审批节点并生成待办；审批人不能是发起人本人。</p>
+      {% else %}
+        <div class="ws-empty is-compact"><b>还没有已发布流程</b><p>请先在左侧创建流程。</p></div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endif %}
+
 <section class="ws-card">
   <div class="ws-card-head"><h2>流程定义</h2><span class="ws-hint">{{ definitions|length }} 个</span></div>
   {% if definitions %}

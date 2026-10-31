@@ -852,8 +852,49 @@ def task_complete(request, pk):
 @require_GET
 @admin_only
 def workflows(request):
+    from smass_workflow.models import WorkflowDefinition
+
+    published = WorkflowDefinition.objects.filter(
+        versions__status='active').distinct()
     return render(request, 'workspace/admin/workflows.html', _ctx(
-        request, **svc.workflows()))
+        request, published_definitions=published, **svc.workflows()))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def workflow_create(request):
+    from smass_workflow import blueprints
+
+    try:
+        definition, version = blueprints.create_single_approval_flow(
+            request.POST.get('code'), request.POST.get('name'),
+            description=request.POST.get('description') or '')
+        messages.success(request, '流程已创建并发布：{}（版本 #{}）'.format(
+            definition.name, version.pk))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_workflows')
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def workflow_instance_start(request):
+    from smass_workflow import blueprints
+    from smass_workflow.models import WorkflowDefinition
+
+    definition = WorkflowDefinition.objects.filter(
+        pk=request.POST.get('definition') or 0).first()
+    try:
+        instance = blueprints.start_and_submit(
+            definition, subject_id=request.POST.get('subject_id') or '',
+            actor=request.user.login_name)
+        messages.success(request, '流程已发起（#{}），待办已生成'.format(
+            instance.pk))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '发起失败：{}'.format(exc))
+    return redirect('workspace:admin_workflows')
 
 
 # ---------------------------------------------------------------------------
