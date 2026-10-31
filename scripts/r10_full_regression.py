@@ -30,8 +30,8 @@ SUITES = [
     ('smass_api', 'smass.settings_r8'),
     ('r22_account', 'smass.settings_r22'),
     ('r21_account', 'smass.settings_r21'),
-    ('app01', None),
-    ('tests_e2e', None),
+    ('app01', 'smass.settings'),
+    ('tests_e2e', 'smass.settings'),
     # ---- DSH 新增模块（R12–R20 / S09–S19）----
     ('smass_enrollment', 'smass.settings_r12'),
     ('smass_attendance', 'smass.settings_r13'),
