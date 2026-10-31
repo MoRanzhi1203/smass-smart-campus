@@ -185,17 +185,100 @@ def record(request):
 def attendance(request):
     account = request.user
     overview = svc.attendance_overview(account)
+    record_obj = svc.student_record(account)
     scope = request.GET.get('scope', 'all')
     leaves = overview['leaves']
     if scope == 'pending':
         leaves = [item for item in leaves if item.status == 'submitted']
+
+    from smass_attendance.models import AttendanceSession, MakeupRequest
+
+    open_sessions = []
+    makeup_candidates = []
+    makeups = []
+    if record_obj is not None:
+        base = AttendanceSession.objects.filter(unit=record_obj.unit)
+        open_sessions = list(
+            base.filter(status='open').order_by('-session_date', '-created_at')[:5])
+        makeup_candidates = list(
+            base.filter(status='closed')
+            .exclude(makeup_requests__record=record_obj)
+            .exclude(records__record=record_obj)
+            .order_by('-session_date', '-created_at')[:10])
+        makeups = list(MakeupRequest.objects.filter(record=record_obj)
+                       .select_related('session')
+                       .order_by('-created_at')[:20])
+
     return render(request, 'workspace/student/attendance.html', _ctx(
         request,
         overview=overview,
+        record=record_obj,
         leaves=leaves,
         scope=scope,
         leave_types=_leave_types(),
+        open_sessions=open_sessions,
+        makeup_candidates=makeup_candidates,
+        makeups=makeups,
     ))
+
+
+@require_POST
+@student_only
+def attendance_sign(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_attendance import services as attendance_services
+    from smass_attendance.models import AttendanceSession
+
+    session = get_object_or_404(AttendanceSession, pk=pk)
+    code = (request.POST.get('code') or '').strip()
+    try:
+        attendance_services.sign_in(
+            session, request.user, code,
+            ip=request.META.get('REMOTE_ADDR', '')[:64])
+        messages.success(request, '签到成功：{} {}'.format(
+            session.session_date, session.period))
+    except attendance_services.AttendanceError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_attendance')
+
+
+@require_POST
+@student_only
+def makeup_submit(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_attendance import services as attendance_services
+    from smass_attendance.models import AttendanceSession
+
+    session = get_object_or_404(AttendanceSession, pk=pk)
+    record_obj = svc.student_record(request.user)
+    reason = (request.POST.get('reason') or '').strip()
+    try:
+        attendance_services.submit_makeup(
+            record_obj, session, reason, request.user)
+        messages.success(request, '补签申请已提交，等待教师审批')
+    except attendance_services.AttendanceError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_attendance')
+
+
+@require_POST
+@student_only
+def leave_close(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_attendance import services as attendance_services
+    from smass_attendance.models import LeaveRequest
+
+    record_obj = svc.student_record(request.user)
+    leave = get_object_or_404(LeaveRequest, pk=pk, record=record_obj)
+    try:
+        attendance_services.close_leave(leave, request.user)
+        messages.success(request, '已销假')
+    except attendance_services.AttendanceError as exc:
+        messages.error(request, str(exc))
+    return redirect('workspace:student_attendance')
 
 
 def _leave_types():

@@ -15,6 +15,27 @@
 {% if not record %}
   <div class="ws-alert is-warning"><span>当前账号未关联学籍档案，无法查询考勤或提交请假。</span></div>
 {% else %}
+{% if open_sessions %}
+<section class="ws-card" style="margin-bottom:16px">
+  <div class="ws-card-head"><h2>进行中的考勤</h2><span class="ws-hint">输入教师公布的签到码完成签到</span></div>
+  <div class="ws-card-body">
+    <div class="ws-grid ws-grid-2">
+      {% for session in open_sessions %}
+        <form method="post" action="{% url 'workspace:student_attendance_sign' session.pk %}" class="ws-field" data-once>
+          {% csrf_token %}
+          <label for="code-{{ session.pk }}">{{ session.session_date|date:"Y-m-d" }} · {{ session.period }}{% if session.topic %} · {{ session.topic }}{% endif %}</label>
+          <div style="display:flex;gap:8px">
+            <input class="ws-input" id="code-{{ session.pk }}" name="code" maxlength="8"
+                   placeholder="签到码" required autocomplete="off">
+            <button class="ws-btn is-primary" type="submit">签到</button>
+          </div>
+        </form>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <div class="ws-grid ws-grid-4">
   <div class="ws-stat"><div class="ws-stat-label">出勤</div><div class="ws-stat-value">{{ overview.counts.present|default:0 }}<small>次</small></div></div>
   <div class="ws-stat"><div class="ws-stat-label">迟到</div><div class="ws-stat-value">{{ overview.counts.late|default:0 }}<small>次</small></div></div>
@@ -82,6 +103,11 @@
                         {% csrf_token %}
                         <button class="ws-btn is-sm is-danger" type="submit">撤销</button>
                       </form>
+                    {% elif leave.status == 'approved' %}
+                      <form method="post" action="{% url 'workspace:student_leave_close' leave.pk %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm" type="submit">销假</button>
+                      </form>
                     {% endif %}
                   </td>
                 </tr>
@@ -94,6 +120,58 @@
           <div class="ws-empty-icon"><svg><use href="#ws-i-inbox"></use></svg></div>
           <b>{% if scope == 'pending' %}没有待审批的请假{% else %}暂无请假记录{% endif %}</b>
           <p>可在右侧提交新的请假申请。</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>补签</h2><span class="ws-hint">已结束考勤可申请补签，由教师审批</span></div>
+      {% if makeup_candidates %}
+        <div class="ws-card-body" style="border-bottom:1px solid var(--smass-border)">
+          <form method="post" action="{% url 'workspace:student_makeup_submit' makeup_candidates.0.pk %}" id="ws-makeup-form" data-once>
+            {% csrf_token %}
+            <div class="ws-form-grid">
+              <div class="ws-field">
+                <label for="makeup-session">考勤场次</label>
+                <select class="ws-select" id="makeup-session" name="session"
+                        onchange="document.getElementById('ws-makeup-form').action='/student/attendance/'+this.value+'/makeup/';">
+                  {% for session in makeup_candidates %}
+                    <option value="{{ session.pk }}">{{ session.session_date|date:"Y-m-d" }} · {{ session.period }} · {{ session.topic|default:"考勤" }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="ws-field">
+                <label for="makeup-reason">补签理由</label>
+                <input class="ws-input" id="makeup-reason" name="reason" maxlength="500" required placeholder="请说明未签到原因">
+              </div>
+            </div>
+            <div class="ws-form-actions"><button class="ws-btn is-primary" type="submit">提交补签申请</button></div>
+          </form>
+        </div>
+      {% endif %}
+      {% if makeups %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>考勤场次</th><th>理由</th><th>状态</th><th>审批人</th></tr></thead>
+            <tbody>
+              {% for item in makeups %}
+                <tr>
+                  <td>{{ item.session.session_date|date:"Y-m-d" }} · {{ item.session.period }}</td>
+                  <td class="is-muted">{{ item.reason|truncatechars:28 }}</td>
+                  <td><span class="ws-badge {% if item.status == 'approved' %}is-success{% elif item.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span>
+                    {% if item.reject_reason %}<div class="is-muted" style="font-size:11.5px">{{ item.reject_reason }}</div>{% endif %}
+                  </td>
+                  <td class="is-muted">{{ item.reviewed_by|default:"—" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% elif not makeup_candidates %}
+        <div class="ws-empty is-compact">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-check"></use></svg></div>
+          <b>暂无可补签场次</b>
+          <p>只有已结束且你缺勤的考勤场次可以申请补签。</p>
         </div>
       {% endif %}
     </section>

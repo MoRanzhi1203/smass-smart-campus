@@ -482,6 +482,81 @@ class StudentCourseEnrollTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 404)
 
 
+class StudentAttendanceActionTests(WorkspaceFixture):
+    """学生签到、补签、销假。"""
+
+    def _open_session(self, code='A1B2C3'):
+        from django.utils import timezone
+
+        from smass_attendance.models import AttendanceSession
+
+        return AttendanceSession.objects.create(
+            unit=self.klass, session_date=date.today(), period='第1-2节',
+            topic='测试考勤', status='open', code=code,
+            code_expires_at=timezone.now() + timedelta(minutes=10),
+            created_by='t_teacher')
+
+    def test_sign_in_with_code(self):
+        from smass_attendance.models import AttendanceRecord
+
+        session = self._open_session()
+        self.login(self.student)
+        response = self.client.post(
+            '/student/attendance/{}/sign/'.format(session.pk),
+            {'code': 'A1B2C3'}, follow=True)
+        self.assertContains(response, '签到成功')
+        self.assertTrue(AttendanceRecord.objects.filter(
+            session=session, record=self.record, status='present').exists())
+
+    def test_sign_in_wrong_code(self):
+        from smass_attendance.models import AttendanceRecord
+
+        session = self._open_session()
+        self.login(self.student)
+        response = self.client.post(
+            '/student/attendance/{}/sign/'.format(session.pk),
+            {'code': 'WRONG'}, follow=True)
+        self.assertContains(response, '签到码')
+        self.assertFalse(AttendanceRecord.objects.filter(
+            session=session, record=self.record).exists())
+
+    def test_makeup_submit(self):
+        from smass_attendance.models import (
+            AttendanceRecord, AttendanceSession, MakeupRequest,
+        )
+
+        session = AttendanceSession.objects.create(
+            unit=self.klass,
+            session_date=date.today() - timedelta(days=2),
+            period='第3-4节', status='closed')
+        AttendanceRecord.objects.create(
+            session=session, record=self.record, status='absent')
+        self.login(self.student)
+        response = self.client.post(
+            '/student/attendance/{}/makeup/'.format(session.pk),
+            {'reason': '身体不适未签到'}, follow=True)
+        self.assertContains(response, '补签申请已提交')
+        self.assertTrue(MakeupRequest.objects.filter(
+            record=self.record, session=session, status='submitted').exists())
+
+    def test_close_approved_leave(self):
+        from smass_attendance.models import LeaveRequest
+
+        leave = LeaveRequest.objects.create(
+            record=self.record, leave_type='sick',
+            start_date=date.today() - timedelta(days=3),
+            end_date=date.today() - timedelta(days=1),
+            reason='测试销假', status='approved',
+            submitted_by=str(self.student.pk), reviewed_by='t_teacher')
+        self.login(self.student)
+        response = self.client.post(
+            '/student/attendance/leave/{}/close/'.format(leave.pk),
+            follow=True)
+        leave.refresh_from_db()
+        self.assertEqual(leave.status, 'closed')
+        self.assertContains(response, '已销假')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',
