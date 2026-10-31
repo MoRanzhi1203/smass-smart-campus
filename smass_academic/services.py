@@ -319,14 +319,46 @@ def available_sections(account, term=None):
 
 
 def schedule_conflicts(account, section):
-    """教学班时间冲突检测。
+    """教学班时间冲突检测：基于已发布排课批次的 ``ScheduleEntry``。
 
-    当前 ``ScheduleEntry`` 绑定 ``LessonRequirement``（cohort/course），
-    尚未与 ``TeachingSection`` 建立时段映射（F01 教学周任务）。
-    在映射落地前返回空列表，避免用猜测的关联误拒选课；
-    容量、重复、学期与状态校验不受影响。
+    同一 (weekday, period) 槽位即视为冲突（保守策略，不区分单双周）。
+    无已发布排课或学生尚无选课时返回空列表。
     """
-    return []
+    from smass_academic.models import Enrollment
+    from smass_scheduling.models import RUN_PUBLISHED, ScheduleEntry
+
+    if account is None or section is None:
+        return []
+    section_ids = list(
+        Enrollment.objects.filter(account=account)
+        .exclude(status='dropped').exclude(section=section)
+        .values_list('section_id', flat=True))
+    if not section_ids:
+        return []
+    target_slots = set(
+        ScheduleEntry.objects.filter(
+            run__status=RUN_PUBLISHED, requirement__section=section)
+        .values_list('weekday', 'period'))
+    if not target_slots:
+        return []
+    weekdays = [slot[0] for slot in target_slots]
+    periods = [slot[1] for slot in target_slots]
+    labels = {1: '一', 2: '二', 3: '三', 4: '四', 5: '五', 6: '六', 7: '日'}
+    conflicts = []
+    entries = (ScheduleEntry.objects
+               .filter(run__status=RUN_PUBLISHED,
+                       requirement__section_id__in=section_ids,
+                       weekday__in=weekdays, period__in=periods)
+               .select_related('requirement__section__course')
+               .order_by('weekday', 'period'))
+    for entry in entries:
+        if (entry.weekday, entry.period) not in target_slots:
+            continue
+        course = entry.requirement.section.course
+        conflicts.append('周{} 第{}节 与《{}》冲突'.format(
+            labels.get(entry.weekday, entry.weekday), entry.period,
+            getattr(course, 'title', '课程')))
+    return conflicts
 
 
 def enroll_for_student(account, section):

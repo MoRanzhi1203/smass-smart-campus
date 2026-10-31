@@ -1554,6 +1554,63 @@ class MfaEnforcementTests(WorkspaceFixture):
         self.assertEqual(self.client.get('/admin/').status_code, 200)
 
 
+class CourseConflictTests(WorkspaceFixture):
+    """C01：选课时间冲突检测（基于已发布排课）。"""
+
+    def _build(self, same_slot=True):
+        from smass_academic.models import Course, TeachingSection
+        from smass_facilities.models import Building, Room
+        from smass_scheduling.models import (
+            Cohort, LessonRequirement, RUN_PUBLISHED, ScheduleEntry,
+            ScheduleRun)
+
+        run = ScheduleRun.objects.create(term=self.term, status=RUN_PUBLISHED)
+        cohort_a = Cohort.objects.create(code='T-COH-A', name='群体A')
+        cohort_b = Cohort.objects.create(code='T-COH-B', name='群体B')
+        course = Course.objects.create(code='T-CS102', title='数据结构', credit=3)
+        other = TeachingSection.objects.create(
+            term=self.term, course=course, code='T-CS102-A', capacity=30,
+            status='open')
+        requirement_a = LessonRequirement.objects.create(
+            run=run, section=self.section, teacher=self.teacher,
+            cohort=cohort_a)
+        requirement_b = LessonRequirement.objects.create(
+            run=run, section=other, teacher=self.teacher2, cohort=cohort_b)
+        room_a = Room.objects.filter(code='T-ROOM-1').first()
+        room_b = Room.objects.create(
+            code='T-ROOM-2', name='测试教室2',
+            building=Building.objects.first(), capacity=50)
+        ScheduleEntry.objects.create(
+            run=run, requirement=requirement_a, room=room_a,
+            teacher=self.teacher, cohort=cohort_a, weekday=1, period=1)
+        ScheduleEntry.objects.create(
+            run=run, requirement=requirement_b, room=room_b,
+            teacher=self.teacher2, cohort=cohort_b, weekday=1,
+            period=1 if same_slot else 3)
+        return other
+
+    def test_conflict_detected(self):
+        from smass_academic.services import schedule_conflicts
+
+        other = self._build(same_slot=True)
+        conflicts = schedule_conflicts(self.student, other)
+        self.assertEqual(len(conflicts), 1)
+        self.assertIn('测试课程', conflicts[0])
+
+    def test_no_conflict_in_different_slot(self):
+        from smass_academic.services import schedule_conflicts
+
+        other = self._build(same_slot=False)
+        self.assertEqual(schedule_conflicts(self.student, other), [])
+
+    def test_enroll_rejected_on_conflict(self):
+        from smass_academic import services as academic
+
+        other = self._build(same_slot=True)
+        with self.assertRaises(academic.AcademicError):
+            academic.enroll_for_student(self.student, other)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

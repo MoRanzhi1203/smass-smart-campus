@@ -44,7 +44,7 @@
 | 项 | 原因 | 后续 |
 |---|---|---|
 | 学籍变更申请 | 已完成：手机号/住宿/住址可在线申请（C07），审批后生效；**同字段去重为应用层校验**（MySQL 不支持条件唯一约束，数据库未创建该约束） | `StudentChangeRequest` + 服务 + 页面 |
-| 时间冲突检测（C01） | `ScheduleEntry` 未与 `TeachingSection` 建立时段映射 | 与 F01 后续一起补 |
+| 时间冲突检测 | 已完成：基于已发布排课的时段冲突（保守按 (weekday, period) 判定，未区分单双周） | `academic.schedule_conflicts` |
 | 组织申请（加入部门） | 无申请模型 | 与 C07 一并设计 |
 | 课表按日期（非周模板） | 排课为周模板 | 后续 `ScheduleEntryDate` |
 
