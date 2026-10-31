@@ -1048,6 +1048,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   .ws-topbar-title strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 
+/* ==========================================================================
+   B06 暗色模式（预留，未启用）
+   启用方式：在 @media (prefers-color-scheme: dark) 中覆盖
+   --smass-page-bg / --smass-surface / --smass-surface-muted /
+   --smass-text-primary / --smass-text-secondary / --smass-border，
+   并同步 --ws-bg / --ws-surface / --ws-text / --ws-border。
+   本轮不做完整暗色，避免未验证的低对比度样式上线。
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }

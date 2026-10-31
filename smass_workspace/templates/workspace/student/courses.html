@@ -51,11 +51,7 @@
       </table>
     </div>
   {% else %}
-    <div class="ws-empty">
-      <div class="ws-empty-icon"><svg><use href="#ws-i-book"></use></svg></div>
-      <b>暂无选课记录</b>
-      <p>教务选课完成后，课程会出现在这里；如你已选课仍未显示，请联系学院教务管理员。</p>
-    </div>
+    {% include "workspace/_empty_state.html" with icon="book" title="暂无选课记录" desc="教务选课完成后，课程会出现在这里；如你已选课仍未显示，请联系学院教务管理员。" %}
   {% endif %}
 </section>
 
@@ -85,11 +81,7 @@
       </table>
     </div>
   {% else %}
-    <div class="ws-empty">
-      <div class="ws-empty-icon"><svg><use href="#ws-i-book"></use></svg></div>
-      <b>暂无可选课程</b>
-      <p>当前学期没有开放且有余量的教学班，或你已选完全部课程。</p>
-    </div>
+    {% include "workspace/_empty_state.html" with icon="book" title="暂无可选课程" desc="当前学期没有开放且有余量的教学班，或你已选完全部课程。" %}
   {% endif %}
 </section>
 

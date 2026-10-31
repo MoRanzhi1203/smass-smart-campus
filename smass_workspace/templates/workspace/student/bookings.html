@@ -56,11 +56,7 @@
         </table>
       </div>
     {% else %}
-      <div class="ws-empty">
-        <div class="ws-empty-icon"><svg><use href="#ws-i-door"></use></svg></div>
-        <b>暂无预约记录</b>
-        <p>可在右侧选择场地并提交预约申请。</p>
-      </div>
+      {% include "workspace/_empty_state.html" with icon="door" title="暂无预约记录" desc="可在右侧选择场地并提交预约申请。" %}
     {% endif %}
   </section>
 

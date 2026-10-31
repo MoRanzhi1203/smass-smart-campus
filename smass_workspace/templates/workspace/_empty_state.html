@@ -1,0 +1,5 @@
+<div class="ws-empty{% if compact %} is-compact{% endif %}">
+  <div class="ws-empty-icon"><svg><use href="#ws-i-{{ icon|default:'inbox' }}"></use></svg></div>
+  <b>{{ title }}</b>
+  {% if desc %}<p>{{ desc }}</p>{% endif %}
+</div>

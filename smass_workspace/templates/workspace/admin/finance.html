@@ -33,7 +33,7 @@
           </table>
         </div>
       {% else %}
-        <div class="ws-empty is-compact"><b>暂无收费项</b><p>在右侧创建收费项后可生成账单。</p></div>
+        {% include "workspace/_empty_state.html" with compact=True icon="wallet" title="暂无收费项" desc="在右侧创建收费项后可生成账单。" %}
       {% endif %}
     </section>
 
@@ -72,7 +72,7 @@
           </table>
         </div>
       {% else %}
-        <div class="ws-empty is-compact"><b>没有待批退费</b><p>学生提交退费申请后会出现在这里。</p></div>
+        {% include "workspace/_empty_state.html" with compact=True icon="wallet" title="没有待批退费" desc="学生提交退费申请后会出现在这里。" %}
       {% endif %}
     </section>
 
@@ -97,7 +97,7 @@
           </table>
         </div>
       {% else %}
-        <div class="ws-empty is-compact"><b>暂无账单</b><p>生成账单后显示在这里。</p></div>
+        {% include "workspace/_empty_state.html" with compact=True icon="wallet" title="暂无账单" desc="生成账单后显示在这里。" %}
       {% endif %}
     </section>
   </div>
