@@ -693,6 +693,48 @@ class TeacherApprovalReasonTests(WorkspaceFixture):
         self.assertContains(response, '请假已驳回')
 
 
+class AdminOrganizationTests(WorkspaceFixture):
+    """E01：组织架构 CRUD、层级校验与越权。"""
+
+    def test_create_unit(self):
+        from smass_organization.models import OrganizationUnit
+
+        self.login(self.admin)
+        response = self.client.post('/admin/organizations/create/', {
+            'unit_type': 'college', 'code': 'T-COL-NEW',
+            'name': '新学院'}, follow=True)
+        self.assertContains(response, '组织单元已创建')
+        self.assertTrue(OrganizationUnit.objects.filter(
+            code='T-COL-NEW', name='新学院').exists())
+
+    def test_college_admin_cannot_create(self):
+        from smass_organization.models import OrganizationUnit
+
+        self.login(self.college_admin)
+        response = self.client.post('/admin/organizations/create/', {
+            'unit_type': 'college', 'code': 'T-COL-X', 'name': '越权学院'})
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(OrganizationUnit.objects.filter(
+            code='T-COL-X').exists())
+
+    def test_deactivate_blocked_by_students(self):
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/organizations/{}/update/'.format(self.klass.pk),
+            {'action': 'status', 'status': 'inactive'}, follow=True)
+        self.klass.refresh_from_db()
+        self.assertEqual(self.klass.status, 'active')
+        self.assertContains(response, '仍有学籍')
+
+    def test_move_unit(self):
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/organizations/{}/update/'.format(self.klass.pk),
+            {'action': 'move', 'parent': self.other_major.pk}, follow=True)
+        self.klass.refresh_from_db()
+        self.assertEqual(self.klass.parent_id, self.other_major.pk)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

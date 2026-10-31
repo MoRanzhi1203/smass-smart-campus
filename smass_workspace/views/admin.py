@@ -208,6 +208,56 @@ def organizations(request):
     ))
 
 
+@require_POST
+@perms.require_system_admin
+def organization_create(request):
+    from smass_organization import services as org_services
+    from smass_organization.models import OrganizationUnit
+
+    unit_type = (request.POST.get('unit_type') or '').strip()
+    code = (request.POST.get('code') or '').strip()
+    name = (request.POST.get('name') or '').strip()
+    parent = OrganizationUnit.objects.filter(
+        pk=request.POST.get('parent') or 0).first()
+    try:
+        org_services.create_unit(code=code, name=name, unit_type=unit_type,
+                                 parent=parent)
+        messages.success(request, '组织单元已创建：{}'.format(name))
+    except Exception as exc:  # noqa: BLE001 - 唯一约束/层级校验统一提示
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_organizations')
+
+
+@require_POST
+@perms.require_system_admin
+def organization_update(request, pk):
+    from django.shortcuts import get_object_or_404
+
+    from smass_organization import services as org_services
+    from smass_organization.models import OrganizationUnit
+
+    unit = get_object_or_404(OrganizationUnit, pk=pk)
+    action = (request.POST.get('action') or '').strip()
+    try:
+        if action == 'rename':
+            org_services.rename_unit(unit, request.POST.get('name'))
+            messages.success(request, '名称已更新')
+        elif action == 'move':
+            parent = OrganizationUnit.objects.filter(
+                pk=request.POST.get('parent') or 0).first()
+            org_services.move_unit(unit, parent,
+                                   actor=request.user.login_name)
+            messages.success(request, '上级已更新')
+        elif action == 'status':
+            org_services.set_unit_status(unit, request.POST.get('status'))
+            messages.success(request, '状态已更新')
+        else:
+            messages.error(request, '未知操作')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_organizations')
+
+
 # ---------------------------------------------------------------------------
 # 学籍与教学
 # ---------------------------------------------------------------------------

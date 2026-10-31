@@ -80,6 +80,32 @@ def create_unit(*, code, name, unit_type, parent=None, sort_order=0,
     )
 
 
+def rename_unit(unit, name, *, actor=''):
+    """重命名组织单元（编码不变）。"""
+    name = (name or '').strip()
+    if not name:
+        raise InvalidHierarchyError('组织名称不能为空')
+    unit.name = name[:100]
+    unit.save(update_fields=['name', 'updated_at'])
+    return unit
+
+
+def set_unit_status(unit, status, *, actor=''):
+    """启用/停用组织单元；停用前必须无启用下级与在册学籍。"""
+    if status not in ('active', 'inactive'):
+        raise InvalidHierarchyError('非法的组织状态')
+    if status == 'inactive':
+        if unit.children.filter(status='active').exists():
+            raise InvalidHierarchyError('存在启用中的下级组织，不能停用')
+        from smass_organization.models import StudentRecord
+
+        if StudentRecord.objects.filter(unit=unit).exists():
+            raise InvalidHierarchyError('该组织下仍有学籍，不能停用')
+    unit.status = status
+    unit.save(update_fields=['status', 'updated_at'])
+    return unit
+
+
 def move_unit(unit, new_parent, *, actor=''):
     """移动节点：校验 → 更新 → 记录审计。"""
     validate_parent(unit.unit_type, new_parent, moving_unit=unit)
