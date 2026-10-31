@@ -258,6 +258,55 @@ def organization_update(request, pk):
     return redirect('workspace:admin_organizations')
 
 
+@require_GET
+@admin_only
+def teachers(request):
+    from smass_organization.models import OrganizationUnit
+
+    rows = svc.teachers(request.user)
+    colleges = OrganizationUnit.objects.filter(
+        unit_type='college', status='active').order_by('name')
+    return render(request, 'workspace/admin/teachers.html', _ctx(
+        request, rows=rows, colleges=colleges))
+
+
+@require_POST
+@perms.require_system_admin
+def teacher_create(request):
+    try:
+        svc.create_teacher(
+            teacher_no=request.POST.get('teacher_no'),
+            name=request.POST.get('name'),
+            college_name=request.POST.get('college_name'),
+            password=request.POST.get('password'),
+            actor=request.user.login_name)
+        messages.success(request, '教师已创建（首次登录需修改口令）')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_teachers')
+
+
+@require_POST
+@perms.require_system_admin
+def teacher_update(request, pk):
+    from r21_account.models import TeacherProfile
+
+    profile = TeacherProfile.objects.filter(pk=pk).first()
+    if profile is None:
+        messages.error(request, '教师档案不存在')
+        return redirect('workspace:admin_teachers')
+    try:
+        svc.update_teacher(
+            profile,
+            name=request.POST.get('name', ''),
+            college_name=request.POST.get('college_name', ''),
+            actor=request.user.login_name)
+        messages.success(request, '教师档案已更新')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '更新失败：{}'.format(exc))
+    return redirect('workspace:admin_teachers')
+
+
 # ---------------------------------------------------------------------------
 # 学籍与教学
 # ---------------------------------------------------------------------------

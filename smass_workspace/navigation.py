@@ -96,6 +96,7 @@ ADMIN_SECTIONS = (
         NavItem('用户账号', 'workspace:admin_users', icon='users'),
         NavItem('角色与权限', 'workspace:admin_roles', icon='shield'),
         NavItem('组织架构', 'workspace:admin_organizations', icon='building'),
+        NavItem('教师档案', 'workspace:admin_teachers', icon='users'),
     )),
     NavSection('学籍与教学', (
         NavItem('学籍管理', 'workspace:admin_records', icon='file'),

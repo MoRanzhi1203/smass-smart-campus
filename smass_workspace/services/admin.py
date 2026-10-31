@@ -375,3 +375,91 @@ def data_exchange(account):
     except Exception:  # noqa: BLE001 - 适配器异常时降级为空清单
         datasets = []
     return {'datasets': datasets}
+
+
+# ---------------------------------------------------------------------------
+# 教师档案（E02）
+# ---------------------------------------------------------------------------
+def teachers(account):
+    """教师档案列表 + 任课数（系统管理员全局，学院管理员本院）。"""
+    from r21_account.models import TeacherProfile
+
+    queryset = TeacherProfile.objects.select_related('account').order_by('teacher_no')
+    if not perms.is_system_admin(account):
+        code = (getattr(account, 'scope_college', '') or '').strip()
+        queryset = queryset.filter(college_name=code) if code else queryset.none()
+    rows = list(queryset)
+    counts = {}
+    try:
+        from smass_academic.models import TeachingAssignment
+
+        for item in (TeachingAssignment.objects
+                     .filter(account_id__in=[row.account_id for row in rows],
+                             revoked_at__isnull=True)
+                     .values('account_id')
+                     .annotate(total=Count('id'))):
+            counts[item['account_id']] = item['total']
+    except Exception:  # noqa: BLE001 - 教学模块缺失时降级
+        counts = {}
+    for row in rows:
+        row.assignment_count = counts.get(row.account_id, 0)
+    return rows
+
+
+def create_teacher(*, teacher_no, name, college_name='', password='', actor=''):
+    """创建教师账号 + 档案 + 角色 + 学院关系（一次性完成）。"""
+    from r21_account import services as account_services
+    from r21_account.models import Account, TeacherProfile
+
+    teacher_no = (teacher_no or '').strip()
+    name = (name or '').strip()
+    college_name = (college_name or '').strip()
+    if not teacher_no or not name:
+        raise ValueError('工号与姓名必填')
+    if len(teacher_no) > 7:
+        raise ValueError('工号最多 7 位')
+    if len(password or '') < 8:
+        raise ValueError('初始口令至少 8 位')
+    if Account.objects.filter(login_name=teacher_no).exists():
+        raise ValueError('工号已存在')
+    if TeacherProfile.objects.filter(teacher_no=teacher_no).exists():
+        raise ValueError('教师档案已存在')
+
+    account = Account.objects.create_user(
+        login_name=teacher_no, password=password, display_name=name,
+        person_type='teacher')
+    account.must_change_password = True
+    account.save(update_fields=['must_change_password'])
+    account_services.grant_role(account, 'teacher', granted_by=actor or 'admin')
+    profile = TeacherProfile.objects.create(
+        account=account, teacher_no=teacher_no, name=name,
+        college_name=college_name)
+    if college_name:
+        from smass_organization.models import (
+            OrganizationMembership, OrganizationUnit,
+        )
+
+        unit = OrganizationUnit.objects.filter(
+            unit_type='college', name=college_name).first()
+        if unit is not None:
+            exists = OrganizationMembership.objects.filter(
+                account=account, unit=unit, ended_at__isnull=True).exists()
+            if not exists:
+                OrganizationMembership.objects.create(
+                    account=account, unit=unit, role='teacher',
+                    started_at=timezone.localdate())
+    return account, profile
+
+
+def update_teacher(profile, *, name='', college_name='', actor=''):
+    """更新教师档案并同步账号展示名。"""
+    name = (name or '').strip()
+    if name:
+        profile.name = name[:100]
+    profile.college_name = (college_name or '').strip()[:100]
+    profile.save(update_fields=['name', 'college_name'])
+    account = profile.account
+    if name:
+        account.display_name = profile.name
+        account.save(update_fields=['display_name'])
+    return profile

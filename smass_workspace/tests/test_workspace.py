@@ -735,6 +735,65 @@ class AdminOrganizationTests(WorkspaceFixture):
         self.assertEqual(self.klass.parent_id, self.other_major.pk)
 
 
+class AdminTeacherTests(WorkspaceFixture):
+    """E02：教师账号与档案 CRUD。"""
+
+    def test_create_teacher_creates_account_profile_role(self):
+        from r21_account.models import Account, TeacherProfile
+
+        self.login(self.admin)
+        response = self.client.post('/admin/teachers/create/', {
+            'teacher_no': 'TT9001', 'name': '新教师',
+            'college_name': '信息工程学院', 'password': 'Test#2026pass',
+        }, follow=True)
+        self.assertContains(response, '教师已创建')
+        account = Account.objects.get(login_name='TT9001')
+        self.assertEqual(account.person_type, 'teacher')
+        self.assertTrue(account.check_password('Test#2026pass'))
+        self.assertGreaterEqual(len(account.active_roles()), 1)
+        self.assertTrue(TeacherProfile.objects.filter(
+            account=account, teacher_no='TT9001', name='新教师').exists())
+
+    def test_duplicate_teacher_no_rejected(self):
+        from r21_account.models import Account
+
+        self.login(self.admin)
+        response = self.client.post('/admin/teachers/create/', {
+            'teacher_no': 'TT0001', 'name': '重复教师',
+            'college_name': '', 'password': 'Test#2026pass',
+        }, follow=True)
+        self.assertContains(response, '已存在')
+        from r21_account.models import TeacherProfile
+
+        self.assertEqual(TeacherProfile.objects.filter(
+            teacher_no='TT0001').count(), 1)
+        self.assertFalse(Account.objects.filter(login_name='TT0001').exists())
+
+    def test_college_admin_cannot_create_teacher(self):
+        from r21_account.models import Account
+
+        self.login(self.college_admin)
+        response = self.client.post('/admin/teachers/create/', {
+            'teacher_no': 'TT9002', 'name': '越权教师',
+            'college_name': '', 'password': 'Test#2026pass',
+        })
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Account.objects.filter(login_name='TT9002').exists())
+
+    def test_update_teacher_syncs_display_name(self):
+        from r21_account.models import TeacherProfile
+
+        profile = TeacherProfile.objects.get(teacher_no='TT0001')
+        self.login(self.admin)
+        response = self.client.post(
+            '/admin/teachers/{}/update/'.format(profile.pk), {
+                'name': '教师改名', 'college_name': '信息工程学院'}, follow=True)
+        self.assertContains(response, '教师档案已更新')
+        profile.refresh_from_db()
+        self.assertEqual(profile.name, '教师改名')
+        self.assertEqual(profile.account.display_name, '教师改名')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

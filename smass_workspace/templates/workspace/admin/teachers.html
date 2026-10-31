@@ -1,0 +1,97 @@
+{% extends "workspace/base.html" %}
+{% block title %}教师档案{% endblock %}
+{% block topbar_title %}教师档案{% endblock %}
+{% block topbar_sub %}教师账号、档案与任课关联{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">身份与组织</div>
+    <h1>教师档案</h1>
+    <p class="ws-sub">共 {{ rows|length }} 名教师{% if not is_super %}（本院范围）{% endif %} · 新建时会同时创建账号与教师角色</p>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>教师列表</h2><span class="ws-hint">工号唯一，任课数来自教学班分配</span></div>
+    {% if rows %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>工号</th><th>姓名</th><th>学院</th><th class="is-num">任课</th><th>账号</th>{% if is_super %}<th>操作</th>{% endif %}</tr></thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td class="is-strong">{{ row.teacher_no }}</td>
+                <td>{{ row.name }}</td>
+                <td class="is-muted">{{ row.college_name|default:"—" }}</td>
+                <td class="is-num">{{ row.assignment_count }}</td>
+                <td>{% if row.account.is_active %}<span class="ws-badge is-success">正常</span>{% else %}<span class="ws-badge is-neutral">停用</span>{% endif %}</td>
+                {% if is_super %}
+                <td>
+                  <form method="post" action="{% url 'workspace:admin_teacher_update' row.pk %}" style="display:flex;gap:4px;align-items:center" data-once>
+                    {% csrf_token %}
+                    <input class="ws-input" name="name" value="{{ row.name }}" maxlength="16"
+                           style="width:90px;height:28px;font-size:12px" aria-label="{{ row.teacher_no }} 姓名">
+                    <select class="ws-select" name="college_name" style="width:120px;height:28px;font-size:12px" aria-label="{{ row.teacher_no }} 学院">
+                      <option value="">（未设置）</option>
+                      {% for college in colleges %}
+                        <option value="{{ college.name }}" {% if row.college_name == college.name %}selected{% endif %}>{{ college.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <button class="ws-btn is-sm" type="submit">保存</button>
+                  </form>
+                </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty"><b>暂无教师档案</b><p>可通过右侧表单创建教师账号与档案。</p></div>
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    {% if is_super %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>新建教师</h2><span class="ws-hint">工号即登录名</span></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_teacher_create' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="teacher-no">工号</label>
+            <input class="ws-input" id="teacher-no" name="teacher_no" maxlength="7" required placeholder="最多 7 位">
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="teacher-name">姓名</label>
+            <input class="ws-input" id="teacher-name" name="name" maxlength="16" required>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="teacher-college">学院</label>
+            <select class="ws-select" id="teacher-college" name="college_name">
+              <option value="">（未设置）</option>
+              {% for college in colleges %}<option value="{{ college.name }}">{{ college.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:12px">
+            <label for="teacher-password">初始口令</label>
+            <input class="ws-input" id="teacher-password" name="password" type="password"
+                   minlength="8" required autocomplete="new-password" placeholder="至少 8 位，首次登录需修改">
+          </div>
+          <button class="ws-btn is-primary" type="submit">创建教师</button>
+        </form>
+      </div>
+    </section>
+    {% endif %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>说明</h2></div>
+      <div class="ws-card-body">
+        <p class="ws-sub" style="margin:0">创建后自动授予 <b>教师</b> 角色并建立学院组织关系；
+          任课关系仍由「教学班与选课」页分配。教师档案的工号与账号登录名一致，修改姓名会同步账号展示名。</p>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
