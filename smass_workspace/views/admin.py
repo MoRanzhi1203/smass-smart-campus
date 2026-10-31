@@ -1273,7 +1273,13 @@ def refund_action(request, pk, action):
 
     refund = get_object_or_404(RefundRequest, pk=pk)
     try:
-        if action == 'approve':
+        if action == 'review':
+            finance_services.review_refund(refund, request.user)
+            messages.success(request, '退费已复核，等待另一人批准')
+        elif action == 'finalize':
+            finance_services.finalize_refund(refund, request.user)
+            messages.success(request, '退费申请已批准')
+        elif action == 'approve':
             finance_services.approve_refund(refund, request.user)
             messages.success(request, '退费申请已批准')
         elif action == 'reject':

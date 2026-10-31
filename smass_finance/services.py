@@ -39,6 +39,7 @@ from .models import (
     REFUND_APPROVED,
     REFUND_PAID,
     REFUND_REJECTED,
+    REFUND_REVIEWED,
     REFUND_SUBMITTED,
     Bill,
     BillItem,
@@ -271,6 +272,44 @@ def approve_refund(refund, actor):
     refund.reviewed_at = timezone.now()
     refund.save(update_fields=['status', 'reviewed_by', 'reviewed_at'])
     logger.info('refund_approved id=%s by=%s', refund.pk, _actor_id(actor))
+    return refund
+
+
+def review_refund(refund, actor):
+    """A03 双人审批第一步：财务复核（复核人 ≠ 申请人）。"""
+    _require_finance(actor)
+    if refund.status != REFUND_SUBMITTED:
+        raise FinanceError('只有待审批的退费可以复核', code='BAD_STATE')
+    if _is_self(actor, refund.submitted_by):
+        raise FinanceError('不能复核自己提交的退费（职责分离）',
+                           code='SELF_APPROVAL_DENIED')
+    refund.status = REFUND_REVIEWED
+    refund.first_reviewed_by = _actor_id(actor)
+    refund.first_reviewed_at = timezone.now()
+    refund.save(update_fields=['status', 'first_reviewed_by',
+                               'first_reviewed_at'])
+    logger.info('refund_reviewed id=%s by=%s', refund.pk, _actor_id(actor))
+    return refund
+
+
+def finalize_refund(refund, actor):
+    """A03 双人审批第二步：批准（批准人 ≠ 复核人 ≠ 申请人）。"""
+    _require_finance(actor)
+    if refund.status == REFUND_SUBMITTED:
+        raise FinanceError('退费需先复核，再由另一人批准', code='NEED_REVIEW')
+    if refund.status != REFUND_REVIEWED:
+        raise FinanceError('只有已复核的退费可以批准', code='BAD_STATE')
+    actor_id = _actor_id(actor)
+    if actor_id == refund.first_reviewed_by:
+        raise FinanceError('复核人与批准人不能为同一人', code='SAME_REVIEWER')
+    if _is_self(actor, refund.submitted_by):
+        raise FinanceError('不能批准自己提交的退费（职责分离）',
+                           code='SELF_APPROVAL_DENIED')
+    refund.status = REFUND_APPROVED
+    refund.reviewed_by = actor_id
+    refund.reviewed_at = timezone.now()
+    refund.save(update_fields=['status', 'reviewed_by', 'reviewed_at'])
+    logger.info('refund_approved id=%s by=%s', refund.pk, actor_id)
     return refund
 
 

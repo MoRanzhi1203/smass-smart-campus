@@ -162,11 +162,13 @@ class Payment(models.Model):
 # 退费
 # ---------------------------------------------------------------------------
 REFUND_SUBMITTED = 'submitted'
+REFUND_REVIEWED = 'reviewed'
 REFUND_APPROVED = 'approved'
 REFUND_REJECTED = 'rejected'
 REFUND_PAID = 'paid'
 REFUND_STATUS = (
     (REFUND_SUBMITTED, '待审批'),
+    (REFUND_REVIEWED, '已复核（待批准）'),
     (REFUND_APPROVED, '已批准（待出纳）'),
     (REFUND_REJECTED, '已驳回'),
     (REFUND_PAID, '已退费'),
@@ -182,6 +184,10 @@ class RefundRequest(models.Model):
     status = models.CharField('状态', max_length=16, choices=REFUND_STATUS,
                               default=REFUND_SUBMITTED)
     submitted_by = models.CharField('申请人', max_length=32, blank=True, default='')
+    #: A03 双人审批：第一人复核，复核人 ≠ 申请人 ≠ 最终批准人
+    first_reviewed_by = models.CharField('复核人', max_length=32, blank=True,
+                                         default='')
+    first_reviewed_at = models.DateTimeField('复核时间', null=True, blank=True)
     reviewed_by = models.CharField('审批人', max_length=32, blank=True, default='')
     reviewed_at = models.DateTimeField('审批时间', null=True, blank=True)
     reject_reason = models.CharField('驳回原因', max_length=255, blank=True, default='')

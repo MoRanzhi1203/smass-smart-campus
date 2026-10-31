@@ -1678,6 +1678,53 @@ class DataExportTests(WorkspaceFixture):
         self.assertEqual(response.status_code, 403)
 
 
+class RefundDualApprovalTests(WorkspaceFixture):
+    """A03：退费双人审批（复核 ≠ 批准 ≠ 申请人）。"""
+
+    def _refund(self):
+        from decimal import Decimal
+
+        from smass_finance import services as finance
+        from smass_finance.models import FeeItem
+
+        item = FeeItem.objects.create(
+            code='T-FEE-REFUND', name='住宿费', category='dormitory',
+            amount=Decimal('1200.00'))
+        bill = finance.create_bill(
+            self.record, '2025-2026-1', [item], self.admin)
+        finance.pay_bill(bill, '1200.00', self.admin)
+        bill.refresh_from_db()
+        return finance.request_refund(bill, '200.00', '多缴', self.student)
+
+    def test_dual_approval_flow(self):
+        from smass_finance import services as finance
+
+        refund = self._refund()
+        finance.review_refund(refund, self.admin)
+        refund.refresh_from_db()
+        self.assertEqual(refund.status, 'reviewed')
+        self.assertEqual(refund.first_reviewed_by, str(self.admin.pk))
+        finance.finalize_refund(refund, self.college_admin)
+        refund.refresh_from_db()
+        self.assertEqual(refund.status, 'approved')
+        self.assertEqual(refund.reviewed_by, str(self.college_admin.pk))
+
+    def test_same_person_cannot_finalize(self):
+        from smass_finance import services as finance
+
+        refund = self._refund()
+        finance.review_refund(refund, self.admin)
+        with self.assertRaises(finance.FinanceError):
+            finance.finalize_refund(refund, self.admin)
+
+    def test_cannot_skip_review(self):
+        from smass_finance import services as finance
+
+        refund = self._refund()
+        with self.assertRaises(finance.FinanceError):
+            finance.finalize_refund(refund, self.college_admin)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

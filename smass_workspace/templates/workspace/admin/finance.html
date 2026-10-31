@@ -53,10 +53,17 @@
                   <td>
                     {% if is_super %}
                     <div style="display:flex;gap:4px;flex-wrap:wrap">
-                      <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'approve' %}" data-once>
+                      {% if refund.status == 'reviewed' %}
+                      <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'finalize' %}" data-once>
                         {% csrf_token %}
                         <button class="ws-btn is-sm is-primary" type="submit">批准</button>
                       </form>
+                      {% else %}
+                      <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'review' %}" data-once>
+                        {% csrf_token %}
+                        <button class="ws-btn is-sm" type="submit">复核</button>
+                      </form>
+                      {% endif %}
                       <form method="post" action="{% url 'workspace:admin_refund_action' refund.pk 'reject' %}" style="display:flex;gap:4px" data-once>
                         {% csrf_token %}
                         <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255"
