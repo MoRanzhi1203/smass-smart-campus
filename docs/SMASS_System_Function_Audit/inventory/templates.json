@@ -1,0 +1,2546 @@
+[
+ {
+  "path": "templates/account/password-forced.html",
+  "size": 5266,
+  "extends": "",
+  "blocks": [],
+  "forms": 1,
+  "tables": 0,
+  "lines": 111
+ },
+ {
+  "path": "templates/account/sessions.html",
+  "size": 6488,
+  "extends": "",
+  "blocks": [],
+  "forms": 2,
+  "tables": 1,
+  "lines": 141
+ },
+ {
+  "path": "templates/admin/admin.html",
+  "size": 2871,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 78
+ },
+ {
+  "path": "templates/admin/classCommittee.html",
+  "size": 3195,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 86
+ },
+ {
+  "path": "templates/admin/classes.html",
+  "size": 5708,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "js",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 147
+ },
+ {
+  "path": "templates/admin/college.html",
+  "size": 2804,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 77
+ },
+ {
+  "path": "templates/admin/department.html",
+  "size": 3444,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 92
+ },
+ {
+  "path": "templates/admin/import_result.html",
+  "size": 2111,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "table"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 47
+ },
+ {
+  "path": "templates/admin/leagueCadres.html",
+  "size": 3195,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 86
+ },
+ {
+  "path": "templates/admin/major.html",
+  "size": 2887,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 79
+ },
+ {
+  "path": "templates/admin/student.html",
+  "size": 3736,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 97
+ },
+ {
+  "path": "templates/admin/teacher.html",
+  "size": 3601,
+  "extends": "layout/admin.html",
+  "blocks": [
+   "admin",
+   "table"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 94
+ },
+ {
+  "path": "templates/dev_hub/index.html",
+  "size": 3992,
+  "extends": "",
+  "blocks": [],
+  "forms": 0,
+  "tables": 0,
+  "lines": 83
+ },
+ {
+  "path": "templates/exchange/history.html",
+  "size": 1998,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 51
+ },
+ {
+  "path": "templates/exchange/import.html",
+  "size": 9932,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 221
+ },
+ {
+  "path": "templates/exchange/index.html",
+  "size": 1624,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 35
+ },
+ {
+  "path": "templates/layout/admin.html",
+  "size": 16116,
+  "extends": "",
+  "blocks": [
+   "admin",
+   "css",
+   "js",
+   "table",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 441
+ },
+ {
+  "path": "templates/layout/student.html",
+  "size": 11319,
+  "extends": "",
+  "blocks": [
+   "css",
+   "css_static",
+   "js",
+   "js_static",
+   "main"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 298
+ },
+ {
+  "path": "templates/login/index.html",
+  "size": 4210,
+  "extends": "",
+  "blocks": [
+   "css",
+   "js"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 139
+ },
+ {
+  "path": "templates/login/login.html",
+  "size": 1752,
+  "extends": "",
+  "blocks": [],
+  "forms": 1,
+  "tables": 0,
+  "lines": 59
+ },
+ {
+  "path": "templates/r10/base.html",
+  "size": 7304,
+  "extends": "",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "head_extra",
+   "scripts",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 163
+ },
+ {
+  "path": "templates/r10/home.html",
+  "size": 2444,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 54
+ },
+ {
+  "path": "templates/r11/forbidden.html",
+  "size": 276,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 7
+ },
+ {
+  "path": "templates/r11/plan.html",
+  "size": 6363,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 3,
+  "lines": 161
+ },
+ {
+  "path": "templates/r11/timetable.html",
+  "size": 4078,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 2,
+  "lines": 107
+ },
+ {
+  "path": "templates/r12/base.html",
+  "size": 4360,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 96
+ },
+ {
+  "path": "templates/r12/forbidden.html",
+  "size": 368,
+  "extends": "r12/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 11
+ },
+ {
+  "path": "templates/r12/placement_detail.html",
+  "size": 2496,
+  "extends": "r12/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 65
+ },
+ {
+  "path": "templates/r12/placement_list.html",
+  "size": 2361,
+  "extends": "r12/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 2,
+  "lines": 53
+ },
+ {
+  "path": "templates/r12/status.html",
+  "size": 3565,
+  "extends": "r12/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 4,
+  "tables": 1,
+  "lines": 87
+ },
+ {
+  "path": "templates/r12/transfers.html",
+  "size": 3928,
+  "extends": "r12/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 5,
+  "tables": 1,
+  "lines": 95
+ },
+ {
+  "path": "templates/r13/base.html",
+  "size": 4254,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 76
+ },
+ {
+  "path": "templates/r13/forbidden.html",
+  "size": 280,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r13/leaves.html",
+  "size": 3310,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 5,
+  "tables": 1,
+  "lines": 82
+ },
+ {
+  "path": "templates/r13/makeups.html",
+  "size": 2594,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 1,
+  "lines": 70
+ },
+ {
+  "path": "templates/r13/sessions.html",
+  "size": 2044,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 58
+ },
+ {
+  "path": "templates/r13/session_detail.html",
+  "size": 3276,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 1,
+  "lines": 78
+ },
+ {
+  "path": "templates/r13/stats.html",
+  "size": 1354,
+  "extends": "r13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 45
+ },
+ {
+  "path": "templates/r14/activities.html",
+  "size": 2703,
+  "extends": "r14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 57
+ },
+ {
+  "path": "templates/r14/activity_detail.html",
+  "size": 4037,
+  "extends": "r14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 6,
+  "tables": 1,
+  "lines": 92
+ },
+ {
+  "path": "templates/r14/base.html",
+  "size": 4051,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 69
+ },
+ {
+  "path": "templates/r14/credits.html",
+  "size": 1913,
+  "extends": "r14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 48
+ },
+ {
+  "path": "templates/r14/forbidden.html",
+  "size": 282,
+  "extends": "r14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r15/base.html",
+  "size": 3884,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 68
+ },
+ {
+  "path": "templates/r15/clubs.html",
+  "size": 1764,
+  "extends": "r15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 48
+ },
+ {
+  "path": "templates/r15/club_detail.html",
+  "size": 5636,
+  "extends": "r15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 8,
+  "tables": 2,
+  "lines": 134
+ },
+ {
+  "path": "templates/r15/forbidden.html",
+  "size": 277,
+  "extends": "r15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r15/posts.html",
+  "size": 797,
+  "extends": "r15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 25
+ },
+ {
+  "path": "templates/r16/approvals.html",
+  "size": 1658,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 44
+ },
+ {
+  "path": "templates/r16/base.html",
+  "size": 4377,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 98
+ },
+ {
+  "path": "templates/r16/bookings.html",
+  "size": 1957,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 1,
+  "lines": 47
+ },
+ {
+  "path": "templates/r16/calendar.html",
+  "size": 1569,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 49
+ },
+ {
+  "path": "templates/r16/forbidden.html",
+  "size": 362,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r16/rooms.html",
+  "size": 2550,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 72
+ },
+ {
+  "path": "templates/r16/room_detail.html",
+  "size": 3522,
+  "extends": "r16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 2,
+  "lines": 86
+ },
+ {
+  "path": "templates/r17/announcements.html",
+  "size": 1677,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 0,
+  "lines": 46
+ },
+ {
+  "path": "templates/r17/base.html",
+  "size": 4034,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 71
+ },
+ {
+  "path": "templates/r17/board.html",
+  "size": 1263,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 36
+ },
+ {
+  "path": "templates/r17/forbidden.html",
+  "size": 271,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r17/forum.html",
+  "size": 1669,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 50
+ },
+ {
+  "path": "templates/r17/post.html",
+  "size": 3531,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 5,
+  "tables": 0,
+  "lines": 75
+ },
+ {
+  "path": "templates/r17/reports.html",
+  "size": 1521,
+  "extends": "r17/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 38
+ },
+ {
+  "path": "templates/r18/base.html",
+  "size": 4309,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 73
+ },
+ {
+  "path": "templates/r18/bills.html",
+  "size": 3215,
+  "extends": "r18/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 82
+ },
+ {
+  "path": "templates/r18/bill_detail.html",
+  "size": 4025,
+  "extends": "r18/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 3,
+  "lines": 108
+ },
+ {
+  "path": "templates/r18/forbidden.html",
+  "size": 271,
+  "extends": "r18/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r18/ledger.html",
+  "size": 1200,
+  "extends": "r18/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 32
+ },
+ {
+  "path": "templates/r18/refunds.html",
+  "size": 1861,
+  "extends": "r18/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 1,
+  "lines": 42
+ },
+ {
+  "path": "templates/r19/access.html",
+  "size": 1613,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 38
+ },
+ {
+  "path": "templates/r19/audit.html",
+  "size": 873,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 25
+ },
+ {
+  "path": "templates/r19/base.html",
+  "size": 4492,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 75
+ },
+ {
+  "path": "templates/r19/document.html",
+  "size": 1194,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 34
+ },
+ {
+  "path": "templates/r19/forbidden.html",
+  "size": 276,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r19/orgs.html",
+  "size": 1601,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 47
+ },
+ {
+  "path": "templates/r19/org_detail.html",
+  "size": 5253,
+  "extends": "r19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 4,
+  "tables": 3,
+  "lines": 140
+ },
+ {
+  "path": "templates/r20/admin.html",
+  "size": 4935,
+  "extends": "r20/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 5,
+  "tables": 2,
+  "lines": 116
+ },
+ {
+  "path": "templates/r20/base.html",
+  "size": 4154,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 72
+ },
+ {
+  "path": "templates/r20/forbidden.html",
+  "size": 270,
+  "extends": "r20/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/r20/home.html",
+  "size": 1218,
+  "extends": "r20/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 39
+ },
+ {
+  "path": "templates/r21/change_password.html",
+  "size": 2293,
+  "extends": "",
+  "blocks": [],
+  "forms": 1,
+  "tables": 0,
+  "lines": 57
+ },
+ {
+  "path": "templates/r21/home.html",
+  "size": 1395,
+  "extends": "",
+  "blocks": [],
+  "forms": 0,
+  "tables": 1,
+  "lines": 32
+ },
+ {
+  "path": "templates/r21/login.html",
+  "size": 1212,
+  "extends": "",
+  "blocks": [],
+  "forms": 1,
+  "tables": 0,
+  "lines": 16
+ },
+ {
+  "path": "templates/r4/import.html",
+  "size": 8027,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "scripts",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 2,
+  "lines": 188
+ },
+ {
+  "path": "templates/r4/student_detail.html",
+  "size": 2594,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 64
+ },
+ {
+  "path": "templates/r4/student_form.html",
+  "size": 4289,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 87
+ },
+ {
+  "path": "templates/r4/student_list.html",
+  "size": 963,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 23
+ },
+ {
+  "path": "templates/r4/unit_form.html",
+  "size": 5081,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 98
+ },
+ {
+  "path": "templates/r4/unit_list.html",
+  "size": 1042,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 22
+ },
+ {
+  "path": "templates/r5/course_form.html",
+  "size": 3247,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 67
+ },
+ {
+  "path": "templates/r5/course_list.html",
+  "size": 930,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r5/enroll.html",
+  "size": 3530,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 2,
+  "lines": 88
+ },
+ {
+  "path": "templates/r5/my_sections.html",
+  "size": 546,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r5/roster.html",
+  "size": 2753,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 64
+ },
+ {
+  "path": "templates/r5/section_assign.html",
+  "size": 3625,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 85
+ },
+ {
+  "path": "templates/r5/section_form.html",
+  "size": 3641,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 74
+ },
+ {
+  "path": "templates/r5/section_list.html",
+  "size": 1122,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r5/teacher_workspace.html",
+  "size": 599,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r5/term_form.html",
+  "size": 3842,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 80
+ },
+ {
+  "path": "templates/r5/term_list.html",
+  "size": 920,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r5/year_form.html",
+  "size": 2971,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 62
+ },
+ {
+  "path": "templates/r5/year_list.html",
+  "size": 863,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 13
+ },
+ {
+  "path": "templates/r6/definition_detail.html",
+  "size": 4459,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 3,
+  "lines": 109
+ },
+ {
+  "path": "templates/r6/definition_list.html",
+  "size": 892,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 11
+ },
+ {
+  "path": "templates/r6/definition_new.html",
+  "size": 3198,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 65
+ },
+ {
+  "path": "templates/r6/instance_detail.html",
+  "size": 3866,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 93
+ },
+ {
+  "path": "templates/r6/instance_list.html",
+  "size": 914,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 11
+ },
+ {
+  "path": "templates/r6/instance_new.html",
+  "size": 3173,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 62
+ },
+ {
+  "path": "templates/r6/notification_list.html",
+  "size": 946,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 11
+ },
+ {
+  "path": "templates/r6/task_list.html",
+  "size": 938,
+  "extends": "r10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 11
+ },
+ {
+  "path": "templates/r7/dashboard.html",
+  "size": 3764,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 105
+ },
+ {
+  "path": "templates/r7/metric_list.html",
+  "size": 4086,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 3,
+  "lines": 98
+ },
+ {
+  "path": "templates/r7/report_detail.html",
+  "size": 2640,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 72
+ },
+ {
+  "path": "templates/r8/docs.html",
+  "size": 2954,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 73
+ },
+ {
+  "path": "templates/r9/status.html",
+  "size": 5839,
+  "extends": "r10/base.html",
+  "blocks": [
+   "breadcrumb",
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 3,
+  "lines": 145
+ },
+ {
+  "path": "templates/s09/base.html",
+  "size": 3108,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 53
+ },
+ {
+  "path": "templates/s09/recovery.html",
+  "size": 430,
+  "extends": "s09/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 13
+ },
+ {
+  "path": "templates/s09/setup.html",
+  "size": 1257,
+  "extends": "s09/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 30
+ },
+ {
+  "path": "templates/s09/status.html",
+  "size": 1712,
+  "extends": "s09/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 42
+ },
+ {
+  "path": "templates/s09/verify.html",
+  "size": 722,
+  "extends": "s09/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 17
+ },
+ {
+  "path": "templates/s10/approvals.html",
+  "size": 2495,
+  "extends": "s10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 2,
+  "lines": 65
+ },
+ {
+  "path": "templates/s10/base.html",
+  "size": 4180,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 72
+ },
+ {
+  "path": "templates/s10/forbidden.html",
+  "size": 277,
+  "extends": "s10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s10/index.html",
+  "size": 1581,
+  "extends": "s10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 34
+ },
+ {
+  "path": "templates/s10/verify.html",
+  "size": 1286,
+  "extends": "s10/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 35
+ },
+ {
+  "path": "templates/s11/base.html",
+  "size": 4032,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 70
+ },
+ {
+  "path": "templates/s11/forbidden.html",
+  "size": 279,
+  "extends": "s11/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s11/policies.html",
+  "size": 3714,
+  "extends": "s11/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 2,
+  "lines": 82
+ },
+ {
+  "path": "templates/s11/preview.html",
+  "size": 1257,
+  "extends": "s11/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 32
+ },
+ {
+  "path": "templates/s13/base.html",
+  "size": 4381,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 74
+ },
+ {
+  "path": "templates/s13/disclosures.html",
+  "size": 3552,
+  "extends": "s13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 4,
+  "tables": 2,
+  "lines": 87
+ },
+ {
+  "path": "templates/s13/fields.html",
+  "size": 2506,
+  "extends": "s13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 58
+ },
+ {
+  "path": "templates/s13/forbidden.html",
+  "size": 283,
+  "extends": "s13/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s14/base.html",
+  "size": 3354,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 59
+ },
+ {
+  "path": "templates/s14/files.html",
+  "size": 2056,
+  "extends": "s14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 57
+ },
+ {
+  "path": "templates/s14/forbidden.html",
+  "size": 277,
+  "extends": "s14/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s15/admin.html",
+  "size": 3586,
+  "extends": "s15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 3,
+  "tables": 2,
+  "lines": 98
+ },
+ {
+  "path": "templates/s15/base.html",
+  "size": 3952,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 66
+ },
+ {
+  "path": "templates/s15/forbidden.html",
+  "size": 260,
+  "extends": "s15/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s16/alerts.html",
+  "size": 1664,
+  "extends": "s16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 43
+ },
+ {
+  "path": "templates/s16/base.html",
+  "size": 3368,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 61
+ },
+ {
+  "path": "templates/s16/events.html",
+  "size": 1551,
+  "extends": "s16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 45
+ },
+ {
+  "path": "templates/s16/forbidden.html",
+  "size": 278,
+  "extends": "s16/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s19/base.html",
+  "size": 2844,
+  "extends": "",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 53
+ },
+ {
+  "path": "templates/s19/forbidden.html",
+  "size": 254,
+  "extends": "s19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 10
+ },
+ {
+  "path": "templates/s19/report.html",
+  "size": 2395,
+  "extends": "s19/base.html",
+  "blocks": [
+   "content",
+   "title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 56
+ },
+ {
+  "path": "templates/student/classes-list.html",
+  "size": 4728,
+  "extends": "layout/student.html",
+  "blocks": [
+   "css_static",
+   "js",
+   "js_static",
+   "main"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 109
+ },
+ {
+  "path": "templates/student/users-profile.html",
+  "size": 24816,
+  "extends": "layout/student.html",
+  "blocks": [
+   "js",
+   "main"
+  ],
+  "forms": 4,
+  "tables": 0,
+  "lines": 416
+ },
+ {
+  "path": "templates/teacher/basic.html",
+  "size": 3108,
+  "extends": "",
+  "blocks": [],
+  "forms": 0,
+  "tables": 1,
+  "lines": 78
+ },
+ {
+  "path": "smass_workspace/templates/workspace/403.html",
+  "size": 1724,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 32
+ },
+ {
+  "path": "smass_workspace/templates/workspace/base.html",
+  "size": 9551,
+  "extends": "",
+  "blocks": [
+   "body_class",
+   "content",
+   "head_extra",
+   "scripts",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 147
+ },
+ {
+  "path": "smass_workspace/templates/workspace/login.html",
+  "size": 2783,
+  "extends": "",
+  "blocks": [],
+  "forms": 1,
+  "tables": 0,
+  "lines": 65
+ },
+ {
+  "path": "smass_workspace/templates/workspace/notifications.html",
+  "size": 1513,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 44
+ },
+ {
+  "path": "smass_workspace/templates/workspace/no_role.html",
+  "size": 1399,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 0,
+  "lines": 24
+ },
+ {
+  "path": "smass_workspace/templates/workspace/profile.html",
+  "size": 4044,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 101
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/academics.html",
+  "size": 8509,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 3,
+  "tables": 3,
+  "lines": 186
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/activities.html",
+  "size": 5726,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 4,
+  "tables": 1,
+  "lines": 114
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/approvals.html",
+  "size": 6046,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 5,
+  "tables": 3,
+  "lines": 128
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/audit.html",
+  "size": 2526,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 65
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/booking_approvals.html",
+  "size": 2367,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 56
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/clubs.html",
+  "size": 2362,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 60
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/data_exchange.html",
+  "size": 1816,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 47
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/facilities.html",
+  "size": 5224,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 108
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/home.html",
+  "size": 5770,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 101
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/monitoring.html",
+  "size": 4768,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 108
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/notices.html",
+  "size": 3436,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 80
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/organizations.html",
+  "size": 2549,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 61
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/records.html",
+  "size": 2574,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 55
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/record_changes.html",
+  "size": 4652,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 4,
+  "tables": 2,
+  "lines": 89
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/record_detail.html",
+  "size": 4743,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 95
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/roles.html",
+  "size": 2490,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 55
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/scheduling.html",
+  "size": 3274,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 59
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/sections.html",
+  "size": 3839,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 83
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/section_roster.html",
+  "size": 2450,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 62
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/settings.html",
+  "size": 4029,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 91
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/users.html",
+  "size": 6512,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 5,
+  "tables": 1,
+  "lines": 131
+ },
+ {
+  "path": "smass_workspace/templates/workspace/admin/workflows.html",
+  "size": 2919,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 65
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/activities.html",
+  "size": 5060,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 2,
+  "lines": 105
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/attendance.html",
+  "size": 6839,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 2,
+  "lines": 135
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/bookings.html",
+  "size": 4409,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 98
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/clubs.html",
+  "size": 3122,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 74
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/courses.html",
+  "size": 2689,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 63
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/dormitory.html",
+  "size": 2242,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 57
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/fees.html",
+  "size": 3142,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 65
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/home.html",
+  "size": 8358,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 189
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/notices.html",
+  "size": 1406,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 41
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/organizations.html",
+  "size": 2985,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 79
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/record.html",
+  "size": 4794,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 103
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/timetable.html",
+  "size": 3130,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 71
+ },
+ {
+  "path": "smass_workspace/templates/workspace/student/volunteer.html",
+  "size": 2474,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 51
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/approvals.html",
+  "size": 7731,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 7,
+  "tables": 4,
+  "lines": 164
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/attendance.html",
+  "size": 3963,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 1,
+  "tables": 1,
+  "lines": 89
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/attendance_detail.html",
+  "size": 3291,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 1,
+  "lines": 73
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/classes.html",
+  "size": 1950,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 52
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/counselor_students.html",
+  "size": 1790,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 44
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/courses.html",
+  "size": 1757,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 47
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/home.html",
+  "size": 8145,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 173
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/leave_review.html",
+  "size": 3507,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 2,
+  "tables": 2,
+  "lines": 78
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/notices.html",
+  "size": 1320,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 0,
+  "lines": 38
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/sections.html",
+  "size": 2306,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 56
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/students.html",
+  "size": 1762,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 44
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/student_detail.html",
+  "size": 3307,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 2,
+  "lines": 82
+ },
+ {
+  "path": "smass_workspace/templates/workspace/teacher/timetable.html",
+  "size": 2558,
+  "extends": "workspace/base.html",
+  "blocks": [
+   "content",
+   "title",
+   "topbar_sub",
+   "topbar_title"
+  ],
+  "forms": 0,
+  "tables": 1,
+  "lines": 63
+ }
+]

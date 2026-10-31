@@ -1,0 +1,7248 @@
+[
+ {
+  "name": "_client_ip",
+  "class": "",
+  "lineno": 14,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "login_view",
+  "class": "",
+  "lineno": 19,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "logout_view",
+  "class": "",
+  "lineno": 52,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "home_view",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "ping_view",
+  "class": "",
+  "lineno": 69,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "受保护探针：用于验证登录态与 RBAC 拒绝。",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "change_password_view",
+  "class": "",
+  "lineno": 81,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "强制改密 / 主动改密（三端共用）。",
+  "file": "r21_account/views.py"
+ },
+ {
+  "name": "_identity_payload",
+  "class": "",
+  "lineno": 8,
+  "decorators": [],
+  "args": [
+   "identity"
+  ],
+  "doc": "",
+  "file": "r22_account/views.py"
+ },
+ {
+  "name": "identity_view",
+  "class": "",
+  "lineno": 21,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "返回当前请求的身份解析结果（不含敏感信息）。",
+  "file": "r22_account/views.py"
+ },
+ {
+  "name": "audit_probe_view",
+  "class": "",
+  "lineno": 42,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "触发一次审计（用于验证 G3 的路由与脱敏）。",
+  "file": "r22_account/views.py"
+ },
+ {
+  "name": "audit_fail_probe_view",
+  "class": "",
+  "lineno": 66,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "业务失败 → 业务回滚，但 error 审计必须留下。",
+  "file": "r22_account/views.py"
+ },
+ {
+  "name": "legacy_parity_view",
+  "class": "",
+  "lineno": 94,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "最小 legacy 路由（验证 compat 模式下旧路径仍可达）。",
+  "file": "r22_account/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 20,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_a11y/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 24,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_a11y/views.py"
+ },
+ {
+  "name": "can_view",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "user"
+  ],
+  "doc": "",
+  "file": "smass_a11y/views.py"
+ },
+ {
+  "name": "report",
+  "class": "",
+  "lineno": 44,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_a11y/views.py"
+ },
+ {
+  "name": "_actor",
+  "class": "",
+  "lineno": 30,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "_parse_date",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "value",
+   "field",
+   "errors"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "_error_code",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "exc"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "year_new",
+  "class": "",
+  "lineno": 64,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "term_new",
+  "class": "",
+  "lineno": 95,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "course_new",
+  "class": "",
+  "lineno": 141,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "section_new",
+  "class": "",
+  "lineno": 179,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "section_assign",
+  "class": "",
+  "lineno": 227,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "assignment_revoke",
+  "class": "",
+  "lineno": 265,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "section_roster_page",
+  "class": "",
+  "lineno": 280,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "roster_drop",
+  "class": "",
+  "lineno": 300,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "enrollment_id"
+  ],
+  "doc": "教师/管理员将学生退选。",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "enroll_page",
+  "class": "",
+  "lineno": 327,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "enroll_action",
+  "class": "",
+  "lineno": 357,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "drop_action",
+  "class": "",
+  "lineno": 381,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/ui_views.py"
+ },
+ {
+  "name": "_body",
+  "class": "",
+  "lineno": 27,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "_date",
+  "class": "",
+  "lineno": 34,
+  "decorators": [],
+  "args": [
+   "value"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "year_list",
+  "class": "",
+  "lineno": 47,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "year_create",
+  "class": "",
+  "lineno": 59,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "year_activate",
+  "class": "",
+  "lineno": 75,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "term_list",
+  "class": "",
+  "lineno": 85,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "term_create",
+  "class": "",
+  "lineno": 92,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "course_list",
+  "class": "",
+  "lineno": 115,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "course_create",
+  "class": "",
+  "lineno": 132,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "section_list",
+  "class": "",
+  "lineno": 155,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "section_create",
+  "class": "",
+  "lineno": 162,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "teacher_workspace",
+  "class": "",
+  "lineno": 183,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "section_roster",
+  "class": "",
+  "lineno": 202,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "my_sections",
+  "class": "",
+  "lineno": 223,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "health",
+  "class": "",
+  "lineno": 235,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_academic/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 36,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 51,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "_parse_dt",
+  "class": "",
+  "lineno": 58,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "_aware",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "value"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_list",
+  "class": "",
+  "lineno": 82,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_create",
+  "class": "",
+  "lineno": 96,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_detail",
+  "class": "",
+  "lineno": 119,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_publish",
+  "class": "",
+  "lineno": 146,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_close",
+  "class": "",
+  "lineno": 159,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_generate_credits",
+  "class": "",
+  "lineno": 172,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_register",
+  "class": "",
+  "lineno": 189,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "registration_cancel",
+  "class": "",
+  "lineno": 202,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "activity_check_in",
+  "class": "",
+  "lineno": 217,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "credit_list",
+  "class": "",
+  "lineno": 235,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "credit_action",
+  "class": "",
+  "lineno": 250,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_activities/views.py"
+ },
+ {
+  "name": "_actor",
+  "class": "",
+  "lineno": 25,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "dashboard_page",
+  "class": "",
+  "lineno": 32,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "看板：指标卡 + 数据源筛选 + 抑制标识。",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "metric_list_page",
+  "class": "",
+  "lineno": 81,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "指标注册表 + 报表清单。",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "report_detail_page",
+  "class": "",
+  "lineno": 102,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "code"
+  ],
+  "doc": "运行单个报表并展示结果（含导出入口）。",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "report_export_page",
+  "class": "",
+  "lineno": 133,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "code"
+  ],
+  "doc": "导出报表 CSV（与页面同一权限与同一 scope）。",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "metric_series",
+  "class": "",
+  "lineno": 157,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "指标的最近快照序列（供图表；只返回已存快照，不重新计算）。",
+  "file": "smass_analytics/ui_views.py"
+ },
+ {
+  "name": "health",
+  "class": "",
+  "lineno": 13,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_analytics/views.py"
+ },
+ {
+  "name": "dashboard",
+  "class": "",
+  "lineno": 25,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_analytics/views.py"
+ },
+ {
+  "name": "metric_list",
+  "class": "",
+  "lineno": 58,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_analytics/views.py"
+ },
+ {
+  "name": "report_run",
+  "class": "",
+  "lineno": 72,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_analytics/views.py"
+ },
+ {
+  "name": "report_export",
+  "class": "",
+  "lineno": 88,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_analytics/views.py"
+ },
+ {
+  "name": "_error",
+  "class": "",
+  "lineno": 12,
+  "decorators": [],
+  "args": [
+   "code",
+   "message",
+   "status"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "_int",
+  "class": "",
+  "lineno": 16,
+  "decorators": [],
+  "args": [
+   "value",
+   "default",
+   "minimum",
+   "maximum"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "_guard",
+  "class": "",
+  "lineno": 24,
+  "decorators": [],
+  "args": [
+   "request",
+   "scope"
+  ],
+  "doc": "认证 + scope + 限流；返回 (account, None) 或 (None, error_response)。",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "_respond",
+  "class": "",
+  "lineno": 37,
+  "decorators": [],
+  "args": [
+   "request",
+   "account",
+   "handler"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "units",
+  "class": "",
+  "lineno": 51,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "students",
+  "class": "",
+  "lineno": 64,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "sections",
+  "class": "",
+  "lineno": 78,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "instances",
+  "class": "",
+  "lineno": 90,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "sync",
+  "class": "",
+  "lineno": 104,
+  "decorators": [
+   "csrf_exempt",
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "openapi",
+  "class": "",
+  "lineno": 141,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api/views.py"
+ },
+ {
+  "name": "ping",
+  "class": "",
+  "lineno": 23,
+  "decorators": [
+   "api_endpoint",
+   "require_http_methods"
+  ],
+  "args": [
+   "request",
+   "token"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "students_count",
+  "class": "",
+  "lineno": 30,
+  "decorators": [
+   "api_endpoint",
+   "require_POST"
+  ],
+  "args": [
+   "request",
+   "token"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 39,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 43,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 54,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 58,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 66,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "admin",
+  "class": "",
+  "lineno": 73,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "client_create",
+  "class": "",
+  "lineno": 88,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "token_create",
+  "class": "",
+  "lineno": 98,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "token_revoke",
+  "class": "",
+  "lineno": 119,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_api_security/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 33,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 37,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 48,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 52,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_classes",
+  "class": "",
+  "lineno": 59,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_parse_date",
+  "class": "",
+  "lineno": 65,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_list",
+  "class": "",
+  "lineno": 80,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_create",
+  "class": "",
+  "lineno": 96,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_detail",
+  "class": "",
+  "lineno": 115,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_sign",
+  "class": "",
+  "lineno": 137,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_close",
+  "class": "",
+  "lineno": 151,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "session_mark",
+  "class": "",
+  "lineno": 164,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "leave_list",
+  "class": "",
+  "lineno": 184,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "leave_submit",
+  "class": "",
+  "lineno": 198,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "leave_action",
+  "class": "",
+  "lineno": 217,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "makeup_list",
+  "class": "",
+  "lineno": 242,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "makeup_submit",
+  "class": "",
+  "lineno": 261,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "makeup_action",
+  "class": "",
+  "lineno": 278,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "stats_view",
+  "class": "",
+  "lineno": 299,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 315,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_attendance/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 15,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 19,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 30,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 34,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "event_list",
+  "class": "",
+  "lineno": 43,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "alert_list",
+  "class": "",
+  "lineno": 55,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "alert_scan",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "alert_ack",
+  "class": "",
+  "lineno": 77,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_audit/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 28,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 43,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "club_list",
+  "class": "",
+  "lineno": 59,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "club_create",
+  "class": "",
+  "lineno": 74,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "club_detail",
+  "class": "",
+  "lineno": 92,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "club_apply",
+  "class": "",
+  "lineno": 127,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "membership_action",
+  "class": "",
+  "lineno": 141,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "post_appoint",
+  "class": "",
+  "lineno": 171,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "post_end",
+  "class": "",
+  "lineno": 190,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "post_list",
+  "class": "",
+  "lineno": 204,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 213,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_clubs/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 33,
+  "decorators": [],
+  "args": [],
+  "doc": "取当前 settings 的登录页（R4 是 /r4/login/，R5 是 /r5/login/）。",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 40,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "_schema_or_404",
+  "class": "",
+  "lineno": 51,
+  "decorators": [],
+  "args": [
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "_wants_json",
+  "class": "",
+  "lineno": 58,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "_read_upload",
+  "class": "",
+  "lineno": 63,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "exchange_home",
+  "class": "",
+  "lineno": 79,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "数据集列表：每个数据集提供 xlsx / csv 模板下载与导入入口。",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "import_page",
+  "class": "",
+  "lineno": 96,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "template_download",
+  "class": "",
+  "lineno": 116,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "api_preview",
+  "class": "",
+  "lineno": 137,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "api_commit",
+  "class": "",
+  "lineno": 154,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "error_download",
+  "class": "",
+  "lineno": 189,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset",
+   "job_id"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "job_history",
+  "class": "",
+  "lineno": 212,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "export_view",
+  "class": "",
+  "lineno": 246,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "dataset"
+  ],
+  "doc": "按授权域导出（实际数据由调用方提供；此处以当前数据集字段为准）。",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "_export_rows",
+  "class": "",
+  "lineno": 272,
+  "decorators": [],
+  "args": [
+   "dataset",
+   "account",
+   "allowed_codes"
+  ],
+  "doc": "从业务模块取导出行（当前仅 R4 学生档案）。",
+  "file": "smass_data_exchange/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 31,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 46,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 50,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_majors",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "placement_list",
+  "class": "",
+  "lineno": 68,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "placement_preview",
+  "class": "",
+  "lineno": 83,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "rule_id"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "placement_detail",
+  "class": "",
+  "lineno": 97,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "placement_apply",
+  "class": "",
+  "lineno": 110,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "placement_rollback",
+  "class": "",
+  "lineno": 123,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "transfer_list",
+  "class": "",
+  "lineno": 139,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "transfer_submit",
+  "class": "",
+  "lineno": 164,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "transfer_action",
+  "class": "",
+  "lineno": 185,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_classes_of",
+  "class": "",
+  "lineno": 209,
+  "decorators": [],
+  "args": [
+   "major"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "status_list",
+  "class": "",
+  "lineno": 218,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "status_submit",
+  "class": "",
+  "lineno": 237,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "status_action",
+  "class": "",
+  "lineno": 259,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 277,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_enrollment/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 38,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 42,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_parse_dt",
+  "class": "",
+  "lineno": 53,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_day_bounds",
+  "class": "",
+  "lineno": 68,
+  "decorators": [],
+  "args": [
+   "raw_date"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_room_queryset",
+  "class": "",
+  "lineno": 80,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 84,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "room_list",
+  "class": "",
+  "lineno": 96,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "room_detail",
+  "class": "",
+  "lineno": 146,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "shared_calendar",
+  "class": "",
+  "lineno": 169,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "my_bookings",
+  "class": "",
+  "lineno": 191,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "approvals",
+  "class": "",
+  "lineno": 205,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "create_booking",
+  "class": "",
+  "lineno": 224,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_booking",
+  "class": "",
+  "lineno": 260,
+  "decorators": [],
+  "args": [
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "cancel_booking",
+  "class": "",
+  "lineno": 267,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "check_in",
+  "class": "",
+  "lineno": 281,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "release",
+  "class": "",
+  "lineno": 294,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "approve",
+  "class": "",
+  "lineno": 307,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "reject",
+  "class": "",
+  "lineno": 320,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_facilities/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 36,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 51,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "_parse_date",
+  "class": "",
+  "lineno": 58,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "bill_list",
+  "class": "",
+  "lineno": 70,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "fee_item_create",
+  "class": "",
+  "lineno": 92,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "bill_create",
+  "class": "",
+  "lineno": 108,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "bill_detail",
+  "class": "",
+  "lineno": 126,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "bill_pay",
+  "class": "",
+  "lineno": 147,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "refund_request",
+  "class": "",
+  "lineno": 164,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "refund_list",
+  "class": "",
+  "lineno": 179,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "refund_action",
+  "class": "",
+  "lineno": 191,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "ledger_list",
+  "class": "",
+  "lineno": 211,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 222,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_finance/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 31,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 46,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 50,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "forum_index",
+  "class": "",
+  "lineno": 59,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "board_detail",
+  "class": "",
+  "lineno": 76,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "post_create",
+  "class": "",
+  "lineno": 89,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "post_detail",
+  "class": "",
+  "lineno": 102,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "comment_create",
+  "class": "",
+  "lineno": 117,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "content_report",
+  "class": "",
+  "lineno": 128,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "content_action",
+  "class": "",
+  "lineno": 143,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "report_list",
+  "class": "",
+  "lineno": 161,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "report_resolve",
+  "class": "",
+  "lineno": 173,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "announcement_list",
+  "class": "",
+  "lineno": 187,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "announcement_create",
+  "class": "",
+  "lineno": 200,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "announcement_publish",
+  "class": "",
+  "lineno": 215,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_forum/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 14,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 18,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 29,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "_next_url",
+  "class": "",
+  "lineno": 36,
+  "decorators": [],
+  "args": [
+   "request",
+   "default"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "setup",
+  "class": "",
+  "lineno": 45,
+  "decorators": [
+   "require_http_methods",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "verify",
+  "class": "",
+  "lineno": 73,
+  "decorators": [
+   "require_http_methods",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "status",
+  "class": "",
+  "lineno": 92,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "disable",
+  "class": "",
+  "lineno": 104,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "regenerate",
+  "class": "",
+  "lineno": 115,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_mfa/views.py"
+ },
+ {
+  "name": "import_page",
+  "class": "",
+  "lineno": 26,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "导入向导：上传 → 预览（零写入）→ 确认 → 结果。",
+  "file": "smass_operations/ui_views.py"
+ },
+ {
+  "name": "import_preview",
+  "class": "",
+  "lineno": 38,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "预览：只解析与校验，**不写任何数据**。",
+  "file": "smass_operations/ui_views.py"
+ },
+ {
+  "name": "api_docs",
+  "class": "",
+  "lineno": 96,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "应用内 API 文档页：渲染既有 OpenAPI schema。",
+  "file": "smass_operations/ui_views.py"
+ },
+ {
+  "name": "ops_status",
+  "class": "",
+  "lineno": 128,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "运维状态页：健康、就绪、遥测、告警（只读，无管理动作）。",
+  "file": "smass_operations/ui_views.py"
+ },
+ {
+  "name": "health",
+  "class": "",
+  "lineno": 9,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "liveness：进程活着即 200，不查数据库。",
+  "file": "smass_operations/views.py"
+ },
+ {
+  "name": "ready",
+  "class": "",
+  "lineno": 15,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "readiness：数据库连 + 迁移无 pending。",
+  "file": "smass_operations/views.py"
+ },
+ {
+  "name": "metrics",
+  "class": "",
+  "lineno": 23,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_operations/views.py"
+ },
+ {
+  "name": "alerts",
+  "class": "",
+  "lineno": 33,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_operations/views.py"
+ },
+ {
+  "name": "nav_home",
+  "class": "",
+  "lineno": 39,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "统一入口：展示导航与当前角色，未登录也可访问（便于排障）。",
+  "file": "smass_operations/views.py"
+ },
+ {
+  "name": "_base_editable",
+  "class": "",
+  "lineno": 31,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "基础字段（name/status/unit）的可编辑集合，按角色判定。",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "_actor",
+  "class": "",
+  "lineno": 43,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "_post_int",
+  "class": "",
+  "lineno": 48,
+  "decorators": [],
+  "args": [
+   "value",
+   "default"
+  ],
+  "doc": "",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "unit_new",
+  "class": "",
+  "lineno": 60,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "unit_edit",
+  "class": "",
+  "lineno": 114,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "student_detail_page",
+  "class": "",
+  "lineno": 170,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "student_no"
+  ],
+  "doc": "学生详情页（HTML）。越权/不存在统一 404，避免探测。",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "student_edit",
+  "class": "",
+  "lineno": 187,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "student_no"
+  ],
+  "doc": "",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "import_commit_page",
+  "class": "",
+  "lineno": 264,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "导入提交：返回 JSON，供导入页 fetch 调用。",
+  "file": "smass_organization/ui_views.py"
+ },
+ {
+  "name": "_roles",
+  "class": "",
+  "lineno": 26,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "roles_required",
+  "class": "",
+  "lineno": 31,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "health",
+  "class": "",
+  "lineno": 45,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "unit_tree",
+  "class": "",
+  "lineno": 56,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "返回组织树（JSON）。",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "unit_list",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "unit_create",
+  "class": "",
+  "lineno": 74,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "unit_move",
+  "class": "",
+  "lineno": 92,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "student_list",
+  "class": "",
+  "lineno": 113,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "学生列表：字段级过滤（无权限字段不出现在上下文里）。",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "student_detail",
+  "class": "",
+  "lineno": 148,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "student_no"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "import_preview_view",
+  "class": "",
+  "lineno": 179,
+  "decorators": [
+   "csrf_exempt",
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "import_commit_view",
+  "class": "",
+  "lineno": 198,
+  "decorators": [
+   "csrf_exempt",
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "student_export",
+  "class": "",
+  "lineno": 213,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "受限 CSV 导出（对象/字段 scope 与列表一致）。",
+  "file": "smass_organization/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 39,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 50,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 54,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "_parse_date",
+  "class": "",
+  "lineno": 61,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "org_list",
+  "class": "",
+  "lineno": 73,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "org_create",
+  "class": "",
+  "lineno": 87,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "org_detail",
+  "class": "",
+  "lineno": 101,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "member_add",
+  "class": "",
+  "lineno": 129,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "activity_create",
+  "class": "",
+  "lineno": 146,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "activity_complete",
+  "class": "",
+  "lineno": 163,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "document_create",
+  "class": "",
+  "lineno": 179,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "document_detail",
+  "class": "",
+  "lineno": 195,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "document_request",
+  "class": "",
+  "lineno": 211,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "access_list",
+  "class": "",
+  "lineno": 222,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "access_action",
+  "class": "",
+  "lineno": 235,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "audit_list",
+  "class": "",
+  "lineno": 254,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 264,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_party/views.py"
+ },
+ {
+  "name": "_parse_pk",
+  "class": "",
+  "lineno": 19,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "把请求参数转成合法主键；非法值返回 None，避免 ValueError 变成 500。",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 25,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 29,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 40,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 44,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "policy_list",
+  "class": "",
+  "lineno": 53,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "policy_save",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "policy_disable",
+  "class": "",
+  "lineno": 93,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "preview",
+  "class": "",
+  "lineno": 106,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "用当前登录账号试读字段策略（含脱敏效果）。",
+  "file": "smass_policy/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 15,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 19,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 30,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 34,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "portal_home",
+  "class": "",
+  "lineno": 43,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "portal_admin",
+  "class": "",
+  "lineno": 56,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "admin_bootstrap",
+  "class": "",
+  "lineno": 76,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "section_create",
+  "class": "",
+  "lineno": 87,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "link_create",
+  "class": "",
+  "lineno": 103,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "notice_create",
+  "class": "",
+  "lineno": 122,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "notice_publish",
+  "class": "",
+  "lineno": 137,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_portal/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 18,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 22,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 33,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 37,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "field_list",
+  "class": "",
+  "lineno": 46,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "field_save",
+  "class": "",
+  "lineno": 62,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "field_purge",
+  "class": "",
+  "lineno": 81,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "disclosure_list",
+  "class": "",
+  "lineno": 91,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "disclosure_request",
+  "class": "",
+  "lineno": 106,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "disclosure_action",
+  "class": "",
+  "lineno": 119,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "disclosure_export",
+  "class": "",
+  "lineno": 140,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_privacy/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 46,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 50,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_wants_json",
+  "class": "",
+  "lineno": 61,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_roles",
+  "class": "",
+  "lineno": 66,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_is_admin",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_grid",
+  "class": "",
+  "lineno": 77,
+  "decorators": [],
+  "args": [
+   "entries",
+   "periods",
+   "days"
+  ],
+  "doc": "把 entries 组织成 ``grid[weekday][period] = [entry...]``。",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_slots_map",
+  "class": "",
+  "lineno": 88,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_cell_render",
+  "class": "",
+  "lineno": 92,
+  "decorators": [],
+  "args": [
+   "entry",
+   "slots"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "plan_page",
+  "class": "",
+  "lineno": 114,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "plan_solve",
+  "class": "",
+  "lineno": 153,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "run_id"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "plan_publish",
+  "class": "",
+  "lineno": 178,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "run_id"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "plan_conflicts",
+  "class": "",
+  "lineno": 207,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "run_id"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_published_runs",
+  "class": "",
+  "lineno": 226,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_pick_run",
+  "class": "",
+  "lineno": 230,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "student_timetable",
+  "class": "",
+  "lineno": 239,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "teacher_timetable",
+  "class": "",
+  "lineno": 259,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "room_timetable",
+  "class": "",
+  "lineno": 274,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "room_id"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_render_timetable",
+  "class": "",
+  "lineno": 294,
+  "decorators": [],
+  "args": [
+   "request",
+   "template",
+   "run",
+   "entries"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "my_timetable_json",
+  "class": "",
+  "lineno": 322,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_scheduling/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 17,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 21,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "_next_url",
+  "class": "",
+  "lineno": 39,
+  "decorators": [],
+  "args": [
+   "request",
+   "default"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "index",
+  "class": "",
+  "lineno": 48,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "verify_page",
+  "class": "",
+  "lineno": 62,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "verify_submit",
+  "class": "",
+  "lineno": 74,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "approval_open",
+  "class": "",
+  "lineno": 91,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "approval_list",
+  "class": "",
+  "lineno": 111,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "approval_action",
+  "class": "",
+  "lineno": 124,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_stepup/views.py"
+ },
+ {
+  "name": "_login_url",
+  "class": "",
+  "lineno": 16,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "require_login",
+  "class": "",
+  "lineno": 20,
+  "decorators": [],
+  "args": [
+   "view"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "_forbidden",
+  "class": "",
+  "lineno": 31,
+  "decorators": [],
+  "args": [
+   "request",
+   "message"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "_flash",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "file_list",
+  "class": "",
+  "lineno": 44,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "file_upload",
+  "class": "",
+  "lineno": 57,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "file_download",
+  "class": "",
+  "lineno": 72,
+  "decorators": [
+   "require_GET",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "file_delete",
+  "class": "",
+  "lineno": 88,
+  "decorators": [
+   "require_POST",
+   "require_login"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_uploads/views.py"
+ },
+ {
+  "name": "_actor",
+  "class": "",
+  "lineno": 52,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "definition_new",
+  "class": "",
+  "lineno": 62,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "definition_detail",
+  "class": "",
+  "lineno": 108,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "definition_publish",
+  "class": "",
+  "lineno": 129,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "发布该定义下最新的草稿版本。",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "instance_new",
+  "class": "",
+  "lineno": 154,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "instance_detail",
+  "class": "",
+  "lineno": 200,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "instance_action",
+  "class": "",
+  "lineno": 232,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "task_list_page",
+  "class": "",
+  "lineno": 265,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "task_complete",
+  "class": "",
+  "lineno": 272,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "notification_page",
+  "class": "",
+  "lineno": 292,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "notification_read",
+  "class": "",
+  "lineno": 303,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/ui_views.py"
+ },
+ {
+  "name": "_body",
+  "class": "",
+  "lineno": 22,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "health",
+  "class": "",
+  "lineno": 29,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "definition_list",
+  "class": "",
+  "lineno": 41,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "definition_create",
+  "class": "",
+  "lineno": 54,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "instance_list",
+  "class": "",
+  "lineno": 68,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "instance_create",
+  "class": "",
+  "lineno": 87,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "instance_action",
+  "class": "",
+  "lineno": 113,
+  "decorators": [
+   "require_POST",
+   "roles_required"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "task_list",
+  "class": "",
+  "lineno": 139,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "notification_list",
+  "class": "",
+  "lineno": 152,
+  "decorators": [
+   "require_http_methods",
+   "roles_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workflow/views.py"
+ },
+ {
+  "name": "login",
+  "class": "",
+  "lineno": 40,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "登录主页面（角色选择入口）。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "_safe_next",
+  "class": "",
+  "lineno": 45,
+  "decorators": [],
+  "args": [
+   "request",
+   "default_url"
+  ],
+  "doc": "校验 ``next`` 参数，仅允许站内跳转，避免开放重定向。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "_render_login",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [
+   "request",
+   "form",
+   "name_ch",
+   "status",
+   "lock_message"
+  ],
+  "doc": "渲染登录页（统一携带 next，保证 POST 后仍能跳回原页面）。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "_handle_login",
+  "class": "",
+  "lineno": 69,
+  "decorators": [],
+  "args": [
+   "request",
+   "role"
+  ],
+  "doc": "管理员 / 学生 / 教师 共用的登录流程。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "login_admin",
+  "class": "",
+  "lineno": 108,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "管理员账号登录界面。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "login_student",
+  "class": "",
+  "lineno": 113,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "学生账号登录界面。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "login_teacher",
+  "class": "",
+  "lineno": 118,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "教师账号登录界面。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "logout_account",
+  "class": "",
+  "lineno": 123,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "注销：丢弃整个会话，旧 Session ID 立即失效。",
+  "file": "app01/views/account.py"
+ },
+ {
+  "name": "_session_account",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "从服务端会话解析当前账号（不信任任何请求参数）。",
+  "file": "app01/views/password_lifecycle.py"
+ },
+ {
+  "name": "_render",
+  "class": "",
+  "lineno": 43,
+  "decorators": [],
+  "args": [
+   "request",
+   "errors",
+   "notice"
+  ],
+  "doc": "",
+  "file": "app01/views/password_lifecycle.py"
+ },
+ {
+  "name": "password_forced_change",
+  "class": "",
+  "lineno": 61,
+  "decorators": [
+   "role_required",
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "强制改密页（首次登录 / 临时口令后）。",
+  "file": "app01/views/password_lifecycle.py"
+ },
+ {
+  "name": "admin_issue_temp_password",
+  "class": "",
+  "lineno": 103,
+  "decorators": [
+   "role_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "管理员发放一次性临时口令。",
+  "file": "app01/views/password_lifecycle.py"
+ },
+ {
+  "name": "_identity",
+  "class": "",
+  "lineno": 28,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "从服务端会话解析当前身份；返回 (role, account_id)。",
+  "file": "app01/views/session_devices.py"
+ },
+ {
+  "name": "_device_rows",
+  "class": "",
+  "lineno": 34,
+  "decorators": [],
+  "args": [
+   "role",
+   "account_id",
+   "current_device_id"
+  ],
+  "doc": "",
+  "file": "app01/views/session_devices.py"
+ },
+ {
+  "name": "session_list",
+  "class": "",
+  "lineno": 50,
+  "decorators": [
+   "role_required",
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "当前账号的在线设备列表（GET）。",
+  "file": "app01/views/session_devices.py"
+ },
+ {
+  "name": "session_revoke",
+  "class": "",
+  "lineno": 72,
+  "decorators": [
+   "role_required",
+   "require_POST"
+  ],
+  "args": [
+   "request",
+   "device_id"
+  ],
+  "doc": "踢出指定设备（仅限本人、本角色）。",
+  "file": "app01/views/session_devices.py"
+ },
+ {
+  "name": "session_revoke_others",
+  "class": "",
+  "lineno": 101,
+  "decorators": [
+   "role_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "踢出除当前设备外的所有会话（\"退出其他设备\"）。",
+  "file": "app01/views/session_devices.py"
+ },
+ {
+  "name": "admin_list",
+  "class": "",
+  "lineno": 25,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "管理员列表",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "admin_add",
+  "class": "",
+  "lineno": 47,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加管理员（ajax 请求）",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "admin_detail",
+  "class": "",
+  "lineno": 65,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取管理员信息（不返回密码哈希）",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "admin_edit",
+  "class": "",
+  "lineno": 76,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑管理员（ajax 请求；密码留空表示不修改）",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "admin_delete",
+  "class": "",
+  "lineno": 93,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除管理员（ajax 请求）",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "admin_resetPass",
+  "class": "",
+  "lineno": 106,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "重置管理员密码（生成随机一次性密码并返回一次）",
+  "file": "app01/views/admin/ad_admin.py"
+ },
+ {
+  "name": "classCommittee_list",
+  "class": "",
+  "lineno": 26,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "班委干部列表",
+  "file": "app01/views/admin/ad_classCommittee.py"
+ },
+ {
+  "name": "classCommittee_add",
+  "class": "",
+  "lineno": 52,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加班委（ajax 请求）",
+  "file": "app01/views/admin/ad_classCommittee.py"
+ },
+ {
+  "name": "classCommittee_detail",
+  "class": "",
+  "lineno": 62,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取班委信息",
+  "file": "app01/views/admin/ad_classCommittee.py"
+ },
+ {
+  "name": "classCommittee_edit",
+  "class": "",
+  "lineno": 73,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑班委信息（ajax 请求）",
+  "file": "app01/views/admin/ad_classCommittee.py"
+ },
+ {
+  "name": "classCommittee_delete",
+  "class": "",
+  "lineno": 89,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除班委（ajax 请求）",
+  "file": "app01/views/admin/ad_classCommittee.py"
+ },
+ {
+  "name": "classes_list",
+  "class": "",
+  "lineno": 28,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "班级列表",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_add",
+  "class": "",
+  "lineno": 54,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加班级（ajax 请求）",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_detail",
+  "class": "",
+  "lineno": 64,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取班级信息",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_edit",
+  "class": "",
+  "lineno": 75,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑班级（ajax 请求）",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_delete",
+  "class": "",
+  "lineno": 91,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除班级（ajax 请求）",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_download_template",
+  "class": "",
+  "lineno": 98,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "下载【批量添加班级】模版",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "classes_multi",
+  "class": "",
+  "lineno": 118,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "批量添加班级信息（Excel 文件上传，整批原子）",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "all_delete",
+  "class": "",
+  "lineno": 136,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "清空班级表 —— HTTP 入口已停用（R1.5-B.2）。",
+  "file": "app01/views/admin/ad_classes.py"
+ },
+ {
+  "name": "college_list",
+  "class": "",
+  "lineno": 22,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "学院列表",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_add",
+  "class": "",
+  "lineno": 42,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加学院（ajax 请求）",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_detail",
+  "class": "",
+  "lineno": 52,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取学院信息",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_edit",
+  "class": "",
+  "lineno": 63,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑学院（ajax 请求）",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_delete",
+  "class": "",
+  "lineno": 79,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除学院（ajax 请求）",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_download_template",
+  "class": "",
+  "lineno": 86,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "下载【批量添加学院】模版",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "college_multi",
+  "class": "",
+  "lineno": 106,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "批量添加学院（Excel 文件上传，整批原子）",
+  "file": "app01/views/admin/ad_college.py"
+ },
+ {
+  "name": "department_list",
+  "class": "",
+  "lineno": 22,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "部门列表",
+  "file": "app01/views/admin/ad_department.py"
+ },
+ {
+  "name": "department_add",
+  "class": "",
+  "lineno": 46,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加部门（ajax 请求）",
+  "file": "app01/views/admin/ad_department.py"
+ },
+ {
+  "name": "department_detail",
+  "class": "",
+  "lineno": 56,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取部门信息",
+  "file": "app01/views/admin/ad_department.py"
+ },
+ {
+  "name": "department_edit",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑部门信息（ajax 请求）",
+  "file": "app01/views/admin/ad_department.py"
+ },
+ {
+  "name": "department_delete",
+  "class": "",
+  "lineno": 83,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除部门信息（ajax 请求）",
+  "file": "app01/views/admin/ad_department.py"
+ },
+ {
+  "name": "leagueCadres_list",
+  "class": "",
+  "lineno": 24,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "团学干部列表",
+  "file": "app01/views/admin/ad_leagueCadres.py"
+ },
+ {
+  "name": "leagueCadres_add",
+  "class": "",
+  "lineno": 48,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加团学干部（ajax 请求）",
+  "file": "app01/views/admin/ad_leagueCadres.py"
+ },
+ {
+  "name": "leagueCadres_detail",
+  "class": "",
+  "lineno": 58,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取团学干部信息",
+  "file": "app01/views/admin/ad_leagueCadres.py"
+ },
+ {
+  "name": "leagueCadres_edit",
+  "class": "",
+  "lineno": 69,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑团学干部信息（ajax 请求）",
+  "file": "app01/views/admin/ad_leagueCadres.py"
+ },
+ {
+  "name": "leagueCadres_delete",
+  "class": "",
+  "lineno": 85,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除团学干部（ajax 请求）",
+  "file": "app01/views/admin/ad_leagueCadres.py"
+ },
+ {
+  "name": "major_list",
+  "class": "",
+  "lineno": 22,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "专业列表",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_add",
+  "class": "",
+  "lineno": 46,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加专业（ajax 请求）",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_detail",
+  "class": "",
+  "lineno": 56,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取专业信息",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_edit",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑专业（ajax 请求）",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_delete",
+  "class": "",
+  "lineno": 83,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除专业（ajax 请求）",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_download_template",
+  "class": "",
+  "lineno": 90,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "下载【批量添加专业】模版",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "major_multi",
+  "class": "",
+  "lineno": 110,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "批量添加专业（Excel 文件上传，整批原子）",
+  "file": "app01/views/admin/ad_major.py"
+ },
+ {
+  "name": "student_list",
+  "class": "",
+  "lineno": 22,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "学生列表",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_add",
+  "class": "",
+  "lineno": 50,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加学生（ajax 请求）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_detail",
+  "class": "",
+  "lineno": 67,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取学生信息（不返回密码哈希）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_edit",
+  "class": "",
+  "lineno": 78,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑学生（ajax 请求；密码留空表示不修改）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_delete",
+  "class": "",
+  "lineno": 95,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除学生（ajax 请求）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_obtain",
+  "class": "",
+  "lineno": 102,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "获取重置密码前的确认信息（仅学号与姓名）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_resetPass",
+  "class": "",
+  "lineno": 113,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "重置学生密码（随机一次性密码，返回一次）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_download_template",
+  "class": "",
+  "lineno": 125,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "下载【批量添加学生账号】模版",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "student_multi",
+  "class": "",
+  "lineno": 150,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "批量添加学生信息（Excel 文件上传，整批原子）",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "all_delete",
+  "class": "",
+  "lineno": 168,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "清空学生表 —— HTTP 入口已停用（R1.5-B.2）。",
+  "file": "app01/views/admin/ad_student.py"
+ },
+ {
+  "name": "teacher_list",
+  "class": "",
+  "lineno": 22,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "教师列表",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_add",
+  "class": "",
+  "lineno": 46,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "添加教师（ajax 请求）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_detail",
+  "class": "",
+  "lineno": 63,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "根据主键获取教师信息（不返回密码哈希）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_edit",
+  "class": "",
+  "lineno": 74,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "编辑教师（ajax 请求；密码留空表示不修改）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_delete",
+  "class": "",
+  "lineno": 91,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "删除教师（ajax 请求）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_obtain",
+  "class": "",
+  "lineno": 98,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "获取重置密码前的确认信息（仅工号与姓名）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_resetPass",
+  "class": "",
+  "lineno": 109,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "重置教师密码（随机一次性密码，返回一次）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_download_template",
+  "class": "",
+  "lineno": 121,
+  "decorators": [
+   "admin_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "下载【批量添加教师信息】模版",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "teacher_multi",
+  "class": "",
+  "lineno": 141,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "批量添加教师信息（Excel 文件上传，整批原子）",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "all_delete",
+  "class": "",
+  "lineno": 159,
+  "decorators": [
+   "admin_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "清空教师表 —— HTTP 入口已停用（R1.5-B.2）。",
+  "file": "app01/views/admin/ad_teacher.py"
+ },
+ {
+  "name": "classes_list",
+  "class": "",
+  "lineno": 14,
+  "decorators": [
+   "student_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "显示所在班级的学生列表",
+  "file": "app01/views/student/st_classes_list.py"
+ },
+ {
+  "name": "student_users_profile",
+  "class": "",
+  "lineno": 20,
+  "decorators": [
+   "student_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "显示学生个人主页（身份只取自服务端会话）",
+  "file": "app01/views/student/st_users_profile.py"
+ },
+ {
+  "name": "student_change_password",
+  "class": "",
+  "lineno": 42,
+  "decorators": [
+   "student_required",
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "学生账号修改密码",
+  "file": "app01/views/student/st_users_profile.py"
+ },
+ {
+  "name": "teacher_basic",
+  "class": "",
+  "lineno": 9,
+  "decorators": [
+   "teacher_required"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "显示教师本人基本信息",
+  "file": "app01/views/teacher/te_basic.py"
+ },
+ {
+  "name": "_ctx",
+  "class": "",
+  "lineno": 25,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "_random_password",
+  "class": "",
+  "lineno": 32,
+  "decorators": [],
+  "args": [
+   "length"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "home",
+  "class": "",
+  "lineno": 42,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "users",
+  "class": "",
+  "lineno": 52,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "_role_choices",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "user_role",
+  "class": "",
+  "lineno": 79,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "user_toggle",
+  "class": "",
+  "lineno": 110,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "user_reset",
+  "class": "",
+  "lineno": 130,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "user_create",
+  "class": "",
+  "lineno": 153,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "roles",
+  "class": "",
+  "lineno": 188,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "organizations",
+  "class": "",
+  "lineno": 202,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "records",
+  "class": "",
+  "lineno": 216,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "record_changes",
+  "class": "",
+  "lineno": 233,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "transfer_action",
+  "class": "",
+  "lineno": 240,
+  "decorators": [
+   "require_POST",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "status_change_action",
+  "class": "",
+  "lineno": 275,
+  "decorators": [
+   "require_POST",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "academics",
+  "class": "",
+  "lineno": 310,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "year_create",
+  "class": "",
+  "lineno": 334,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "term_create",
+  "class": "",
+  "lineno": 356,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "course_create",
+  "class": "",
+  "lineno": 384,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "sections",
+  "class": "",
+  "lineno": 409,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "section_create",
+  "class": "",
+  "lineno": 426,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "section_roster",
+  "class": "",
+  "lineno": 448,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "record_detail",
+  "class": "",
+  "lineno": 473,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "student_no"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "record_update",
+  "class": "",
+  "lineno": 505,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "student_no"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "scheduling",
+  "class": "",
+  "lineno": 531,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "facilities",
+  "class": "",
+  "lineno": 538,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "room_create",
+  "class": "",
+  "lineno": 546,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "booking_approvals",
+  "class": "",
+  "lineno": 578,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "booking_action",
+  "class": "",
+  "lineno": 589,
+  "decorators": [
+   "require_POST",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "approvals",
+  "class": "",
+  "lineno": 619,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "leave_action",
+  "class": "",
+  "lineno": 626,
+  "decorators": [
+   "require_POST",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "task_complete",
+  "class": "",
+  "lineno": 660,
+  "decorators": [
+   "require_POST",
+   "admin_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "workflows",
+  "class": "",
+  "lineno": 682,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "activities",
+  "class": "",
+  "lineno": 692,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "activity_create",
+  "class": "",
+  "lineno": 708,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "activity_action",
+  "class": "",
+  "lineno": 746,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "clubs",
+  "class": "",
+  "lineno": 774,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "notices",
+  "class": "",
+  "lineno": 781,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "announcement_create",
+  "class": "",
+  "lineno": 789,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "announcement_publish",
+  "class": "",
+  "lineno": 811,
+  "decorators": [
+   "require_POST",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "data_exchange",
+  "class": "",
+  "lineno": 833,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "monitoring",
+  "class": "",
+  "lineno": 840,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "audit",
+  "class": "",
+  "lineno": 847,
+  "decorators": [
+   "require_GET",
+   "admin_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "settings_overview",
+  "class": "",
+  "lineno": 855,
+  "decorators": [
+   "require_GET",
+   "admin_only",
+   "perms.require_system_admin"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "_password_lifecycle",
+  "class": "",
+  "lineno": 866,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/views/admin.py"
+ },
+ {
+  "name": "_client_ip",
+  "class": "",
+  "lineno": 19,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/auth.py"
+ },
+ {
+  "name": "_safe_next",
+  "class": "",
+  "lineno": 23,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/auth.py"
+ },
+ {
+  "name": "login_view",
+  "class": "",
+  "lineno": 33,
+  "decorators": [
+   "require_http_methods"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/auth.py"
+ },
+ {
+  "name": "logout_view",
+  "class": "",
+  "lineno": 73,
+  "decorators": [
+   "require_POST"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/auth.py"
+ },
+ {
+  "name": "root_view",
+  "class": "",
+  "lineno": 78,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "站点根路径：未登录去登录页，已登录去本角色工作台。",
+  "file": "smass_workspace/views/auth.py"
+ },
+ {
+  "name": "_kind_of",
+  "class": "",
+  "lineno": 11,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "no_role",
+  "class": "",
+  "lineno": 16,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "profile",
+  "class": "",
+  "lineno": 27,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "notifications",
+  "class": "",
+  "lineno": 52,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "forbid",
+  "class": "",
+  "lineno": 109,
+  "decorators": [],
+  "args": [
+   "request",
+   "detail"
+  ],
+  "doc": "统一的 403 渲染（供其它视图复用）。",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "toast",
+  "class": "",
+  "lineno": 122,
+  "decorators": [],
+  "args": [
+   "request",
+   "text",
+   "level"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/common.py"
+ },
+ {
+  "name": "_ctx",
+  "class": "",
+  "lineno": 22,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "home",
+  "class": "",
+  "lineno": 33,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "timetable",
+  "class": "",
+  "lineno": 74,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "courses",
+  "class": "",
+  "lineno": 95,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "record",
+  "class": "",
+  "lineno": 114,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "attendance",
+  "class": "",
+  "lineno": 138,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "_leave_types",
+  "class": "",
+  "lineno": 154,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "leave_submit",
+  "class": "",
+  "lineno": 162,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "leave_cancel",
+  "class": "",
+  "lineno": 184,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "fees",
+  "class": "",
+  "lineno": 207,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "fee_pay",
+  "class": "",
+  "lineno": 219,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "bookings",
+  "class": "",
+  "lineno": 243,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "booking_create",
+  "class": "",
+  "lineno": 259,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "booking_cancel",
+  "class": "",
+  "lineno": 291,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "activities",
+  "class": "",
+  "lineno": 314,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "activity_register",
+  "class": "",
+  "lineno": 349,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "activity_cancel",
+  "class": "",
+  "lineno": 369,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "volunteer",
+  "class": "",
+  "lineno": 388,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "clubs",
+  "class": "",
+  "lineno": 400,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "club_apply",
+  "class": "",
+  "lineno": 415,
+  "decorators": [
+   "require_POST",
+   "student_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "organizations",
+  "class": "",
+  "lineno": 435,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "dormitory",
+  "class": "",
+  "lineno": 448,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "notices",
+  "class": "",
+  "lineno": 460,
+  "decorators": [
+   "require_GET",
+   "student_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/student.py"
+ },
+ {
+  "name": "_ctx",
+  "class": "",
+  "lineno": 21,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "home",
+  "class": "",
+  "lineno": 32,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "courses",
+  "class": "",
+  "lineno": 51,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "sections",
+  "class": "",
+  "lineno": 69,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "timetable",
+  "class": "",
+  "lineno": 88,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "attendance",
+  "class": "",
+  "lineno": 107,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "attendance_create",
+  "class": "",
+  "lineno": 121,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "attendance_detail",
+  "class": "",
+  "lineno": 150,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "attendance_mark",
+  "class": "",
+  "lineno": 190,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "attendance_close",
+  "class": "",
+  "lineno": 216,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "students",
+  "class": "",
+  "lineno": 240,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "student_detail",
+  "class": "",
+  "lineno": 256,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "approvals",
+  "class": "",
+  "lineno": 295,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "_can_approve_facilities",
+  "class": "",
+  "lineno": 308,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "leave_action",
+  "class": "",
+  "lineno": 316,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "makeup_action",
+  "class": "",
+  "lineno": 344,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "task_complete",
+  "class": "",
+  "lineno": 372,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "booking_action",
+  "class": "",
+  "lineno": 390,
+  "decorators": [
+   "require_POST",
+   "teacher_only"
+  ],
+  "args": [
+   "request",
+   "pk",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "classes",
+  "class": "",
+  "lineno": 419,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "counselor_students",
+  "class": "",
+  "lineno": 446,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "leave_review",
+  "class": "",
+  "lineno": 466,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ },
+ {
+  "name": "notices",
+  "class": "",
+  "lineno": 493,
+  "decorators": [
+   "require_GET",
+   "teacher_only"
+  ],
+  "args": [
+   "request"
+  ],
+  "doc": "",
+  "file": "smass_workspace/views/teacher.py"
+ }
+]

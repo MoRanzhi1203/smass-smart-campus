@@ -1,0 +1,5678 @@
+[
+ {
+  "name": "audit",
+  "class": "",
+  "lineno": 41,
+  "decorators": [],
+  "args": [
+   "action",
+   "actor",
+   "target",
+   "detail",
+   "ip"
+  ],
+  "doc": "",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "account_content_type",
+  "class": "",
+  "lineno": 51,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "ensure_role_groups",
+  "class": "",
+  "lineno": 55,
+  "decorators": [],
+  "args": [],
+  "doc": "幂等创建 4 个角色 Group，并按矩阵分配 Permission。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "sync_account_groups",
+  "class": "",
+  "lineno": 79,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "把\"未撤销的角色\"同步为 Django Group 成员关系。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "grant_role",
+  "class": "",
+  "lineno": 89,
+  "decorators": [],
+  "args": [
+   "account",
+   "role_code",
+   "granted_by",
+   "ip"
+  ],
+  "doc": "授予角色（幂等）。同一事务内更新记录与 Group。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "revoke_role",
+  "class": "",
+  "lineno": 108,
+  "decorators": [],
+  "args": [
+   "account",
+   "role_code",
+   "revoked_by",
+   "ip"
+  ],
+  "doc": "撤销角色（保留历史记录，不物理删除）。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "account_has_perm",
+  "class": "",
+  "lineno": 124,
+  "decorators": [],
+  "args": [
+   "account",
+   "codename"
+  ],
+  "doc": "统一入口：既支持 codename 也支持完整 'app.codename'。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "register_login_result",
+  "class": "",
+  "lineno": 138,
+  "decorators": [],
+  "args": [
+   "login_name",
+   "ip",
+   "success"
+  ],
+  "doc": "",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "login_lock_status",
+  "class": "",
+  "lineno": 144,
+  "decorators": [],
+  "args": [
+   "login_name",
+   "ip"
+  ],
+  "doc": "返回 ``(locked, remaining_seconds, reason)``。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "clear_login_failures",
+  "class": "",
+  "lineno": 177,
+  "decorators": [],
+  "args": [
+   "login_name"
+  ],
+  "doc": "成功登录后清理该账号的失败记录（不影响其他账号）。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "password_policy_errors",
+  "class": "",
+  "lineno": 185,
+  "decorators": [],
+  "args": [
+   "raw_password",
+   "account"
+  ],
+  "doc": "",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "set_temporary_password",
+  "class": "",
+  "lineno": 195,
+  "decorators": [],
+  "args": [
+   "account",
+   "raw_password"
+  ],
+  "doc": "设置一次性临时口令，并置 ``must_change_password=True``。",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "link_legacy",
+  "class": "",
+  "lineno": 207,
+  "decorators": [],
+  "args": [
+   "account",
+   "source_table",
+   "source_pk",
+   "checksum"
+  ],
+  "doc": "",
+  "file": "r21_account/services.py"
+ },
+ {
+  "name": "handle_starttag",
+  "class": "_Collector",
+  "lineno": 51,
+  "decorators": [],
+  "args": [
+   "self",
+   "tag",
+   "attrs"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "handle_endtag",
+  "class": "_Collector",
+  "lineno": 64,
+  "decorators": [],
+  "args": [
+   "self",
+   "tag"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "handle_data",
+  "class": "_Collector",
+  "lineno": 74,
+  "decorators": [],
+  "args": [
+   "self",
+   "data"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "audit_html",
+  "class": "",
+  "lineno": 86,
+  "decorators": [],
+  "args": [
+   "html",
+   "name",
+   "new_template"
+  ],
+  "doc": "返回问题列表：[{level, rule, detail}]。",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "relative_luminance",
+  "class": "",
+  "lineno": 160,
+  "decorators": [],
+  "args": [
+   "rgb"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "contrast_ratio",
+  "class": "",
+  "lineno": 169,
+  "decorators": [],
+  "args": [
+   "fg",
+   "bg"
+  ],
+  "doc": "返回对比度（1.0 ~ 21.0）。",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "wcag_level",
+  "class": "",
+  "lineno": 178,
+  "decorators": [],
+  "args": [
+   "ratio",
+   "large_text"
+  ],
+  "doc": "返回 'AAA' / 'AA' / 'FAIL'。",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "is_new_template",
+  "class": "",
+  "lineno": 196,
+  "decorators": [],
+  "args": [
+   "relative_path"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "audit_dir",
+  "class": "",
+  "lineno": 201,
+  "decorators": [],
+  "args": [
+   "root"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "summarize",
+  "class": "",
+  "lineno": 219,
+  "decorators": [],
+  "args": [
+   "results"
+  ],
+  "doc": "",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "audit_dir_cached",
+  "class": "",
+  "lineno": 239,
+  "decorators": [],
+  "args": [
+   "root"
+  ],
+  "doc": "带缓存的扫描结果。",
+  "file": "smass_a11y/services.py"
+ },
+ {
+  "name": "create_year",
+  "class": "",
+  "lineno": 55,
+  "decorators": [],
+  "args": [
+   "code",
+   "start_date",
+   "end_date"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "activate_year",
+  "class": "",
+  "lineno": 76,
+  "decorators": [],
+  "args": [
+   "year"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "create_term",
+  "class": "",
+  "lineno": 86,
+  "decorators": [],
+  "args": [
+   "year",
+   "semester",
+   "start_date",
+   "end_date"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "activate_term",
+  "class": "",
+  "lineno": 108,
+  "decorators": [],
+  "args": [
+   "term"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "current_term",
+  "class": "",
+  "lineno": 118,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "create_course",
+  "class": "",
+  "lineno": 125,
+  "decorators": [],
+  "args": [
+   "code",
+   "title"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "search_courses",
+  "class": "",
+  "lineno": 142,
+  "decorators": [],
+  "args": [
+   "keyword",
+   "active_only"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "models_q_title",
+  "class": "",
+  "lineno": 153,
+  "decorators": [],
+  "args": [
+   "keyword"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "create_section",
+  "class": "",
+  "lineno": 162,
+  "decorators": [],
+  "args": [
+   "term",
+   "course",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "assign_teacher",
+  "class": "",
+  "lineno": 184,
+  "decorators": [],
+  "args": [
+   "section",
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "revoke_assignment",
+  "class": "",
+  "lineno": 199,
+  "decorators": [],
+  "args": [
+   "assignment"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "teacher_sections",
+  "class": "",
+  "lineno": 205,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "返回该教师当前任课的教学班（撤销即失效）。",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "can_teach",
+  "class": "",
+  "lineno": 216,
+  "decorators": [],
+  "args": [
+   "account",
+   "section"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "enroll",
+  "class": "",
+  "lineno": 223,
+  "decorators": [],
+  "args": [
+   "section",
+   "account"
+  ],
+  "doc": "选课：容量与重复校验在同一事务内（依赖唯一约束兜底并发）。",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "drop",
+  "class": "",
+  "lineno": 262,
+  "decorators": [],
+  "args": [
+   "enrollment"
+  ],
+  "doc": "",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "student_sections",
+  "class": "",
+  "lineno": 277,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "学生当前修读的教学班（仅 enrolled）。",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "section_roster",
+  "class": "",
+  "lineno": 288,
+  "decorators": [],
+  "args": [
+   "section",
+   "account"
+  ],
+  "doc": "教学班名册：只有任课教师或全局角色可见。",
+  "file": "smass_academic/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 75,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "record_for_account",
+  "class": "",
+  "lineno": 89,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "create_activity",
+  "class": "",
+  "lineno": 96,
+  "decorators": [],
+  "args": [
+   "actor",
+   "title",
+   "category",
+   "start_at",
+   "end_at"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "publish_activity",
+  "class": "",
+  "lineno": 131,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "cancel_activity",
+  "class": "",
+  "lineno": 143,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "close_activity",
+  "class": "",
+  "lineno": 154,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "关闭活动：未签到的已报名者标缺勤，清空签到码。",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "register",
+  "class": "",
+  "lineno": 177,
+  "decorators": [],
+  "args": [
+   "activity",
+   "record",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "cancel_registration",
+  "class": "",
+  "lineno": 216,
+  "decorators": [],
+  "args": [
+   "registration",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "check_in",
+  "class": "",
+  "lineno": 247,
+  "decorators": [],
+  "args": [
+   "registration",
+   "actor",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "generate_credits",
+  "class": "",
+  "lineno": 273,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "活动关闭后，为已签到学生生成待认定记录（幂等）。",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "approve_credit",
+  "class": "",
+  "lineno": 298,
+  "decorators": [],
+  "args": [
+   "credit",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "reject_credit",
+  "class": "",
+  "lineno": 316,
+  "decorators": [],
+  "args": [
+   "credit",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "scoped_activities",
+  "class": "",
+  "lineno": 336,
+  "decorators": [],
+  "args": [
+   "account",
+   "status"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "scoped_registrations",
+  "class": "",
+  "lineno": 345,
+  "decorators": [],
+  "args": [
+   "account",
+   "activity"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "scoped_credits",
+  "class": "",
+  "lineno": 357,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "credit_summary",
+  "class": "",
+  "lineno": 367,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "已认定学分与志愿时长累计。",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "activity_stats",
+  "class": "",
+  "lineno": 375,
+  "decorators": [],
+  "args": [
+   "activity"
+  ],
+  "doc": "",
+  "file": "smass_activities/services.py"
+ },
+ {
+  "name": "register_metric",
+  "class": "",
+  "lineno": 42,
+  "decorators": [],
+  "args": [
+   "code",
+   "name",
+   "data_source"
+  ],
+  "doc": "",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "validate_metric",
+  "class": "",
+  "lineno": 58,
+  "decorators": [],
+  "args": [
+   "metric"
+  ],
+  "doc": "校验：必须能在代码中找到对应计算函数，且数据源匹配。",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "enabled_metrics",
+  "class": "",
+  "lineno": 77,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "compute_metric",
+  "class": "",
+  "lineno": 160,
+  "decorators": [],
+  "args": [
+   "metric",
+   "account"
+  ],
+  "doc": "计算指标并（可选）写快照。返回 ``(value, meta)``。",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "create_report",
+  "class": "",
+  "lineno": 226,
+  "decorators": [],
+  "args": [
+   "code",
+   "name"
+  ],
+  "doc": "",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "run_report",
+  "class": "",
+  "lineno": 241,
+  "decorators": [],
+  "args": [
+   "report",
+   "account"
+  ],
+  "doc": "运行报表：逐指标计算结果，记录 query_hash 与 scope_hash。",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "latest_snapshot",
+  "class": "",
+  "lineno": 273,
+  "decorators": [],
+  "args": [
+   "metric"
+  ],
+  "doc": "",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "export_report_csv",
+  "class": "",
+  "lineno": 290,
+  "decorators": [],
+  "args": [
+   "report",
+   "account"
+  ],
+  "doc": "导出报表（CSV），权限与网页一致；含 query_hash 便于对账。",
+  "file": "smass_analytics/services.py"
+ },
+ {
+  "name": "create_service_account",
+  "class": "",
+  "lineno": 48,
+  "decorators": [],
+  "args": [
+   "name"
+  ],
+  "doc": "创建服务账号，返回 ``(account, raw_token)``。明文 token 只返回一次。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "authenticate",
+  "class": "",
+  "lineno": 59,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "从 Authorization: Bearer <token> 解析服务账号。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "require_scope",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "account",
+   "scope"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "check_rate_limit",
+  "class": "",
+  "lineno": 80,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "简单滑动窗口限流（进程内；多进程需换共享存储）。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "reset_rate_limits",
+  "class": "",
+  "lineno": 94,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "request_fingerprint",
+  "class": "",
+  "lineno": 101,
+  "decorators": [],
+  "args": [
+   "payload"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "begin_idempotent",
+  "class": "",
+  "lineno": 106,
+  "decorators": [],
+  "args": [
+   "account",
+   "key",
+   "payload"
+  ],
+  "doc": "返回 ``(existing_response, fingerprint)``；无既存记录时返回 (None, fp)。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "store_idempotent",
+  "class": "",
+  "lineno": 122,
+  "decorators": [],
+  "args": [
+   "key",
+   "account",
+   "fingerprint",
+   "status_code",
+   "body"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "list_units",
+  "class": "",
+  "lineno": 134,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "list_students",
+  "class": "",
+  "lineno": 157,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "学生列表：**必须**经过组织 scope（与服务端页面一致）。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "scoped_students_service_account",
+  "class": "",
+  "lineno": 195,
+  "decorators": [],
+  "args": [
+   "service_account"
+  ],
+  "doc": "服务账号的可见范围：默认空集，``write:students``/``read:students`` 不自动等于全校。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "list_sections",
+  "class": "",
+  "lineno": 209,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "list_workflow_instances",
+  "class": "",
+  "lineno": 229,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "run_mock_sync",
+  "class": "",
+  "lineno": 256,
+  "decorators": [],
+  "args": [
+   "account",
+   "payload"
+  ],
+  "doc": "本地 mock 同步：不连接任何外部系统。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "log_call",
+  "class": "",
+  "lineno": 305,
+  "decorators": [],
+  "args": [
+   "account",
+   "request",
+   "status_code",
+   "duration_ms"
+  ],
+  "doc": "",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "openapi_schema",
+  "class": "",
+  "lineno": 320,
+  "decorators": [],
+  "args": [],
+  "doc": "返回 /api/v1/ 的 OpenAPI 3.0 描述。",
+  "file": "smass_api/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 44,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "hash_token",
+  "class": "",
+  "lineno": 53,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "create_client",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [
+   "actor",
+   "name"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "issue_token",
+  "class": "",
+  "lineno": 71,
+  "decorators": [],
+  "args": [
+   "client",
+   "scopes",
+   "ttl_seconds"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "revoke_token",
+  "class": "",
+  "lineno": 84,
+  "decorators": [],
+  "args": [
+   "token",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "authenticate",
+  "class": "",
+  "lineno": 102,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "返回 (token, ApiError)。",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "has_scope",
+  "class": "",
+  "lineno": 121,
+  "decorators": [],
+  "args": [
+   "token",
+   "scope"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "check_rate",
+  "class": "",
+  "lineno": 128,
+  "decorators": [],
+  "args": [
+   "token",
+   "limit",
+   "window_seconds"
+  ],
+  "doc": "固定窗口限流；返回 (allowed, remaining)。",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "check_replay",
+  "class": "",
+  "lineno": 145,
+  "decorators": [],
+  "args": [
+   "token",
+   "timestamp_raw",
+   "nonce"
+  ],
+  "doc": "时间戳窗口 + 一次性 nonce。",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "idempotency_lookup",
+  "class": "",
+  "lineno": 170,
+  "decorators": [],
+  "args": [
+   "token",
+   "key",
+   "digest"
+  ],
+  "doc": "返回 (hit, response_status, response_body)。",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "store_idempotency",
+  "class": "",
+  "lineno": 181,
+  "decorators": [],
+  "args": [
+   "token",
+   "key",
+   "digest",
+   "status",
+   "body"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "log_request",
+  "class": "",
+  "lineno": 192,
+  "decorators": [],
+  "args": [
+   "token",
+   "method",
+   "path",
+   "status",
+   "reason",
+   "ip"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "client_rows",
+  "class": "",
+  "lineno": 199,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "token_rows",
+  "class": "",
+  "lineno": 203,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "scoped_logs",
+  "class": "",
+  "lineno": 207,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_api_security/services.py"
+ },
+ {
+  "name": "roles_of",
+  "class": "",
+  "lineno": 77,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 87,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "教师或管理员。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "record_for_account",
+  "class": "",
+  "lineno": 107,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "create_session",
+  "class": "",
+  "lineno": 121,
+  "decorators": [],
+  "args": [
+   "unit",
+   "session_date",
+   "period",
+   "actor"
+  ],
+  "doc": "创建考勤会话并生成签到码。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "close_session",
+  "class": "",
+  "lineno": 149,
+  "decorators": [],
+  "args": [
+   "session",
+   "actor"
+  ],
+  "doc": "关闭会话：未签到学生补缺勤，请假覆盖当日者标请假。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "teacher_mark",
+  "class": "",
+  "lineno": 186,
+  "decorators": [],
+  "args": [
+   "session",
+   "student",
+   "status",
+   "actor"
+  ],
+  "doc": "教师手动标记某个学生的考勤状态（upsert）。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "sign_in",
+  "class": "",
+  "lineno": 206,
+  "decorators": [],
+  "args": [
+   "session",
+   "account",
+   "code"
+  ],
+  "doc": "学生签到；返回 (record, created)。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "submit_leave",
+  "class": "",
+  "lineno": 254,
+  "decorators": [],
+  "args": [
+   "record",
+   "leave_type",
+   "start_date",
+   "end_date",
+   "reason",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "approve_leave",
+  "class": "",
+  "lineno": 291,
+  "decorators": [],
+  "args": [
+   "leave",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "reject_leave",
+  "class": "",
+  "lineno": 313,
+  "decorators": [],
+  "args": [
+   "leave",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "cancel_leave",
+  "class": "",
+  "lineno": 333,
+  "decorators": [],
+  "args": [
+   "leave",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "close_leave",
+  "class": "",
+  "lineno": 344,
+  "decorators": [],
+  "args": [
+   "leave",
+   "actor"
+  ],
+  "doc": "销假：批准且已过结束日期后，由本人或管理员销假。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "submit_makeup",
+  "class": "",
+  "lineno": 363,
+  "decorators": [],
+  "args": [
+   "record",
+   "session",
+   "reason",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "approve_makeup",
+  "class": "",
+  "lineno": 397,
+  "decorators": [],
+  "args": [
+   "makeup",
+   "actor"
+  ],
+  "doc": "批准补签：把缺勤/迟到记录覆盖为出勤（source=makeup）。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "reject_makeup",
+  "class": "",
+  "lineno": 428,
+  "decorators": [],
+  "args": [
+   "makeup",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "scoped_sessions",
+  "class": "",
+  "lineno": 451,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "scoped_leaves",
+  "class": "",
+  "lineno": 461,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "scoped_makeups",
+  "class": "",
+  "lineno": 471,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "session_stats",
+  "class": "",
+  "lineno": 481,
+  "decorators": [],
+  "args": [
+   "session"
+  ],
+  "doc": "单个会话的出勤统计。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "unit_stats",
+  "class": "",
+  "lineno": 499,
+  "decorators": [],
+  "args": [
+   "unit",
+   "date_from",
+   "date_to"
+  ],
+  "doc": "按学生汇总班级出勤率（用于统计页）。",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "attendance_statuses",
+  "class": "",
+  "lineno": 524,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_attendance/services.py"
+ },
+ {
+  "name": "can_audit",
+  "class": "",
+  "lineno": 53,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "record",
+  "class": "",
+  "lineno": 88,
+  "decorators": [],
+  "args": [
+   "actor",
+   "action"
+  ],
+  "doc": "写入一条审计事件（哈希链）。",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "verify_chain",
+  "class": "",
+  "lineno": 120,
+  "decorators": [],
+  "args": [
+   "limit"
+  ],
+  "doc": "校验哈希链完整性，返回 {'ok', 'count', 'broken_at'}。",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "detect_alerts",
+  "class": "",
+  "lineno": 139,
+  "decorators": [],
+  "args": [
+   "window_minutes",
+   "threshold"
+  ],
+  "doc": "窗口内 denied 次数超阈值 → 生成告警（同主体窗口内只开一条）。",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "acknowledge_alert",
+  "class": "",
+  "lineno": 173,
+  "decorators": [],
+  "args": [
+   "alert",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "scoped_events",
+  "class": "",
+  "lineno": 186,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "scoped_alerts",
+  "class": "",
+  "lineno": 195,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "stats",
+  "class": "",
+  "lineno": 201,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_audit/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 74,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "record_for_account",
+  "class": "",
+  "lineno": 83,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "is_leader",
+  "class": "",
+  "lineno": 87,
+  "decorators": [],
+  "args": [
+   "account",
+   "club"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "can_admin_club",
+  "class": "",
+  "lineno": 101,
+  "decorators": [],
+  "args": [
+   "account",
+   "club"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "create_club",
+  "class": "",
+  "lineno": 113,
+  "decorators": [],
+  "args": [
+   "actor",
+   "code",
+   "name",
+   "category"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "archive_club",
+  "class": "",
+  "lineno": 139,
+  "decorators": [],
+  "args": [
+   "club",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "apply_join",
+  "class": "",
+  "lineno": 153,
+  "decorators": [],
+  "args": [
+   "club",
+   "record",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "approve_join",
+  "class": "",
+  "lineno": 184,
+  "decorators": [],
+  "args": [
+   "membership",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "reject_join",
+  "class": "",
+  "lineno": 204,
+  "decorators": [],
+  "args": [
+   "membership",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "leave_club",
+  "class": "",
+  "lineno": 226,
+  "decorators": [],
+  "args": [
+   "membership",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "promote_leader",
+  "class": "",
+  "lineno": 240,
+  "decorators": [],
+  "args": [
+   "membership",
+   "actor"
+  ],
+  "doc": "把在册成员设为负责人（社团负责人/管理员可操作）。",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "demote_leader",
+  "class": "",
+  "lineno": 252,
+  "decorators": [],
+  "args": [
+   "membership",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "appoint_post",
+  "class": "",
+  "lineno": 266,
+  "decorators": [],
+  "args": [
+   "club",
+   "record",
+   "title",
+   "term",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "end_post",
+  "class": "",
+  "lineno": 306,
+  "decorators": [],
+  "args": [
+   "post",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "scoped_clubs",
+  "class": "",
+  "lineno": 320,
+  "decorators": [],
+  "args": [
+   "account",
+   "category"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "scoped_memberships",
+  "class": "",
+  "lineno": 329,
+  "decorators": [],
+  "args": [
+   "account",
+   "club"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "scoped_posts",
+  "class": "",
+  "lineno": 341,
+  "decorators": [],
+  "args": [
+   "account",
+   "club"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "club_stats",
+  "class": "",
+  "lineno": 353,
+  "decorators": [],
+  "args": [
+   "club"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "active_posts",
+  "class": "",
+  "lineno": 363,
+  "decorators": [],
+  "args": [
+   "club",
+   "term"
+  ],
+  "doc": "",
+  "file": "smass_clubs/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 100,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "教务/管理员：具备 update 或 manage_roles 动作。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "record_for_account",
+  "class": "",
+  "lineno": 105,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "classes_of_major",
+  "class": "",
+  "lineno": 114,
+  "decorators": [],
+  "args": [
+   "major"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "major_of_record",
+  "class": "",
+  "lineno": 119,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "推断学籍档案的当前专业单元。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "is_unplaced",
+  "class": "",
+  "lineno": 138,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "candidate_records",
+  "class": "",
+  "lineno": 142,
+  "decorators": [],
+  "args": [
+   "rule"
+  ],
+  "doc": "分班候选：在读、尚未编班、且属于该专业。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "create_placement_preview",
+  "class": "",
+  "lineno": 216,
+  "decorators": [],
+  "args": [
+   "rule",
+   "actor"
+  ],
+  "doc": "生成分班预览（不修改任何学籍档案）。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "apply_placement",
+  "class": "",
+  "lineno": 252,
+  "decorators": [],
+  "args": [
+   "batch",
+   "actor"
+  ],
+  "doc": "执行分班：写学籍档案并保留原组织，便于回滚。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "rollback_placement",
+  "class": "",
+  "lineno": 293,
+  "decorators": [],
+  "args": [
+   "batch",
+   "actor"
+  ],
+  "doc": "回滚分班：仅当学生仍停留在本批次分配的班级时才允许。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "submit_transfer",
+  "class": "",
+  "lineno": 340,
+  "decorators": [],
+  "args": [
+   "record",
+   "to_major",
+   "reason",
+   "actor",
+   "target_class"
+  ],
+  "doc": "提交转专业申请（学生本人或教务代提交）。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "approve_transfer",
+  "class": "",
+  "lineno": 382,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor"
+  ],
+  "doc": "审批通过（不得自批）。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "reject_transfer",
+  "class": "",
+  "lineno": 406,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "cancel_transfer",
+  "class": "",
+  "lineno": 426,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "apply_transfer",
+  "class": "",
+  "lineno": 437,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor",
+   "target_class"
+  ],
+  "doc": "生效：编入目标班级并写档案变更历史。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "submit_status_change",
+  "class": "",
+  "lineno": 490,
+  "decorators": [],
+  "args": [
+   "record",
+   "change_type",
+   "reason",
+   "actor",
+   "effective_date"
+  ],
+  "doc": "提交学籍异动申请。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "approve_status_change",
+  "class": "",
+  "lineno": 538,
+  "decorators": [],
+  "args": [
+   "change",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "reject_status_change",
+  "class": "",
+  "lineno": 554,
+  "decorators": [],
+  "args": [
+   "change",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "apply_status_change",
+  "class": "",
+  "lineno": 574,
+  "decorators": [],
+  "args": [
+   "change",
+   "actor"
+  ],
+  "doc": "生效：更新学籍状态并写变更历史。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "scoped_transfers",
+  "class": "",
+  "lineno": 610,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "按角色收窄的转专业列表（默认拒绝）。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "scoped_status_changes",
+  "class": "",
+  "lineno": 622,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "placement_summary",
+  "class": "",
+  "lineno": 632,
+  "decorators": [],
+  "args": [
+   "rule"
+  ],
+  "doc": "规则当前可预览的规模（用于页面展示）。",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "batch_rows",
+  "class": "",
+  "lineno": 646,
+  "decorators": [],
+  "args": [
+   "batch"
+  ],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "status_counts",
+  "class": "",
+  "lineno": 651,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_enrollment/services.py"
+ },
+ {
+  "name": "find_conflicts",
+  "class": "",
+  "lineno": 71,
+  "decorators": [],
+  "args": [
+   "room",
+   "start_at",
+   "end_at"
+  ],
+  "doc": "返回与该区间重叠的占用中预约。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "find_maintenance",
+  "class": "",
+  "lineno": 86,
+  "decorators": [],
+  "args": [
+   "room",
+   "start_at",
+   "end_at"
+  ],
+  "doc": "返回与该区间重叠的维护封闭期。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "availability_windows",
+  "class": "",
+  "lineno": 95,
+  "decorators": [],
+  "args": [
+   "room"
+  ],
+  "doc": "房间的常规可用时段（周内）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "is_within_availability",
+  "class": "",
+  "lineno": 100,
+  "decorators": [],
+  "args": [
+   "room",
+   "start_at",
+   "end_at"
+  ],
+  "doc": "区间是否完全落在某个常规可用时段内。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "has_qualification",
+  "class": "",
+  "lineno": 124,
+  "decorators": [],
+  "args": [
+   "account",
+   "room"
+  ],
+  "doc": "",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "can_book",
+  "class": "",
+  "lineno": 136,
+  "decorators": [],
+  "args": [
+   "account",
+   "room"
+  ],
+  "doc": "是否具备预约资格（不含时间冲突判断）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "can_approve",
+  "class": "",
+  "lineno": 149,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "can_manage_rooms",
+  "class": "",
+  "lineno": 153,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "create_booking",
+  "class": "",
+  "lineno": 160,
+  "decorators": [],
+  "args": [
+   "account",
+   "room",
+   "start_at",
+   "end_at",
+   "purpose"
+  ],
+  "doc": "创建预约。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "approve_booking",
+  "class": "",
+  "lineno": 233,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor"
+  ],
+  "doc": "审批通过。仅 pending 可批。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "reject_booking",
+  "class": "",
+  "lineno": 259,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor",
+   "reason"
+  ],
+  "doc": "驳回待审批预约（必须填写原因，且不得自批）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "cancel_booking",
+  "class": "",
+  "lineno": 278,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor",
+   "reason"
+  ],
+  "doc": "取消预约。申请人本人或具备 update 权限者可取消。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "check_in_booking",
+  "class": "",
+  "lineno": 294,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor"
+  ],
+  "doc": "签到。仅 approved 可签到；必须是申请人本人或管理员。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "mark_no_show",
+  "class": "",
+  "lineno": 309,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor"
+  ],
+  "doc": "标记爽约（通常在预约开始后由管理员批量执行）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "release_booking",
+  "class": "",
+  "lineno": 323,
+  "decorators": [],
+  "args": [
+   "booking",
+   "actor"
+  ],
+  "doc": "提前释放房间（结束占用，释放后该时段可被再次预约）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "auto_mark_no_shows",
+  "class": "",
+  "lineno": 338,
+  "decorators": [],
+  "args": [
+   "now",
+   "grace_minutes"
+  ],
+  "doc": "把\"已过开始时间 + 宽限期仍未签到\"的预约标记爽约。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "scoped_bookings",
+  "class": "",
+  "lineno": 358,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "按角色收窄的预约查询集（默认拒绝）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "room_calendar",
+  "class": "",
+  "lineno": 377,
+  "decorators": [],
+  "args": [
+   "room",
+   "start_at",
+   "end_at"
+  ],
+  "doc": "共享日历：返回该房间在区间内的占用与封闭期。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "available_rooms",
+  "class": "",
+  "lineno": 400,
+  "decorators": [],
+  "args": [
+   "start_at",
+   "end_at"
+  ],
+  "doc": "在指定时段内可预约的房间列表（不含权限判断）。",
+  "file": "smass_facilities/services.py"
+ },
+ {
+  "name": "can_finance",
+  "class": "",
+  "lineno": 89,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "create_fee_item",
+  "class": "",
+  "lineno": 107,
+  "decorators": [],
+  "args": [
+   "actor",
+   "code",
+   "name",
+   "category",
+   "amount",
+   "term"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "create_bill",
+  "class": "",
+  "lineno": 128,
+  "decorators": [],
+  "args": [
+   "record",
+   "term",
+   "fee_items",
+   "actor"
+  ],
+  "doc": "按收费项目生成账单（合成数据）。",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "pay_bill",
+  "class": "",
+  "lineno": 174,
+  "decorators": [],
+  "args": [
+   "bill",
+   "amount",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "request_refund",
+  "class": "",
+  "lineno": 228,
+  "decorators": [],
+  "args": [
+   "bill",
+   "amount",
+   "reason",
+   "actor"
+  ],
+  "doc": "退费申请：本人或财务发起。",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "approve_refund",
+  "class": "",
+  "lineno": 262,
+  "decorators": [],
+  "args": [
+   "refund",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "reject_refund",
+  "class": "",
+  "lineno": 277,
+  "decorators": [],
+  "args": [
+   "refund",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "execute_refund",
+  "class": "",
+  "lineno": 296,
+  "decorators": [],
+  "args": [
+   "refund",
+   "actor"
+  ],
+  "doc": "出纳执行：写负向台账、回写账单与缴费记录。",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "scoped_bills",
+  "class": "",
+  "lineno": 334,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "scoped_refunds",
+  "class": "",
+  "lineno": 347,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "scoped_ledger",
+  "class": "",
+  "lineno": 360,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "bill_summary",
+  "class": "",
+  "lineno": 366,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "finance_totals",
+  "class": "",
+  "lineno": 374,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_finance/services.py"
+ },
+ {
+  "name": "can_moderate",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "create_board",
+  "class": "",
+  "lineno": 87,
+  "decorators": [],
+  "args": [
+   "actor",
+   "code",
+   "name",
+   "description"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "create_post",
+  "class": "",
+  "lineno": 101,
+  "decorators": [],
+  "args": [
+   "board",
+   "author",
+   "title",
+   "body"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "create_comment",
+  "class": "",
+  "lineno": 121,
+  "decorators": [],
+  "args": [
+   "post",
+   "author",
+   "body"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "hide_content",
+  "class": "",
+  "lineno": 153,
+  "decorators": [],
+  "args": [
+   "target_type",
+   "target_id",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "remove_content",
+  "class": "",
+  "lineno": 164,
+  "decorators": [],
+  "args": [
+   "target_type",
+   "target_id",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "report_content",
+  "class": "",
+  "lineno": 176,
+  "decorators": [],
+  "args": [
+   "target_type",
+   "target_id",
+   "reporter",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "resolve_report",
+  "class": "",
+  "lineno": 200,
+  "decorators": [],
+  "args": [
+   "report",
+   "actor",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "create_announcement",
+  "class": "",
+  "lineno": 236,
+  "decorators": [],
+  "args": [
+   "actor",
+   "title",
+   "body",
+   "audience"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "publish_announcement",
+  "class": "",
+  "lineno": 251,
+  "decorators": [],
+  "args": [
+   "announcement",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "visible_posts",
+  "class": "",
+  "lineno": 266,
+  "decorators": [],
+  "args": [
+   "account",
+   "board"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "models_q_visible",
+  "class": "",
+  "lineno": 279,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "visible_comments",
+  "class": "",
+  "lineno": 284,
+  "decorators": [],
+  "args": [
+   "account",
+   "post"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "scoped_reports",
+  "class": "",
+  "lineno": 293,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "visible_announcements",
+  "class": "",
+  "lineno": 302,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "board_stats",
+  "class": "",
+  "lineno": 315,
+  "decorators": [],
+  "args": [
+   "board"
+  ],
+  "doc": "",
+  "file": "smass_forum/services.py"
+ },
+ {
+  "name": "mfa_enabled",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "required_roles",
+  "class": "",
+  "lineno": 61,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "is_privileged",
+  "class": "",
+  "lineno": 68,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "generate_secret",
+  "class": "",
+  "lineno": 76,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "totp",
+  "class": "",
+  "lineno": 86,
+  "decorators": [],
+  "args": [
+   "secret",
+   "at",
+   "step",
+   "digits"
+  ],
+  "doc": "返回给定时间片的 TOTP 码。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "verify_totp",
+  "class": "",
+  "lineno": 96,
+  "decorators": [],
+  "args": [
+   "secret",
+   "code",
+   "at",
+   "window"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "provisioning_uri",
+  "class": "",
+  "lineno": 107,
+  "decorators": [],
+  "args": [
+   "account",
+   "secret"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "enroll",
+  "class": "",
+  "lineno": 141,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "生成/重置待确认设备，返回 (device, provisioning_uri)。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "confirm",
+  "class": "",
+  "lineno": 163,
+  "decorators": [],
+  "args": [
+   "account",
+   "code"
+  ],
+  "doc": "校验 TOTP 并启用，返回一次性恢复码列表。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "verify",
+  "class": "",
+  "lineno": 187,
+  "decorators": [],
+  "args": [
+   "account",
+   "code",
+   "at"
+  ],
+  "doc": "二次验证：TOTP 或恢复码。成功后写 session 标记。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "mark_session_verified",
+  "class": "",
+  "lineno": 212,
+  "decorators": [],
+  "args": [
+   "session"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "session_verified",
+  "class": "",
+  "lineno": 216,
+  "decorators": [],
+  "args": [
+   "session"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "clear_session_verified",
+  "class": "",
+  "lineno": 232,
+  "decorators": [],
+  "args": [
+   "session"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "disable",
+  "class": "",
+  "lineno": 236,
+  "decorators": [],
+  "args": [
+   "account",
+   "code"
+  ],
+  "doc": "停用 MFA：必须提供有效验证码，防止会话被劫持后直接关闭。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "device_status",
+  "class": "",
+  "lineno": 250,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "regenerate_recovery_codes",
+  "class": "",
+  "lineno": 261,
+  "decorators": [],
+  "args": [
+   "account",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "needs_setup",
+  "class": "",
+  "lineno": 272,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "特权角色且未启用 MFA。",
+  "file": "smass_mfa/services.py"
+ },
+ {
+  "name": "normalize_route",
+  "class": "",
+  "lineno": 26,
+  "decorators": [],
+  "args": [
+   "path"
+  ],
+  "doc": "把路径里的数字/ID 段替换为占位符，避免记录具体对象标识。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "record_request",
+  "class": "",
+  "lineno": 41,
+  "decorators": [],
+  "args": [
+   "request",
+   "status_code",
+   "duration_ms"
+  ],
+  "doc": "记录一次请求指标（失败不抛，避免影响业务）。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "summary",
+  "class": "",
+  "lineno": 62,
+  "decorators": [],
+  "args": [
+   "window_seconds"
+  ],
+  "doc": "返回窗口内的延迟分位与错误率。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "check_database",
+  "class": "",
+  "lineno": 93,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "check_migrations",
+  "class": "",
+  "lineno": 105,
+  "decorators": [],
+  "args": [],
+  "doc": "检查是否有未应用的迁移（只读，不执行迁移）。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "readiness",
+  "class": "",
+  "lineno": 120,
+  "decorators": [],
+  "args": [
+   "persist"
+  ],
+  "doc": "逐项检查，返回总体是否就绪。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "close_connections",
+  "class": "",
+  "lineno": 138,
+  "decorators": [],
+  "args": [],
+  "doc": "测试辅助：释放连接（避免连接数堆积）。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "create_rule",
+  "class": "",
+  "lineno": 146,
+  "decorators": [],
+  "args": [
+   "code",
+   "name",
+   "metric",
+   "threshold"
+  ],
+  "doc": "",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "evaluate_rules",
+  "class": "",
+  "lineno": 174,
+  "decorators": [],
+  "args": [
+   "persist"
+  ],
+  "doc": "评估所有启用规则，超阈值则记 AlertEvent。",
+  "file": "smass_operations/services.py"
+ },
+ {
+  "name": "validate_parent",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "unit_type",
+   "parent"
+  ],
+  "doc": "校验 ``unit_type`` 能否挂在 ``parent`` 下。失败抛异常。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "create_unit",
+  "class": "",
+  "lineno": 74,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "move_unit",
+  "class": "",
+  "lineno": 83,
+  "decorators": [],
+  "args": [
+   "unit",
+   "new_parent"
+  ],
+  "doc": "移动节点：校验 → 更新 → 记录审计。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "subtree",
+  "class": "",
+  "lineno": 111,
+  "decorators": [],
+  "args": [
+   "unit"
+  ],
+  "doc": "返回以 unit 为根的子树（广度优先，带深度上限）。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "scoped_units",
+  "class": "",
+  "lineno": 131,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "返回账号可见的组织单元查询集。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "scoped_students",
+  "class": "",
+  "lineno": 167,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "返回账号可见的学生档案查询集（列表/详情/搜索/导出/API 统一入口）。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "can_access_student",
+  "class": "",
+  "lineno": 189,
+  "decorators": [],
+  "args": [
+   "account",
+   "record"
+  ],
+  "doc": "单对象访问判定（防 IDOR）。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "can_access_unit",
+  "class": "",
+  "lineno": 194,
+  "decorators": [],
+  "args": [
+   "account",
+   "unit"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "account_roles",
+  "class": "",
+  "lineno": 201,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "visible_fields",
+  "class": "",
+  "lineno": 216,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "editable_fields",
+  "class": "",
+  "lineno": 225,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "filtered_extra",
+  "class": "",
+  "lineno": 234,
+  "decorators": [],
+  "args": [
+   "record",
+   "account"
+  ],
+  "doc": "按字段级权限裁剪 ``extra``：无权限字段**不出现在返回值中**。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "can_view_field",
+  "class": "",
+  "lineno": 240,
+  "decorators": [],
+  "args": [
+   "account",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "can_edit_field",
+  "class": "",
+  "lineno": 244,
+  "decorators": [],
+  "args": [
+   "account",
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "update_student",
+  "class": "",
+  "lineno": 255,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "带乐观锁的档案更新。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "import_preview",
+  "class": "",
+  "lineno": 318,
+  "decorators": [],
+  "args": [
+   "text"
+  ],
+  "doc": "解析并逐行校验，返回 ``(job, preview_rows)``；不写业务数据。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "import_commit",
+  "class": "",
+  "lineno": 396,
+  "decorators": [],
+  "args": [
+   "text"
+  ],
+  "doc": "预检 + 提交：逐行 upsert，写变更历史；单行失败不阻断其他行。",
+  "file": "smass_organization/services.py"
+ },
+ {
+  "name": "can_manage_party",
+  "class": "",
+  "lineno": 85,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "record_for_account",
+  "class": "",
+  "lineno": 99,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "is_org_member",
+  "class": "",
+  "lineno": 103,
+  "decorators": [],
+  "args": [
+   "account",
+   "org"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "has_clearance",
+  "class": "",
+  "lineno": 111,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "models_q_expiry",
+  "class": "",
+  "lineno": 121,
+  "decorators": [],
+  "args": [
+   "now"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "create_org",
+  "class": "",
+  "lineno": 129,
+  "decorators": [],
+  "args": [
+   "actor",
+   "code",
+   "name",
+   "org_type"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "add_member",
+  "class": "",
+  "lineno": 147,
+  "decorators": [],
+  "args": [
+   "org",
+   "record",
+   "political_status",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "remove_member",
+  "class": "",
+  "lineno": 176,
+  "decorators": [],
+  "args": [
+   "member",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "create_activity",
+  "class": "",
+  "lineno": 190,
+  "decorators": [],
+  "args": [
+   "org",
+   "title",
+   "activity_type",
+   "held_on",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "complete_activity",
+  "class": "",
+  "lineno": 207,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "cancel_activity",
+  "class": "",
+  "lineno": 219,
+  "decorators": [],
+  "args": [
+   "activity",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "create_document",
+  "class": "",
+  "lineno": 233,
+  "decorators": [],
+  "args": [
+   "org",
+   "title",
+   "classification",
+   "summary",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "can_view",
+  "class": "",
+  "lineno": 257,
+  "decorators": [],
+  "args": [
+   "account",
+   "document"
+  ],
+  "doc": "是否可查看资料正文。",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "view_document",
+  "class": "",
+  "lineno": 280,
+  "decorators": [],
+  "args": [
+   "document",
+   "actor"
+  ],
+  "doc": "受控查看：允许则返回摘要并记 view，否则记 deny 并返回占位。",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "request_access",
+  "class": "",
+  "lineno": 291,
+  "decorators": [],
+  "args": [
+   "document",
+   "purpose",
+   "applicant"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "approve_access",
+  "class": "",
+  "lineno": 314,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "reject_access",
+  "class": "",
+  "lineno": 337,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "expire_requests",
+  "class": "",
+  "lineno": 360,
+  "decorators": [],
+  "args": [
+   "now"
+  ],
+  "doc": "把已过有效期的批准申请标记为 expired（惰性清理）。",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "grant_clearance",
+  "class": "",
+  "lineno": 370,
+  "decorators": [],
+  "args": [
+   "account",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "revoke_clearance",
+  "class": "",
+  "lineno": 383,
+  "decorators": [],
+  "args": [
+   "grant",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "scoped_orgs",
+  "class": "",
+  "lineno": 397,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "scoped_documents",
+  "class": "",
+  "lineno": 404,
+  "decorators": [],
+  "args": [
+   "account",
+   "org"
+  ],
+  "doc": "列表只返回元数据；正文是否可见由 ``view_document`` 判定。",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "scoped_access_requests",
+  "class": "",
+  "lineno": 426,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "scoped_audit_logs",
+  "class": "",
+  "lineno": 435,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "org_summary",
+  "class": "",
+  "lineno": 441,
+  "decorators": [],
+  "args": [
+   "org"
+  ],
+  "doc": "",
+  "file": "smass_party/services.py"
+ },
+ {
+  "name": "roles_of",
+  "class": "",
+  "lineno": 40,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "can_admin",
+  "class": "",
+  "lineno": 44,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "condition_ok",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "policy",
+   "obj"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "mask_value",
+  "class": "",
+  "lineno": 109,
+  "decorators": [],
+  "args": [
+   "policy",
+   "value"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "read_field",
+  "class": "",
+  "lineno": 135,
+  "decorators": [],
+  "args": [
+   "account",
+   "resource",
+   "field",
+   "obj"
+  ],
+  "doc": "返回 {'allowed', 'value', 'masked', 'reason'}。",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "can_write",
+  "class": "",
+  "lineno": 152,
+  "decorators": [],
+  "args": [
+   "account",
+   "resource",
+   "field",
+   "obj"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "effective_fields",
+  "class": "",
+  "lineno": 160,
+  "decorators": [],
+  "args": [
+   "account",
+   "resource",
+   "obj"
+  ],
+  "doc": "该账号对该资源所有已配置字段的读写能力。",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "set_policy",
+  "class": "",
+  "lineno": 177,
+  "decorators": [],
+  "args": [
+   "account",
+   "resource",
+   "field"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "disable_policy",
+  "class": "",
+  "lineno": 202,
+  "decorators": [],
+  "args": [
+   "account",
+   "policy"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "scoped_policies",
+  "class": "",
+  "lineno": 213,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "decision_logs",
+  "class": "",
+  "lineno": 219,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "all_resources",
+  "class": "",
+  "lineno": 225,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_policy/services.py"
+ },
+ {
+  "name": "roles_of",
+  "class": "",
+  "lineno": 44,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "can_admin_portal",
+  "class": "",
+  "lineno": 48,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "visible_sections",
+  "class": "",
+  "lineno": 70,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "visible_links",
+  "class": "",
+  "lineno": 81,
+  "decorators": [],
+  "args": [
+   "section",
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "resolve_link",
+  "class": "",
+  "lineno": 89,
+  "decorators": [],
+  "args": [
+   "link"
+  ],
+  "doc": "优先 reverse，失败回退 fallback_url，再失败返回 '#'。",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "portal_context",
+  "class": "",
+  "lineno": 99,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "visible_notices",
+  "class": "",
+  "lineno": 114,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "create_section",
+  "class": "",
+  "lineno": 127,
+  "decorators": [],
+  "args": [
+   "actor",
+   "code",
+   "title"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "create_link",
+  "class": "",
+  "lineno": 144,
+  "decorators": [],
+  "args": [
+   "section",
+   "label"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "create_notice",
+  "class": "",
+  "lineno": 162,
+  "decorators": [],
+  "args": [
+   "actor",
+   "title",
+   "body"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "publish_notice",
+  "class": "",
+  "lineno": 175,
+  "decorators": [],
+  "args": [
+   "notice",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "bootstrap_defaults",
+  "class": "",
+  "lineno": 221,
+  "decorators": [],
+  "args": [],
+  "doc": "幂等创建默认门户（区块 + 链接 + 欢迎公告）。",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "section_stats",
+  "class": "",
+  "lineno": 248,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_portal/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 66,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "set_field",
+  "class": "",
+  "lineno": 75,
+  "decorators": [],
+  "args": [
+   "actor",
+   "resource",
+   "field",
+   "classification",
+   "mask",
+   "retention_days",
+   "note"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "fields_of",
+  "class": "",
+  "lineno": 96,
+  "decorators": [],
+  "args": [
+   "resource",
+   "only_enabled"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "effective_mask",
+  "class": "",
+  "lineno": 116,
+  "decorators": [],
+  "args": [
+   "policy"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "minimized_rows",
+  "class": "",
+  "lineno": 137,
+  "decorators": [],
+  "args": [
+   "resource",
+   "fields",
+   "records"
+  ],
+  "doc": "按字段分级生成最小化后的行（只含已登记字段，敏感字段强制脱敏）。",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "request_disclosure",
+  "class": "",
+  "lineno": 151,
+  "decorators": [],
+  "args": [
+   "account",
+   "resource",
+   "fields",
+   "purpose"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "approve_disclosure",
+  "class": "",
+  "lineno": 175,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "reject_disclosure",
+  "class": "",
+  "lineno": 192,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "build_export",
+  "class": "",
+  "lineno": 213,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "生成 CSV 文本（确定性顺序），返回 (text, row_count, digest)。",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "execute_disclosure",
+  "class": "",
+  "lineno": 226,
+  "decorators": [],
+  "args": [
+   "request",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "expire_stale",
+  "class": "",
+  "lineno": 253,
+  "decorators": [],
+  "args": [
+   "now",
+   "minutes"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "purge_expired",
+  "class": "",
+  "lineno": 261,
+  "decorators": [],
+  "args": [
+   "now"
+  ],
+  "doc": "按字段 ``retention_days`` 清理过期样本。",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "scoped_requests",
+  "class": "",
+  "lineno": 281,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "scoped_logs",
+  "class": "",
+  "lineno": 290,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "stats",
+  "class": "",
+  "lineno": 296,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_privacy/services.py"
+ },
+ {
+  "name": "action_spec",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [
+   "code"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "can_approve",
+  "class": "",
+  "lineno": 64,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "verify_stepup",
+  "class": "",
+  "lineno": 82,
+  "decorators": [],
+  "args": [
+   "account",
+   "action_code",
+   "code"
+  ],
+  "doc": "再认证成功则写入证明并返回。",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "has_stepup",
+  "class": "",
+  "lineno": 110,
+  "decorators": [],
+  "args": [
+   "account",
+   "action_code"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "open_approval",
+  "class": "",
+  "lineno": 121,
+  "decorators": [],
+  "args": [
+   "account",
+   "action_code",
+   "payload",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "expire_stale",
+  "class": "",
+  "lineno": 143,
+  "decorators": [],
+  "args": [
+   "now",
+   "minutes"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "approve_approval",
+  "class": "",
+  "lineno": 151,
+  "decorators": [],
+  "args": [
+   "approval",
+   "actor"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "reject_approval",
+  "class": "",
+  "lineno": 171,
+  "decorators": [],
+  "args": [
+   "approval",
+   "actor",
+   "reason"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "execute_approval",
+  "class": "",
+  "lineno": 193,
+  "decorators": [],
+  "args": [
+   "approval",
+   "actor"
+  ],
+  "doc": "执行敏感操作：只有已批准、且执行人是发起人或审批人。",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "scoped_approvals",
+  "class": "",
+  "lineno": 228,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "scoped_operation_logs",
+  "class": "",
+  "lineno": 237,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "action_catalog",
+  "class": "",
+  "lineno": 243,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_stepup/services.py"
+ },
+ {
+  "name": "can_manage",
+  "class": "",
+  "lineno": 86,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "private_root",
+  "class": "",
+  "lineno": 95,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "sanitize_filename",
+  "class": "",
+  "lineno": 102,
+  "decorators": [],
+  "args": [
+   "raw"
+  ],
+  "doc": "只保留 basename，去掉控制字符与路径分隔符，限制长度。",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "extension_of",
+  "class": "",
+  "lineno": 113,
+  "decorators": [],
+  "args": [
+   "name"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "validate",
+  "class": "",
+  "lineno": 175,
+  "decorators": [],
+  "args": [
+   "file_obj",
+   "purpose",
+   "original_name"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "store",
+  "class": "",
+  "lineno": 219,
+  "decorators": [],
+  "args": [
+   "file_obj",
+   "owner",
+   "purpose"
+  ],
+  "doc": "校验并保存到私有目录，返回 ``UploadedFile``。",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "path_for",
+  "class": "",
+  "lineno": 251,
+  "decorators": [],
+  "args": [
+   "upload"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "can_access",
+  "class": "",
+  "lineno": 256,
+  "decorators": [],
+  "args": [
+   "upload",
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "open_upload",
+  "class": "",
+  "lineno": 264,
+  "decorators": [],
+  "args": [
+   "upload",
+   "account"
+  ],
+  "doc": "鉴权后返回文件句柄。",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "delete_upload",
+  "class": "",
+  "lineno": 277,
+  "decorators": [],
+  "args": [
+   "upload",
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "scoped_files",
+  "class": "",
+  "lineno": 292,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "storage_stats",
+  "class": "",
+  "lineno": 301,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_uploads/services.py"
+ },
+ {
+  "name": "create_definition",
+  "class": "",
+  "lineno": 51,
+  "decorators": [],
+  "args": [
+   "code",
+   "name"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "create_draft_version",
+  "class": "",
+  "lineno": 64,
+  "decorators": [],
+  "args": [
+   "definition"
+  ],
+  "doc": "创建一个新的草稿版本（版本号自增）。",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "add_node",
+  "class": "",
+  "lineno": 73,
+  "decorators": [],
+  "args": [
+   "version",
+   "code",
+   "name",
+   "node_type"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "add_transition",
+  "class": "",
+  "lineno": 85,
+  "decorators": [],
+  "args": [
+   "version",
+   "from_code",
+   "to_code",
+   "action"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "validate_version",
+  "class": "",
+  "lineno": 104,
+  "decorators": [],
+  "args": [
+   "version"
+  ],
+  "doc": "结构校验：恰好一个 start、至少一个 end、无离开 end 的转移。",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "publish_version",
+  "class": "",
+  "lineno": 141,
+  "decorators": [],
+  "args": [
+   "version"
+  ],
+  "doc": "发布版本：校验通过后设为 active，同流程旧 active 归档。",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "active_version",
+  "class": "",
+  "lineno": 164,
+  "decorators": [],
+  "args": [
+   "definition"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "start_instance",
+  "class": "",
+  "lineno": 171,
+  "decorators": [],
+  "args": [
+   "version"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "transition",
+  "class": "",
+  "lineno": 210,
+  "decorators": [],
+  "args": [
+   "instance",
+   "action"
+  ],
+  "doc": "执行状态转移（唯一合法入口）。",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "open_tasks",
+  "class": "",
+  "lineno": 279,
+  "decorators": [],
+  "args": [
+   "assignee"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "complete_task",
+  "class": "",
+  "lineno": 288,
+  "decorators": [],
+  "args": [
+   "task"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "notify",
+  "class": "",
+  "lineno": 303,
+  "decorators": [],
+  "args": [
+   "recipient",
+   "title"
+  ],
+  "doc": "写站内通知（幂等：同 recipient+event_key 只落一条）。",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "inbox",
+  "class": "",
+  "lineno": 330,
+  "decorators": [],
+  "args": [
+   "recipient",
+   "unread_only"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "mark_read",
+  "class": "",
+  "lineno": 337,
+  "decorators": [],
+  "args": [
+   "notification"
+  ],
+  "doc": "",
+  "file": "smass_workflow/services.py"
+ },
+ {
+  "name": "legacy_md5_secret",
+  "class": "",
+  "lineno": 56,
+  "decorators": [],
+  "args": [],
+  "doc": "返回当前注入的历史 MD5 密钥；未注入时返回空串。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "legacy_md5_compat_enabled",
+  "class": "",
+  "lineno": 61,
+  "decorators": [],
+  "args": [],
+  "doc": "迁移模式开关；默认关闭，必须显式开启才允许消费历史 MD5。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "legacy_md5_compat_status",
+  "class": "",
+  "lineno": 66,
+  "decorators": [],
+  "args": [],
+  "doc": "给运维/审计用的无敏感信息状态摘要。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "password_errors",
+  "class": "",
+  "lineno": 133,
+  "decorators": [],
+  "args": [
+   "raw_password",
+   "account"
+  ],
+  "doc": "用 Django 官方校验器检查密码强度，返回错误消息列表（空列表表示通过）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "set_password_with_policy",
+  "class": "",
+  "lineno": 154,
+  "decorators": [],
+  "args": [
+   "account",
+   "raw_password",
+   "enforce"
+  ],
+  "doc": "设置密码，可选地先做强度校验。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "generate_password",
+  "class": "",
+  "lineno": 166,
+  "decorators": [],
+  "args": [
+   "length"
+  ],
+  "doc": "生成随机初始密码（大小写字母 + 数字）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "legacy_md5",
+  "class": "",
+  "lineno": 175,
+  "decorators": [],
+  "args": [
+   "raw_password",
+   "secret_key"
+  ],
+  "doc": "用**注入的**历史密钥重算 MD5，仅用于兼容校验。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "is_legacy_hash",
+  "class": "",
+  "lineno": 188,
+  "decorators": [],
+  "args": [
+   "encoded"
+  ],
+  "doc": "判断数据库里存的是不是旧的 32 位 MD5。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "is_preferred_hash",
+  "class": "",
+  "lineno": 193,
+  "decorators": [],
+  "args": [
+   "encoded"
+  ],
+  "doc": "判断编码是否已是当前首选的官方哈希算法（否则应在校验成功后升级）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "set_password",
+  "class": "",
+  "lineno": 203,
+  "decorators": [],
+  "args": [
+   "account",
+   "raw_password"
+  ],
+  "doc": "把 *raw_password* 用官方哈希写入 *account* 并落库（只更新 password 字段）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "verify_password",
+  "class": "",
+  "lineno": 231,
+  "decorators": [],
+  "args": [
+   "account",
+   "raw_password"
+  ],
+  "doc": "校验密码。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "authenticate",
+  "class": "",
+  "lineno": 297,
+  "decorators": [],
+  "args": [
+   "model",
+   "account_id",
+   "raw_password"
+  ],
+  "doc": "按主键校验账号密码，成功返回账号实例，失败返回 ``None``。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "reset_password",
+  "class": "",
+  "lineno": 312,
+  "decorators": [],
+  "args": [
+   "account",
+   "new_password",
+   "request"
+  ],
+  "doc": "重置密码并返回一次性明文（供调用方展示一次，不落库明文）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "create_account",
+  "class": "",
+  "lineno": 326,
+  "decorators": [],
+  "args": [
+   "model",
+   "raw_password"
+  ],
+  "doc": "统一账号创建入口：安全编码密码后落库。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "save_account_form",
+  "class": "",
+  "lineno": 343,
+  "decorators": [],
+  "args": [
+   "form",
+   "model",
+   "instance",
+   "request"
+  ],
+  "doc": "保存账号类 ModelForm（Admin / Student / Teacher）。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "login_lock_remaining",
+  "class": "",
+  "lineno": 380,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "返回剩余锁定秒数；``0`` 表示当前可尝试登录。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "register_login_failure",
+  "class": "",
+  "lineno": 391,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "记录一次登录失败，达到阈值后锁定。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "clear_login_failures",
+  "class": "",
+  "lineno": 407,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "登录成功后清除失败计数。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "establish_session",
+  "class": "",
+  "lineno": 415,
+  "decorators": [],
+  "args": [
+   "request",
+   "account",
+   "role"
+  ],
+  "doc": "建立登录会话。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "destroy_session",
+  "class": "",
+  "lineno": 461,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "登出：``flush()`` 丢弃整个会话数据与 Session ID，旧会话立即失效。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "log_action",
+  "class": "",
+  "lineno": 490,
+  "decorators": [],
+  "args": [
+   "request",
+   "action",
+   "obj",
+   "detail"
+  ],
+  "doc": "记录业务操作审计。",
+  "file": "app01/services/accounts.py"
+ },
+ {
+  "name": "build_endpoints",
+  "class": "",
+  "lineno": 23,
+  "decorators": [],
+  "args": [
+   "module_prefix",
+   "actions"
+  ],
+  "doc": "按命名路由约定生成接口地址字典。",
+  "file": "app01/services/crud.py"
+ },
+ {
+  "name": "apply_search",
+  "class": "",
+  "lineno": 39,
+  "decorators": [],
+  "args": [
+   "queryset",
+   "search_fields",
+   "keyword"
+  ],
+  "doc": "按显式声明的字段做 OR 模糊匹配。",
+  "file": "app01/services/crud.py"
+ },
+ {
+  "name": "build_search_meta",
+  "class": "",
+  "lineno": 56,
+  "decorators": [],
+  "args": [
+   "search_fields",
+   "keyword"
+  ],
+  "doc": "构造传给模板的搜索上下文（保持 ``search_data`` 回显）。",
+  "file": "app01/services/crud.py"
+ },
+ {
+  "name": "row_detail_dict",
+  "class": "",
+  "lineno": 64,
+  "decorators": [],
+  "args": [
+   "model",
+   "pk",
+   "exclude"
+  ],
+  "doc": "返回一行数据的字典。",
+  "file": "app01/services/crud.py"
+ },
+ {
+  "name": "delete_by_pk",
+  "class": "",
+  "lineno": 87,
+  "decorators": [],
+  "args": [
+   "model",
+   "pk",
+   "request"
+  ],
+  "doc": "按主键删除一行并返回统一 JSON。",
+  "file": "app01/services/crud.py"
+ },
+ {
+  "name": "ok",
+  "class": "ImportResult",
+  "lineno": 38,
+  "decorators": [
+   "property"
+  ],
+  "args": [
+   "self"
+  ],
+  "doc": "",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "import_colleges",
+  "class": "",
+  "lineno": 146,
+  "decorators": [],
+  "args": [
+   "file_object"
+  ],
+  "doc": "批量导入学院（幂等：同名跳过）。",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "import_majors",
+  "class": "",
+  "lineno": 176,
+  "decorators": [],
+  "args": [
+   "file_object"
+  ],
+  "doc": "批量导入专业。",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "import_classes",
+  "class": "",
+  "lineno": 214,
+  "decorators": [],
+  "args": [
+   "file_object"
+  ],
+  "doc": "批量导入班级。",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "import_students",
+  "class": "",
+  "lineno": 270,
+  "decorators": [],
+  "args": [
+   "file_object"
+  ],
+  "doc": "批量导入学生。",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "import_teachers",
+  "class": "",
+  "lineno": 374,
+  "decorators": [],
+  "args": [
+   "file_object"
+  ],
+  "doc": "批量导入教师（含教师职务中间表）。",
+  "file": "app01/services/imports.py"
+ },
+ {
+  "name": "policy",
+  "class": "",
+  "lineno": 49,
+  "decorators": [],
+  "args": [],
+  "doc": "返回合并后的策略字典（settings 覆盖默认值）。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "lifecycle_enabled",
+  "class": "",
+  "lineno": 56,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "table_available",
+  "class": "",
+  "lineno": 60,
+  "decorators": [],
+  "args": [
+   "force"
+  ],
+  "doc": "探测状态表是否存在。缺表不是错误，只是\"策略未落地\"。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "reset_table_probe",
+  "class": "",
+  "lineno": 78,
+  "decorators": [],
+  "args": [],
+  "doc": "测试辅助：强制下次重新探测。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "get_state",
+  "class": "",
+  "lineno": 92,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "account_id"
+  ],
+  "doc": "取状态行；缺表或不存在均返回 ``None``。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "get_or_create_state",
+  "class": "",
+  "lineno": 100,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "account_id"
+  ],
+  "doc": "取或建状态行；缺表返回 ``None``。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "is_legacy_hash_encoded",
+  "class": "",
+  "lineno": 122,
+  "decorators": [],
+  "args": [
+   "encoded"
+  ],
+  "doc": "是否为历史 32 位小写 MD5（与 ``accounts.is_legacy_hash`` 同一判据）。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "sync_legacy_flag",
+  "class": "",
+  "lineno": 127,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type"
+  ],
+  "doc": "把账号当前是否持有遗留哈希同步到状态行。返回是否持有。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "evaluate",
+  "class": "",
+  "lineno": 140,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type",
+   "now"
+  ],
+  "doc": "给出该账号在当前策略下的处置建议。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "current_epoch",
+  "class": "",
+  "lineno": 196,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "account_id"
+  ],
+  "doc": "",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "bump_epoch",
+  "class": "",
+  "lineno": 201,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "account_id"
+  ],
+  "doc": "把会话世代 +1，使所有旧会话失效。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "write_session_epoch",
+  "class": "",
+  "lineno": 210,
+  "decorators": [],
+  "args": [
+   "session",
+   "account_type",
+   "account_id"
+  ],
+  "doc": "登录/改密成功后把当前世代写入会话。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "session_is_current",
+  "class": "",
+  "lineno": 219,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "account_id",
+   "session"
+  ],
+  "doc": "会话是否仍然有效。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "issue_temporary_password",
+  "class": "",
+  "lineno": 251,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type",
+   "actor",
+   "request",
+   "ttl_minutes"
+  ],
+  "doc": "管理员发起的一次性临时口令。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "change_password",
+  "class": "",
+  "lineno": 284,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type",
+   "raw_password",
+   "request",
+   "enforce_policy",
+   "current_session"
+  ],
+  "doc": "用户自助改密（含首次强制改密）。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "deactivate",
+  "class": "",
+  "lineno": 323,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type",
+   "reason",
+   "request"
+  ],
+  "doc": "停用账号并使其全部会话失效（不动账号表，只改状态表）。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "reactivate",
+  "class": "",
+  "lineno": 335,
+  "decorators": [],
+  "args": [
+   "account",
+   "account_type",
+   "request"
+  ],
+  "doc": "",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "sweep",
+  "class": "",
+  "lineno": 363,
+  "decorators": [],
+  "args": [
+   "account_type",
+   "limit",
+   "dry_run"
+  ],
+  "doc": "扫描某类账号，登记遗留哈希与隐藏风险，供人工决定是否重置。",
+  "file": "app01/services/password_lifecycle.py"
+ },
+ {
+  "name": "idle_timeout_minutes",
+  "class": "",
+  "lineno": 30,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "enabled",
+  "class": "",
+  "lineno": 37,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "register_device",
+  "class": "",
+  "lineno": 41,
+  "decorators": [],
+  "args": [
+   "request",
+   "account",
+   "role"
+  ],
+  "doc": "登录成功后登记设备，并初始化空闲计时。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "touch_device",
+  "class": "",
+  "lineno": 66,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "刷新最近活动时间与会话键（会话可能被轮换）。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "touch_session",
+  "class": "",
+  "lineno": 90,
+  "decorators": [],
+  "args": [
+   "request",
+   "interval"
+  ],
+  "doc": "节流刷新会话活动时间与设备 last_seen。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "list_devices",
+  "class": "",
+  "lineno": 107,
+  "decorators": [],
+  "args": [
+   "user_id",
+   "role"
+  ],
+  "doc": "",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "revoke_device",
+  "class": "",
+  "lineno": 115,
+  "decorators": [],
+  "args": [
+   "user_id",
+   "device_id",
+   "role"
+  ],
+  "doc": "踢出指定设备：删除服务端会话并标记撤销。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "revoke_other_devices",
+  "class": "",
+  "lineno": 135,
+  "decorators": [],
+  "args": [
+   "user_id",
+   "keep_device_id",
+   "role"
+  ],
+  "doc": "踢出除当前设备外的所有会话。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "check_idle_timeout",
+  "class": "",
+  "lineno": 144,
+  "decorators": [],
+  "args": [
+   "request"
+  ],
+  "doc": "返回 True 表示已超时（调用方应让会话失效）。",
+  "file": "app01/services/session_security.py"
+ },
+ {
+  "name": "scope_users",
+  "class": "",
+  "lineno": 19,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "scope_records",
+  "class": "",
+  "lineno": 33,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "overview",
+  "class": "",
+  "lineno": 40,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "users",
+  "class": "",
+  "lineno": 95,
+  "decorators": [],
+  "args": [
+   "account",
+   "keyword",
+   "role",
+   "person_type"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "roles_matrix",
+  "class": "",
+  "lineno": 114,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "organizations",
+  "class": "",
+  "lineno": 125,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "memberships",
+  "class": "",
+  "lineno": 140,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "records",
+  "class": "",
+  "lineno": 156,
+  "decorators": [],
+  "args": [
+   "account",
+   "keyword",
+   "status"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "record_changes",
+  "class": "",
+  "lineno": 169,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "academics",
+  "class": "",
+  "lineno": 183,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "scheduling",
+  "class": "",
+  "lineno": 206,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "facilities",
+  "class": "",
+  "lineno": 220,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "approvals",
+  "class": "",
+  "lineno": 240,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "workflows",
+  "class": "",
+  "lineno": 267,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "activities",
+  "class": "",
+  "lineno": 279,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "clubs",
+  "class": "",
+  "lineno": 291,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "notices",
+  "class": "",
+  "lineno": 309,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "monitoring",
+  "class": "",
+  "lineno": 320,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "audit",
+  "class": "",
+  "lineno": 343,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "settings_overview",
+  "class": "",
+  "lineno": 351,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "data_exchange",
+  "class": "",
+  "lineno": 362,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/admin.py"
+ },
+ {
+  "name": "student_record",
+  "class": "",
+  "lineno": 20,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "record_chain",
+  "class": "",
+  "lineno": 30,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "返回 (学院, 专业, 班级) 名称，缺失项为空串。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "profile_of",
+  "class": "",
+  "lineno": 42,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "dormitory_of",
+  "class": "",
+  "lineno": 50,
+  "decorators": [],
+  "args": [
+   "record"
+  ],
+  "doc": "寝室信息：优先统一学籍扩展字段，其次历史 app01 档案（只读桥接）。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "current_term",
+  "class": "",
+  "lineno": 84,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "published_run",
+  "class": "",
+  "lineno": 95,
+  "decorators": [],
+  "args": [],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "student_entries",
+  "class": "",
+  "lineno": 107,
+  "decorators": [],
+  "args": [
+   "account",
+   "run"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "week_grid",
+  "class": "",
+  "lineno": 129,
+  "decorators": [],
+  "args": [
+   "entries",
+   "periods",
+   "days"
+  ],
+  "doc": "把课表条目转成 ``grid[(weekday, period)] = entry``。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "grid_rows",
+  "class": "",
+  "lineno": 137,
+  "decorators": [],
+  "args": [
+   "entries",
+   "periods"
+  ],
+  "doc": "模板可直接遍历的行结构：``[(节次, [周一…周日])]``。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "week_span",
+  "class": "",
+  "lineno": 144,
+  "decorators": [],
+  "args": [
+   "entries"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "today_index",
+  "class": "",
+  "lineno": 150,
+  "decorators": [],
+  "args": [],
+  "doc": "周一=0 … 周日=6。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "todays_entries",
+  "class": "",
+  "lineno": 155,
+  "decorators": [],
+  "args": [
+   "entries"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "courses_of",
+  "class": "",
+  "lineno": 164,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "section_teachers",
+  "class": "",
+  "lineno": 176,
+  "decorators": [],
+  "args": [
+   "section_ids"
+  ],
+  "doc": "教学班 → 任课教师列表。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "attendance_overview",
+  "class": "",
+  "lineno": 193,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "bills_of",
+  "class": "",
+  "lineno": 232,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "bill_summary",
+  "class": "",
+  "lineno": 241,
+  "decorators": [],
+  "args": [
+   "bills"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "bookings_of",
+  "class": "",
+  "lineno": 254,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "activities_overview",
+  "class": "",
+  "lineno": 265,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "volunteer_summary",
+  "class": "",
+  "lineno": 292,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "clubs_overview",
+  "class": "",
+  "lineno": 312,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "organizations_overview",
+  "class": "",
+  "lineno": 333,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "announcements_for",
+  "class": "",
+  "lineno": 357,
+  "decorators": [],
+  "args": [
+   "audience",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "upcoming_deadlines",
+  "class": "",
+  "lineno": 370,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "学生首页\"待办\"：未缴账单、待审批请假、可报名活动、即将开始预约。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "term_week_number",
+  "class": "",
+  "lineno": 409,
+  "decorators": [],
+  "args": [
+   "term"
+  ],
+  "doc": "当前教学周；不在学期区间内返回 ``None``（不虚报周次）。",
+  "file": "smass_workspace/services/student.py"
+ },
+ {
+  "name": "my_sections",
+  "class": "",
+  "lineno": 10,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "section_students",
+  "class": "",
+  "lineno": 24,
+  "decorators": [],
+  "args": [
+   "sections"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "my_students",
+  "class": "",
+  "lineno": 35,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "本人教学班内的学生（去重）。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "student_section_map",
+  "class": "",
+  "lineno": 47,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "学生账号 → 其所在教学班名称，供学生事务列表展示。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "my_entries",
+  "class": "",
+  "lineno": 57,
+  "decorators": [],
+  "args": [
+   "account",
+   "run"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "weekly_load",
+  "class": "",
+  "lineno": 71,
+  "decorators": [],
+  "args": [
+   "entries"
+  ],
+  "doc": "本周课时（同一教学班同一时段合并计 1 节）。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "attendance_sessions",
+  "class": "",
+  "lineno": 76,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "my_classes",
+  "class": "",
+  "lineno": 89,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "本人教学班学生所在的班级组织（去重）。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "pending_leaves",
+  "class": "",
+  "lineno": 100,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "leave_history",
+  "class": "",
+  "lineno": 113,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "pending_makeups",
+  "class": "",
+  "lineno": 125,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "pending_tasks",
+  "class": "",
+  "lineno": 138,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "pending_bookings",
+  "class": "",
+  "lineno": 148,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "教师可审批的场地预约（需要审批且待处理）。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "counselor_overview",
+  "class": "",
+  "lineno": 161,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "辅导员视图：负责班级、学生、待审批请假。",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "notices",
+  "class": "",
+  "lineno": 187,
+  "decorators": [],
+  "args": [
+   "account",
+   "limit"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ },
+ {
+  "name": "overview",
+  "class": "",
+  "lineno": 191,
+  "decorators": [],
+  "args": [
+   "account"
+  ],
+  "doc": "",
+  "file": "smass_workspace/services/teacher.py"
+ }
+]

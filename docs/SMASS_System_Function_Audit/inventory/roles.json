@@ -1,0 +1,452 @@
+{
+ "person_types": [
+  {
+   "value": "admin",
+   "label": "管理员"
+  },
+  {
+   "value": "teacher",
+   "label": "教师"
+  },
+  {
+   "value": "student",
+   "label": "学生"
+  }
+ ],
+ "role_codes": [
+  {
+   "value": "system_admin",
+   "label": "系统管理员"
+  },
+  {
+   "value": "college_admin",
+   "label": "学院管理员"
+  },
+  {
+   "value": "teacher",
+   "label": "辅导员/教师"
+  },
+  {
+   "value": "student",
+   "label": "学生"
+  }
+ ],
+ "actions": [
+  "bulk_delete",
+  "create",
+  "delete",
+  "export",
+  "import",
+  "manage_roles",
+  "reset_password",
+  "update",
+  "view"
+ ],
+ "action_count": 9,
+ "resources": [
+  {
+   "code": "student",
+   "model": "r21_account.StudentProfile",
+   "scope": "",
+   "fields": []
+  },
+  {
+   "code": "teacher",
+   "model": "r21_account.TeacherProfile",
+   "scope": "",
+   "fields": []
+  },
+  {
+   "code": "account",
+   "model": "r21_account.Account",
+   "scope": "",
+   "fields": []
+  }
+ ],
+ "workspaces": [
+  {
+   "kind": "student",
+   "sections": [
+    {
+     "label": "我的学习",
+     "items": [
+      {
+       "label": "学习工作台",
+       "url_name": "workspace:student_home",
+       "href": "",
+       "icon": "home",
+       "system_admin_only": false
+      },
+      {
+       "label": "我的课表",
+       "url_name": "workspace:student_timetable",
+       "href": "",
+       "icon": "calendar",
+       "system_admin_only": false
+      },
+      {
+       "label": "我的课程",
+       "url_name": "workspace:student_courses",
+       "href": "",
+       "icon": "book",
+       "system_admin_only": false
+      },
+      {
+       "label": "学籍信息",
+       "url_name": "workspace:student_record",
+       "href": "",
+       "icon": "file",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "日常事务",
+     "items": [
+      {
+       "label": "考勤与请假",
+       "url_name": "workspace:student_attendance",
+       "href": "",
+       "icon": "check",
+       "system_admin_only": false
+      },
+      {
+       "label": "场地预约",
+       "url_name": "workspace:student_bookings",
+       "href": "",
+       "icon": "door",
+       "system_admin_only": false
+      },
+      {
+       "label": "费用与账单",
+       "url_name": "workspace:student_fees",
+       "href": "",
+       "icon": "wallet",
+       "system_admin_only": false
+      },
+      {
+       "label": "我的寝室",
+       "url_name": "workspace:student_dormitory",
+       "href": "",
+       "icon": "building",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "校园生活",
+     "items": [
+      {
+       "label": "活动与志愿",
+       "url_name": "workspace:student_activities",
+       "href": "",
+       "icon": "megaphone",
+       "system_admin_only": false
+      },
+      {
+       "label": "社团",
+       "url_name": "workspace:student_clubs",
+       "href": "",
+       "icon": "users",
+       "system_admin_only": false
+      },
+      {
+       "label": "学生组织",
+       "url_name": "workspace:student_organizations",
+       "href": "",
+       "icon": "shield",
+       "system_admin_only": false
+      },
+      {
+       "label": "志愿服务",
+       "url_name": "workspace:student_volunteer",
+       "href": "",
+       "icon": "heart",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "消息",
+     "items": [
+      {
+       "label": "通知公告",
+       "url_name": "workspace:student_notices",
+       "href": "",
+       "icon": "bell",
+       "system_admin_only": false
+      },
+      {
+       "label": "个人中心",
+       "url_name": "workspace:profile",
+       "href": "",
+       "icon": "settings",
+       "system_admin_only": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "teacher",
+   "sections": [
+    {
+     "label": "教学工作",
+     "items": [
+      {
+       "label": "教学工作台",
+       "url_name": "workspace:teacher_home",
+       "href": "",
+       "icon": "home",
+       "system_admin_only": false
+      },
+      {
+       "label": "我的课程",
+       "url_name": "workspace:teacher_courses",
+       "href": "",
+       "icon": "book",
+       "system_admin_only": false
+      },
+      {
+       "label": "教学班",
+       "url_name": "workspace:teacher_sections",
+       "href": "",
+       "icon": "clipboard",
+       "system_admin_only": false
+      },
+      {
+       "label": "我的课表",
+       "url_name": "workspace:teacher_timetable",
+       "href": "",
+       "icon": "calendar",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "学生事务",
+     "items": [
+      {
+       "label": "考勤管理",
+       "url_name": "workspace:teacher_attendance",
+       "href": "",
+       "icon": "check",
+       "system_admin_only": false
+      },
+      {
+       "label": "学生事务",
+       "url_name": "workspace:teacher_students",
+       "href": "",
+       "icon": "users",
+       "system_admin_only": false
+      },
+      {
+       "label": "审批中心",
+       "url_name": "workspace:teacher_approvals",
+       "href": "",
+       "icon": "inbox",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "消息",
+     "items": [
+      {
+       "label": "通知与公告",
+       "url_name": "workspace:teacher_notices",
+       "href": "",
+       "icon": "bell",
+       "system_admin_only": false
+      },
+      {
+       "label": "个人中心",
+       "url_name": "workspace:profile",
+       "href": "",
+       "icon": "settings",
+       "system_admin_only": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "admin",
+   "sections": [
+    {
+     "label": "总览",
+     "items": [
+      {
+       "label": "控制台总览",
+       "url_name": "workspace:admin_home",
+       "href": "",
+       "icon": "home",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "身份与组织",
+     "items": [
+      {
+       "label": "用户账号",
+       "url_name": "workspace:admin_users",
+       "href": "",
+       "icon": "users",
+       "system_admin_only": false
+      },
+      {
+       "label": "角色与权限",
+       "url_name": "workspace:admin_roles",
+       "href": "",
+       "icon": "shield",
+       "system_admin_only": false
+      },
+      {
+       "label": "组织架构",
+       "url_name": "workspace:admin_organizations",
+       "href": "",
+       "icon": "building",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "学籍与教学",
+     "items": [
+      {
+       "label": "学籍管理",
+       "url_name": "workspace:admin_records",
+       "href": "",
+       "icon": "file",
+       "system_admin_only": false
+      },
+      {
+       "label": "学籍异动",
+       "url_name": "workspace:admin_record_changes",
+       "href": "",
+       "icon": "inbox",
+       "system_admin_only": false
+      },
+      {
+       "label": "学年学期与课程",
+       "url_name": "workspace:admin_academics",
+       "href": "",
+       "icon": "book",
+       "system_admin_only": false
+      },
+      {
+       "label": "教学班与选课",
+       "url_name": "workspace:admin_sections",
+       "href": "",
+       "icon": "clipboard",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "排课与资源",
+     "items": [
+      {
+       "label": "排课与课表",
+       "url_name": "workspace:admin_scheduling",
+       "href": "",
+       "icon": "calendar",
+       "system_admin_only": false
+      },
+      {
+       "label": "教室与场地",
+       "url_name": "workspace:admin_facilities",
+       "href": "",
+       "icon": "door",
+       "system_admin_only": false
+      },
+      {
+       "label": "预约审批",
+       "url_name": "workspace:admin_booking_approvals",
+       "href": "",
+       "icon": "check",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "审批与工作流",
+     "items": [
+      {
+       "label": "待办与审批",
+       "url_name": "workspace:admin_approvals",
+       "href": "",
+       "icon": "inbox",
+       "system_admin_only": false
+      },
+      {
+       "label": "流程定义",
+       "url_name": "workspace:admin_workflows",
+       "href": "",
+       "icon": "settings",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "校园业务",
+     "items": [
+      {
+       "label": "活动管理",
+       "url_name": "workspace:admin_activities",
+       "href": "",
+       "icon": "megaphone",
+       "system_admin_only": false
+      },
+      {
+       "label": "社团与学生组织",
+       "url_name": "workspace:admin_clubs",
+       "href": "",
+       "icon": "users",
+       "system_admin_only": false
+      },
+      {
+       "label": "通知公告",
+       "url_name": "workspace:admin_notices",
+       "href": "",
+       "icon": "bell",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "数据治理",
+     "items": [
+      {
+       "label": "数据导入导出",
+       "url_name": "workspace:admin_data_exchange",
+       "href": "",
+       "icon": "file",
+       "system_admin_only": false
+      }
+     ]
+    },
+    {
+     "label": "运维与安全",
+     "items": [
+      {
+       "label": "运行监控",
+       "url_name": "workspace:admin_monitoring",
+       "href": "",
+       "icon": "chart",
+       "system_admin_only": false
+      },
+      {
+       "label": "安全审计",
+       "url_name": "workspace:admin_audit",
+       "href": "",
+       "icon": "shield",
+       "system_admin_only": false
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

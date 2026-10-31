@@ -1,0 +1,2747 @@
+[
+ {
+  "path": "/",
+  "name": "root",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.auth",
+  "view_qualname": "root_view",
+  "real_view": "smass_workspace.views.auth.root_view",
+  "include": ""
+ },
+ {
+  "path": "/login/",
+  "name": "login",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.auth",
+  "view_qualname": "login_view",
+  "real_view": "smass_workspace.views.auth.login_view",
+  "include": ""
+ },
+ {
+  "path": "/logout/",
+  "name": "logout",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.auth",
+  "view_qualname": "logout_view",
+  "real_view": "smass_workspace.views.auth.logout_view",
+  "include": ""
+ },
+ {
+  "path": "/no-role/",
+  "name": "no_role",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.common",
+  "view_qualname": "no_role",
+  "real_view": "smass_workspace.views.common.no_role",
+  "include": ""
+ },
+ {
+  "path": "/profile/",
+  "name": "profile",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.common",
+  "view_qualname": "profile",
+  "real_view": "smass_workspace.views.common.profile",
+  "include": ""
+ },
+ {
+  "path": "/notifications/",
+  "name": "notifications",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.common",
+  "view_qualname": "notifications",
+  "real_view": "smass_workspace.views.common.notifications",
+  "include": ""
+ },
+ {
+  "path": "/student/",
+  "name": "student_home",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "home",
+  "real_view": "smass_workspace.views.student.home",
+  "include": ""
+ },
+ {
+  "path": "/student/timetable/",
+  "name": "student_timetable",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "timetable",
+  "real_view": "smass_workspace.views.student.timetable",
+  "include": ""
+ },
+ {
+  "path": "/student/courses/",
+  "name": "student_courses",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "courses",
+  "real_view": "smass_workspace.views.student.courses",
+  "include": ""
+ },
+ {
+  "path": "/student/record/",
+  "name": "student_record",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "record",
+  "real_view": "smass_workspace.views.student.record",
+  "include": ""
+ },
+ {
+  "path": "/student/attendance/",
+  "name": "student_attendance",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "attendance",
+  "real_view": "smass_workspace.views.student.attendance",
+  "include": ""
+ },
+ {
+  "path": "/student/attendance/leave/",
+  "name": "student_leave_submit",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "leave_submit",
+  "real_view": "smass_workspace.views.student.leave_submit",
+  "include": ""
+ },
+ {
+  "path": "/student/attendance/leave/<int:pk>/cancel/",
+  "name": "student_leave_cancel",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "leave_cancel",
+  "real_view": "smass_workspace.views.student.leave_cancel",
+  "include": ""
+ },
+ {
+  "path": "/student/fees/",
+  "name": "student_fees",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "fees",
+  "real_view": "smass_workspace.views.student.fees",
+  "include": ""
+ },
+ {
+  "path": "/student/fees/<int:pk>/pay/",
+  "name": "student_fee_pay",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "fee_pay",
+  "real_view": "smass_workspace.views.student.fee_pay",
+  "include": ""
+ },
+ {
+  "path": "/student/bookings/",
+  "name": "student_bookings",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "bookings",
+  "real_view": "smass_workspace.views.student.bookings",
+  "include": ""
+ },
+ {
+  "path": "/student/bookings/create/",
+  "name": "student_booking_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "booking_create",
+  "real_view": "smass_workspace.views.student.booking_create",
+  "include": ""
+ },
+ {
+  "path": "/student/bookings/<int:pk>/cancel/",
+  "name": "student_booking_cancel",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "booking_cancel",
+  "real_view": "smass_workspace.views.student.booking_cancel",
+  "include": ""
+ },
+ {
+  "path": "/student/activities/",
+  "name": "student_activities",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "activities",
+  "real_view": "smass_workspace.views.student.activities",
+  "include": ""
+ },
+ {
+  "path": "/student/activities/<int:pk>/register/",
+  "name": "student_activity_register",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "activity_register",
+  "real_view": "smass_workspace.views.student.activity_register",
+  "include": ""
+ },
+ {
+  "path": "/student/activities/registrations/<int:pk>/cancel/",
+  "name": "student_activity_cancel",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "activity_cancel",
+  "real_view": "smass_workspace.views.student.activity_cancel",
+  "include": ""
+ },
+ {
+  "path": "/student/volunteer/",
+  "name": "student_volunteer",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "volunteer",
+  "real_view": "smass_workspace.views.student.volunteer",
+  "include": ""
+ },
+ {
+  "path": "/student/clubs/",
+  "name": "student_clubs",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "clubs",
+  "real_view": "smass_workspace.views.student.clubs",
+  "include": ""
+ },
+ {
+  "path": "/student/clubs/<int:pk>/apply/",
+  "name": "student_club_apply",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "club_apply",
+  "real_view": "smass_workspace.views.student.club_apply",
+  "include": ""
+ },
+ {
+  "path": "/student/organizations/",
+  "name": "student_organizations",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "organizations",
+  "real_view": "smass_workspace.views.student.organizations",
+  "include": ""
+ },
+ {
+  "path": "/student/dormitory/",
+  "name": "student_dormitory",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "dormitory",
+  "real_view": "smass_workspace.views.student.dormitory",
+  "include": ""
+ },
+ {
+  "path": "/student/notices/",
+  "name": "student_notices",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.student",
+  "view_qualname": "notices",
+  "real_view": "smass_workspace.views.student.notices",
+  "include": ""
+ },
+ {
+  "path": "/teacher/",
+  "name": "teacher_home",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "home",
+  "real_view": "smass_workspace.views.teacher.home",
+  "include": ""
+ },
+ {
+  "path": "/teacher/courses/",
+  "name": "teacher_courses",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "courses",
+  "real_view": "smass_workspace.views.teacher.courses",
+  "include": ""
+ },
+ {
+  "path": "/teacher/sections/",
+  "name": "teacher_sections",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "sections",
+  "real_view": "smass_workspace.views.teacher.sections",
+  "include": ""
+ },
+ {
+  "path": "/teacher/timetable/",
+  "name": "teacher_timetable",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "timetable",
+  "real_view": "smass_workspace.views.teacher.timetable",
+  "include": ""
+ },
+ {
+  "path": "/teacher/attendance/",
+  "name": "teacher_attendance",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "attendance",
+  "real_view": "smass_workspace.views.teacher.attendance",
+  "include": ""
+ },
+ {
+  "path": "/teacher/attendance/create/",
+  "name": "teacher_attendance_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "attendance_create",
+  "real_view": "smass_workspace.views.teacher.attendance_create",
+  "include": ""
+ },
+ {
+  "path": "/teacher/attendance/<int:pk>/",
+  "name": "teacher_attendance_detail",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "attendance_detail",
+  "real_view": "smass_workspace.views.teacher.attendance_detail",
+  "include": ""
+ },
+ {
+  "path": "/teacher/attendance/<int:pk>/mark/",
+  "name": "teacher_attendance_mark",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "attendance_mark",
+  "real_view": "smass_workspace.views.teacher.attendance_mark",
+  "include": ""
+ },
+ {
+  "path": "/teacher/attendance/<int:pk>/close/",
+  "name": "teacher_attendance_close",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "attendance_close",
+  "real_view": "smass_workspace.views.teacher.attendance_close",
+  "include": ""
+ },
+ {
+  "path": "/teacher/students/",
+  "name": "teacher_students",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "students",
+  "real_view": "smass_workspace.views.teacher.students",
+  "include": ""
+ },
+ {
+  "path": "/teacher/students/<int:pk>/",
+  "name": "teacher_student_detail",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "student_detail",
+  "real_view": "smass_workspace.views.teacher.student_detail",
+  "include": ""
+ },
+ {
+  "path": "/teacher/approvals/",
+  "name": "teacher_approvals",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "approvals",
+  "real_view": "smass_workspace.views.teacher.approvals",
+  "include": ""
+ },
+ {
+  "path": "/teacher/approvals/leave/<int:pk>/<str:action>/",
+  "name": "teacher_leave_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "leave_action",
+  "real_view": "smass_workspace.views.teacher.leave_action",
+  "include": ""
+ },
+ {
+  "path": "/teacher/approvals/makeup/<int:pk>/<str:action>/",
+  "name": "teacher_makeup_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "makeup_action",
+  "real_view": "smass_workspace.views.teacher.makeup_action",
+  "include": ""
+ },
+ {
+  "path": "/teacher/approvals/task/<int:pk>/complete/",
+  "name": "teacher_task_complete",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "task_complete",
+  "real_view": "smass_workspace.views.teacher.task_complete",
+  "include": ""
+ },
+ {
+  "path": "/teacher/approvals/booking/<int:pk>/<str:action>/",
+  "name": "teacher_booking_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "booking_action",
+  "real_view": "smass_workspace.views.teacher.booking_action",
+  "include": ""
+ },
+ {
+  "path": "/teacher/classes/",
+  "name": "teacher_classes",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "classes",
+  "real_view": "smass_workspace.views.teacher.classes",
+  "include": ""
+ },
+ {
+  "path": "/teacher/counselor/students/",
+  "name": "teacher_counselor_students",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "counselor_students",
+  "real_view": "smass_workspace.views.teacher.counselor_students",
+  "include": ""
+ },
+ {
+  "path": "/teacher/counselor/leaves/",
+  "name": "teacher_leave_review",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "leave_review",
+  "real_view": "smass_workspace.views.teacher.leave_review",
+  "include": ""
+ },
+ {
+  "path": "/teacher/notices/",
+  "name": "teacher_notices",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.teacher",
+  "view_qualname": "notices",
+  "real_view": "smass_workspace.views.teacher.notices",
+  "include": ""
+ },
+ {
+  "path": "/admin/",
+  "name": "admin_home",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "home",
+  "real_view": "smass_workspace.views.admin.home",
+  "include": ""
+ },
+ {
+  "path": "/admin/users/",
+  "name": "admin_users",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "users",
+  "real_view": "smass_workspace.views.admin.users",
+  "include": ""
+ },
+ {
+  "path": "/admin/users/create/",
+  "name": "admin_user_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "user_create",
+  "real_view": "smass_workspace.views.admin.user_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/users/<int:pk>/role/",
+  "name": "admin_user_role",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "user_role",
+  "real_view": "smass_workspace.views.admin.user_role",
+  "include": ""
+ },
+ {
+  "path": "/admin/users/<int:pk>/toggle/",
+  "name": "admin_user_toggle",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "user_toggle",
+  "real_view": "smass_workspace.views.admin.user_toggle",
+  "include": ""
+ },
+ {
+  "path": "/admin/users/<int:pk>/reset/",
+  "name": "admin_user_reset",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "user_reset",
+  "real_view": "smass_workspace.views.admin.user_reset",
+  "include": ""
+ },
+ {
+  "path": "/admin/roles/",
+  "name": "admin_roles",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "roles",
+  "real_view": "smass_workspace.views.admin.roles",
+  "include": ""
+ },
+ {
+  "path": "/admin/organizations/",
+  "name": "admin_organizations",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "organizations",
+  "real_view": "smass_workspace.views.admin.organizations",
+  "include": ""
+ },
+ {
+  "path": "/admin/records/",
+  "name": "admin_records",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "records",
+  "real_view": "smass_workspace.views.admin.records",
+  "include": ""
+ },
+ {
+  "path": "/admin/records/<str:student_no>/",
+  "name": "admin_record_detail",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "record_detail",
+  "real_view": "smass_workspace.views.admin.record_detail",
+  "include": ""
+ },
+ {
+  "path": "/admin/records/<str:student_no>/update/",
+  "name": "admin_record_update",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "record_update",
+  "real_view": "smass_workspace.views.admin.record_update",
+  "include": ""
+ },
+ {
+  "path": "/admin/record-changes/",
+  "name": "admin_record_changes",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "record_changes",
+  "real_view": "smass_workspace.views.admin.record_changes",
+  "include": ""
+ },
+ {
+  "path": "/admin/record-changes/transfer/<int:pk>/<str:action>/",
+  "name": "admin_transfer_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "transfer_action",
+  "real_view": "smass_workspace.views.admin.transfer_action",
+  "include": ""
+ },
+ {
+  "path": "/admin/record-changes/status/<int:pk>/<str:action>/",
+  "name": "admin_status_change_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "status_change_action",
+  "real_view": "smass_workspace.views.admin.status_change_action",
+  "include": ""
+ },
+ {
+  "path": "/admin/academics/",
+  "name": "admin_academics",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "academics",
+  "real_view": "smass_workspace.views.admin.academics",
+  "include": ""
+ },
+ {
+  "path": "/admin/academics/year/",
+  "name": "admin_year_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "year_create",
+  "real_view": "smass_workspace.views.admin.year_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/academics/term/",
+  "name": "admin_term_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "term_create",
+  "real_view": "smass_workspace.views.admin.term_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/academics/course/",
+  "name": "admin_course_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "course_create",
+  "real_view": "smass_workspace.views.admin.course_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/sections/",
+  "name": "admin_sections",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "sections",
+  "real_view": "smass_workspace.views.admin.sections",
+  "include": ""
+ },
+ {
+  "path": "/admin/sections/create/",
+  "name": "admin_section_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "section_create",
+  "real_view": "smass_workspace.views.admin.section_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/sections/<int:pk>/roster/",
+  "name": "admin_section_roster",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "section_roster",
+  "real_view": "smass_workspace.views.admin.section_roster",
+  "include": ""
+ },
+ {
+  "path": "/admin/scheduling/",
+  "name": "admin_scheduling",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "scheduling",
+  "real_view": "smass_workspace.views.admin.scheduling",
+  "include": ""
+ },
+ {
+  "path": "/admin/facilities/",
+  "name": "admin_facilities",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "facilities",
+  "real_view": "smass_workspace.views.admin.facilities",
+  "include": ""
+ },
+ {
+  "path": "/admin/facilities/rooms/create/",
+  "name": "admin_room_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "room_create",
+  "real_view": "smass_workspace.views.admin.room_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/booking-approvals/",
+  "name": "admin_booking_approvals",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "booking_approvals",
+  "real_view": "smass_workspace.views.admin.booking_approvals",
+  "include": ""
+ },
+ {
+  "path": "/admin/bookings/<int:pk>/<str:action>/",
+  "name": "admin_booking_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "booking_action",
+  "real_view": "smass_workspace.views.admin.booking_action",
+  "include": ""
+ },
+ {
+  "path": "/admin/approvals/",
+  "name": "admin_approvals",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "approvals",
+  "real_view": "smass_workspace.views.admin.approvals",
+  "include": ""
+ },
+ {
+  "path": "/admin/approvals/leave/<int:pk>/<str:action>/",
+  "name": "admin_leave_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "leave_action",
+  "real_view": "smass_workspace.views.admin.leave_action",
+  "include": ""
+ },
+ {
+  "path": "/admin/approvals/task/<int:pk>/complete/",
+  "name": "admin_task_complete",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "task_complete",
+  "real_view": "smass_workspace.views.admin.task_complete",
+  "include": ""
+ },
+ {
+  "path": "/admin/workflows/",
+  "name": "admin_workflows",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "workflows",
+  "real_view": "smass_workspace.views.admin.workflows",
+  "include": ""
+ },
+ {
+  "path": "/admin/activities/",
+  "name": "admin_activities",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "activities",
+  "real_view": "smass_workspace.views.admin.activities",
+  "include": ""
+ },
+ {
+  "path": "/admin/activities/create/",
+  "name": "admin_activity_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "activity_create",
+  "real_view": "smass_workspace.views.admin.activity_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/activities/<int:pk>/<str:action>/",
+  "name": "admin_activity_action",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "activity_action",
+  "real_view": "smass_workspace.views.admin.activity_action",
+  "include": ""
+ },
+ {
+  "path": "/admin/clubs/",
+  "name": "admin_clubs",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "clubs",
+  "real_view": "smass_workspace.views.admin.clubs",
+  "include": ""
+ },
+ {
+  "path": "/admin/notices/",
+  "name": "admin_notices",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "notices",
+  "real_view": "smass_workspace.views.admin.notices",
+  "include": ""
+ },
+ {
+  "path": "/admin/notices/create/",
+  "name": "admin_announcement_create",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "announcement_create",
+  "real_view": "smass_workspace.views.admin.announcement_create",
+  "include": ""
+ },
+ {
+  "path": "/admin/notices/<int:pk>/publish/",
+  "name": "admin_announcement_publish",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "announcement_publish",
+  "real_view": "smass_workspace.views.admin.announcement_publish",
+  "include": ""
+ },
+ {
+  "path": "/admin/data-exchange/",
+  "name": "admin_data_exchange",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "data_exchange",
+  "real_view": "smass_workspace.views.admin.data_exchange",
+  "include": ""
+ },
+ {
+  "path": "/admin/monitoring/",
+  "name": "admin_monitoring",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "monitoring",
+  "real_view": "smass_workspace.views.admin.monitoring",
+  "include": ""
+ },
+ {
+  "path": "/admin/audit/",
+  "name": "admin_audit",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "audit",
+  "real_view": "smass_workspace.views.admin.audit",
+  "include": ""
+ },
+ {
+  "path": "/admin/settings/",
+  "name": "admin_settings",
+  "namespace": "workspace",
+  "view_module": "smass_workspace.views.admin",
+  "view_qualname": "settings_overview",
+  "real_view": "smass_workspace.views.admin.settings_overview",
+  "include": ""
+ },
+ {
+  "path": "/hub/",
+  "name": "legacy_hub",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r10/",
+  "name": "legacy_r10",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r21/login/",
+  "name": "legacy_login",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r21/logout/",
+  "name": "legacy_logout",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r21/home/",
+  "name": "legacy_home",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r11/login/",
+  "name": "legacy_r11_login",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r11/logout/",
+  "name": "legacy_r11_logout",
+  "namespace": "",
+  "view_module": "django.views.generic.base",
+  "view_qualname": "View.as_view.<locals>.view",
+  "real_view": "django.views.generic.base.View.as_view.<locals>.view",
+  "include": ""
+ },
+ {
+  "path": "/r21/change-password/",
+  "name": "r21_change_password",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "change_password_view",
+  "real_view": "r21_account.views.change_password_view",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/new/",
+  "name": "r4_unit_new",
+  "namespace": "",
+  "view_module": "smass_organization.ui_views",
+  "view_qualname": "unit_new",
+  "real_view": "smass_organization.ui_views.unit_new",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/<int:pk>/edit/",
+  "name": "r4_unit_edit",
+  "namespace": "",
+  "view_module": "smass_organization.ui_views",
+  "view_qualname": "unit_edit",
+  "real_view": "smass_organization.ui_views.unit_edit",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/export/",
+  "name": "r4_student_export_r10",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "student_export",
+  "real_view": "smass_organization.views.student_export",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/<str:student_no>/edit/",
+  "name": "r4_student_edit",
+  "namespace": "",
+  "view_module": "smass_organization.ui_views",
+  "view_qualname": "student_edit",
+  "real_view": "smass_organization.ui_views.student_edit",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/<str:student_no>/",
+  "name": "r4_student_detail_page",
+  "namespace": "",
+  "view_module": "smass_organization.ui_views",
+  "view_qualname": "student_detail_page",
+  "real_view": "smass_organization.ui_views.student_detail_page",
+  "include": ""
+ },
+ {
+  "path": "/r4/import/",
+  "name": "r4_import_page",
+  "namespace": "",
+  "view_module": "smass_operations.ui_views",
+  "view_qualname": "import_page",
+  "real_view": "smass_operations.ui_views.import_page",
+  "include": ""
+ },
+ {
+  "path": "/r4/import/preview/",
+  "name": "r4_import_preview_ui",
+  "namespace": "",
+  "view_module": "smass_operations.ui_views",
+  "view_qualname": "import_preview",
+  "real_view": "smass_operations.ui_views.import_preview",
+  "include": ""
+ },
+ {
+  "path": "/r4/import/commit/",
+  "name": "r4_import_commit_ui",
+  "namespace": "",
+  "view_module": "smass_organization.ui_views",
+  "view_qualname": "import_commit_page",
+  "real_view": "smass_organization.ui_views.import_commit_page",
+  "include": ""
+ },
+ {
+  "path": "/r5/years/new/",
+  "name": "r5_year_new",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "year_new",
+  "real_view": "smass_academic.ui_views.year_new",
+  "include": ""
+ },
+ {
+  "path": "/r5/terms/new/",
+  "name": "r5_term_new",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "term_new",
+  "real_view": "smass_academic.ui_views.term_new",
+  "include": ""
+ },
+ {
+  "path": "/r5/courses/new/",
+  "name": "r5_course_new",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "course_new",
+  "real_view": "smass_academic.ui_views.course_new",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/new/",
+  "name": "r5_section_new",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "section_new",
+  "real_view": "smass_academic.ui_views.section_new",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/<int:pk>/assign/",
+  "name": "r5_section_assign",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "section_assign",
+  "real_view": "smass_academic.ui_views.section_assign",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/<int:pk>/roster/<int:enrollment_id>/drop/",
+  "name": "r5_roster_drop",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "roster_drop",
+  "real_view": "smass_academic.ui_views.roster_drop",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/<int:pk>/roster/",
+  "name": "r5_roster_page",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "section_roster_page",
+  "real_view": "smass_academic.ui_views.section_roster_page",
+  "include": ""
+ },
+ {
+  "path": "/r5/assignments/<int:pk>/revoke/",
+  "name": "r5_assignment_revoke",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "assignment_revoke",
+  "real_view": "smass_academic.ui_views.assignment_revoke",
+  "include": ""
+ },
+ {
+  "path": "/r5/enroll/",
+  "name": "r5_enroll_page",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "enroll_page",
+  "real_view": "smass_academic.ui_views.enroll_page",
+  "include": ""
+ },
+ {
+  "path": "/r5/enroll/<int:pk>/",
+  "name": "r5_enroll_action",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "enroll_action",
+  "real_view": "smass_academic.ui_views.enroll_action",
+  "include": ""
+ },
+ {
+  "path": "/r5/enrollments/<int:pk>/drop/",
+  "name": "r5_drop_action",
+  "namespace": "",
+  "view_module": "smass_academic.ui_views",
+  "view_qualname": "drop_action",
+  "real_view": "smass_academic.ui_views.drop_action",
+  "include": ""
+ },
+ {
+  "path": "/r6/definitions/new/",
+  "name": "r6_definition_new",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "definition_new",
+  "real_view": "smass_workflow.ui_views.definition_new",
+  "include": ""
+ },
+ {
+  "path": "/r6/definitions/<int:pk>/publish/",
+  "name": "r6_definition_publish",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "definition_publish",
+  "real_view": "smass_workflow.ui_views.definition_publish",
+  "include": ""
+ },
+ {
+  "path": "/r6/definitions/<int:pk>/",
+  "name": "r6_definition_detail",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "definition_detail",
+  "real_view": "smass_workflow.ui_views.definition_detail",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/new/",
+  "name": "r6_instance_new",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "instance_new",
+  "real_view": "smass_workflow.ui_views.instance_new",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/<int:pk>/",
+  "name": "r6_instance_detail",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "instance_detail",
+  "real_view": "smass_workflow.ui_views.instance_detail",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/<int:pk>/action/",
+  "name": "r6_instance_action",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "instance_action",
+  "real_view": "smass_workflow.ui_views.instance_action",
+  "include": ""
+ },
+ {
+  "path": "/r6/tasks/<int:pk>/complete/",
+  "name": "r6_task_complete",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "task_complete",
+  "real_view": "smass_workflow.ui_views.task_complete",
+  "include": ""
+ },
+ {
+  "path": "/r6/tasks/",
+  "name": "r6_task_list_page",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "task_list_page",
+  "real_view": "smass_workflow.ui_views.task_list_page",
+  "include": ""
+ },
+ {
+  "path": "/r6/notifications/<int:pk>/read/",
+  "name": "r6_notification_read",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "notification_read",
+  "real_view": "smass_workflow.ui_views.notification_read",
+  "include": ""
+ },
+ {
+  "path": "/r6/notifications/",
+  "name": "r6_notification_page",
+  "namespace": "",
+  "view_module": "smass_workflow.ui_views",
+  "view_qualname": "notification_page",
+  "real_view": "smass_workflow.ui_views.notification_page",
+  "include": ""
+ },
+ {
+  "path": "/r7/dashboard/",
+  "name": "r7_dashboard_page",
+  "namespace": "",
+  "view_module": "smass_analytics.ui_views",
+  "view_qualname": "dashboard_page",
+  "real_view": "smass_analytics.ui_views.dashboard_page",
+  "include": ""
+ },
+ {
+  "path": "/r7/metrics/",
+  "name": "r7_metric_list_page",
+  "namespace": "",
+  "view_module": "smass_analytics.ui_views",
+  "view_qualname": "metric_list_page",
+  "real_view": "smass_analytics.ui_views.metric_list_page",
+  "include": ""
+ },
+ {
+  "path": "/r7/reports/<str:code>/",
+  "name": "r7_report_detail_page",
+  "namespace": "",
+  "view_module": "smass_analytics.ui_views",
+  "view_qualname": "report_detail_page",
+  "real_view": "smass_analytics.ui_views.report_detail_page",
+  "include": ""
+ },
+ {
+  "path": "/r7/reports/<str:code>/export/",
+  "name": "r7_report_export_page",
+  "namespace": "",
+  "view_module": "smass_analytics.ui_views",
+  "view_qualname": "report_export_page",
+  "real_view": "smass_analytics.ui_views.report_export_page",
+  "include": ""
+ },
+ {
+  "path": "/r7/metric-series/",
+  "name": "r7_metric_series",
+  "namespace": "",
+  "view_module": "smass_analytics.ui_views",
+  "view_qualname": "metric_series",
+  "real_view": "smass_analytics.ui_views.metric_series",
+  "include": ""
+ },
+ {
+  "path": "/r8/docs/",
+  "name": "r8_api_docs",
+  "namespace": "",
+  "view_module": "smass_operations.ui_views",
+  "view_qualname": "api_docs",
+  "real_view": "smass_operations.ui_views.api_docs",
+  "include": ""
+ },
+ {
+  "path": "/r9/status/",
+  "name": "r9_ops_status",
+  "namespace": "",
+  "view_module": "smass_operations.ui_views",
+  "view_qualname": "ops_status",
+  "real_view": "smass_operations.ui_views.ops_status",
+  "include": ""
+ },
+ {
+  "path": "/r4/login/",
+  "name": "r4_login",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "login_view",
+  "real_view": "r21_account.views.login_view",
+  "include": ""
+ },
+ {
+  "path": "/r4/logout/",
+  "name": "r4_logout",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "logout_view",
+  "real_view": "r21_account.views.logout_view",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/",
+  "name": "r4_unit_list",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "unit_list",
+  "real_view": "smass_organization.views.unit_list",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/tree/",
+  "name": "r4_unit_tree",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "unit_tree",
+  "real_view": "smass_organization.views.unit_tree",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/create/",
+  "name": "r4_unit_create",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "unit_create",
+  "real_view": "smass_organization.views.unit_create",
+  "include": ""
+ },
+ {
+  "path": "/r4/units/<int:pk>/move/",
+  "name": "r4_unit_move",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "unit_move",
+  "real_view": "smass_organization.views.unit_move",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/",
+  "name": "r4_student_list",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "student_list",
+  "real_view": "smass_organization.views.student_list",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/export/",
+  "name": "r4_student_export",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "student_export",
+  "real_view": "smass_organization.views.student_export",
+  "include": ""
+ },
+ {
+  "path": "/r4/students/<str:student_no>/",
+  "name": "r4_student_detail",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "student_detail",
+  "real_view": "smass_organization.views.student_detail",
+  "include": ""
+ },
+ {
+  "path": "/r4/import/preview/",
+  "name": "r4_import_preview",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "import_preview_view",
+  "real_view": "smass_organization.views.import_preview_view",
+  "include": ""
+ },
+ {
+  "path": "/r4/import/commit/",
+  "name": "r4_import_commit",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "import_commit_view",
+  "real_view": "smass_organization.views.import_commit_view",
+  "include": ""
+ },
+ {
+  "path": "/r4/health/",
+  "name": "r4_health",
+  "namespace": "",
+  "view_module": "smass_organization.views",
+  "view_qualname": "health",
+  "real_view": "smass_organization.views.health",
+  "include": ""
+ },
+ {
+  "path": "/exchange/",
+  "name": "exchange_home",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "exchange_home",
+  "real_view": "smass_data_exchange.views.exchange_home",
+  "include": ""
+ },
+ {
+  "path": "/exchange/template/<str:dataset>/",
+  "name": "exchange_template",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "template_download",
+  "real_view": "smass_data_exchange.views.template_download",
+  "include": ""
+ },
+ {
+  "path": "/exchange/import/<str:dataset>/",
+  "name": "exchange_import",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "import_page",
+  "real_view": "smass_data_exchange.views.import_page",
+  "include": ""
+ },
+ {
+  "path": "/exchange/preview/<str:dataset>/",
+  "name": "exchange_preview",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "api_preview",
+  "real_view": "smass_data_exchange.views.api_preview",
+  "include": ""
+ },
+ {
+  "path": "/exchange/commit/<str:dataset>/",
+  "name": "exchange_commit",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "api_commit",
+  "real_view": "smass_data_exchange.views.api_commit",
+  "include": ""
+ },
+ {
+  "path": "/exchange/errors/<str:dataset>/<int:job_id>/",
+  "name": "exchange_errors",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "error_download",
+  "real_view": "smass_data_exchange.views.error_download",
+  "include": ""
+ },
+ {
+  "path": "/exchange/history/<str:dataset>/",
+  "name": "exchange_history",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "job_history",
+  "real_view": "smass_data_exchange.views.job_history",
+  "include": ""
+ },
+ {
+  "path": "/exchange/export/<str:dataset>/",
+  "name": "exchange_export",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "export_view",
+  "real_view": "smass_data_exchange.views.export_view",
+  "include": ""
+ },
+ {
+  "path": "/r5/login/",
+  "name": "r5_login",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "login_view",
+  "real_view": "r21_account.views.login_view",
+  "include": ""
+ },
+ {
+  "path": "/r5/logout/",
+  "name": "r5_logout",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "logout_view",
+  "real_view": "r21_account.views.logout_view",
+  "include": ""
+ },
+ {
+  "path": "/r5/health/",
+  "name": "r5_health",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "health",
+  "real_view": "smass_academic.views.health",
+  "include": ""
+ },
+ {
+  "path": "/r5/years/",
+  "name": "r5_year_list",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "year_list",
+  "real_view": "smass_academic.views.year_list",
+  "include": ""
+ },
+ {
+  "path": "/r5/years/create/",
+  "name": "r5_year_create",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "year_create",
+  "real_view": "smass_academic.views.year_create",
+  "include": ""
+ },
+ {
+  "path": "/r5/years/<int:pk>/activate/",
+  "name": "r5_year_activate",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "year_activate",
+  "real_view": "smass_academic.views.year_activate",
+  "include": ""
+ },
+ {
+  "path": "/r5/terms/",
+  "name": "r5_term_list",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "term_list",
+  "real_view": "smass_academic.views.term_list",
+  "include": ""
+ },
+ {
+  "path": "/r5/terms/create/",
+  "name": "r5_term_create",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "term_create",
+  "real_view": "smass_academic.views.term_create",
+  "include": ""
+ },
+ {
+  "path": "/r5/courses/",
+  "name": "r5_course_list",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "course_list",
+  "real_view": "smass_academic.views.course_list",
+  "include": ""
+ },
+ {
+  "path": "/r5/courses/create/",
+  "name": "r5_course_create",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "course_create",
+  "real_view": "smass_academic.views.course_create",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/",
+  "name": "r5_section_list",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "section_list",
+  "real_view": "smass_academic.views.section_list",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/create/",
+  "name": "r5_section_create",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "section_create",
+  "real_view": "smass_academic.views.section_create",
+  "include": ""
+ },
+ {
+  "path": "/r5/workspace/",
+  "name": "r5_teacher_workspace",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "teacher_workspace",
+  "real_view": "smass_academic.views.teacher_workspace",
+  "include": ""
+ },
+ {
+  "path": "/r5/sections/<int:pk>/roster/",
+  "name": "r5_section_roster",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "section_roster",
+  "real_view": "smass_academic.views.section_roster",
+  "include": ""
+ },
+ {
+  "path": "/r5/my-courses/",
+  "name": "r5_my_sections",
+  "namespace": "",
+  "view_module": "smass_academic.views",
+  "view_qualname": "my_sections",
+  "real_view": "smass_academic.views.my_sections",
+  "include": ""
+ },
+ {
+  "path": "/exchange/",
+  "name": "exchange_home",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "exchange_home",
+  "real_view": "smass_data_exchange.views.exchange_home",
+  "include": ""
+ },
+ {
+  "path": "/exchange/template/<str:dataset>/",
+  "name": "exchange_template",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "template_download",
+  "real_view": "smass_data_exchange.views.template_download",
+  "include": ""
+ },
+ {
+  "path": "/exchange/import/<str:dataset>/",
+  "name": "exchange_import",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "import_page",
+  "real_view": "smass_data_exchange.views.import_page",
+  "include": ""
+ },
+ {
+  "path": "/exchange/preview/<str:dataset>/",
+  "name": "exchange_preview",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "api_preview",
+  "real_view": "smass_data_exchange.views.api_preview",
+  "include": ""
+ },
+ {
+  "path": "/exchange/commit/<str:dataset>/",
+  "name": "exchange_commit",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "api_commit",
+  "real_view": "smass_data_exchange.views.api_commit",
+  "include": ""
+ },
+ {
+  "path": "/exchange/errors/<str:dataset>/<int:job_id>/",
+  "name": "exchange_errors",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "error_download",
+  "real_view": "smass_data_exchange.views.error_download",
+  "include": ""
+ },
+ {
+  "path": "/exchange/history/<str:dataset>/",
+  "name": "exchange_history",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "job_history",
+  "real_view": "smass_data_exchange.views.job_history",
+  "include": ""
+ },
+ {
+  "path": "/exchange/export/<str:dataset>/",
+  "name": "exchange_export",
+  "namespace": "",
+  "view_module": "smass_data_exchange.views",
+  "view_qualname": "export_view",
+  "real_view": "smass_data_exchange.views.export_view",
+  "include": ""
+ },
+ {
+  "path": "/r6/login/",
+  "name": "r6_login",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "login_view",
+  "real_view": "r21_account.views.login_view",
+  "include": ""
+ },
+ {
+  "path": "/r6/logout/",
+  "name": "r6_logout",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "logout_view",
+  "real_view": "r21_account.views.logout_view",
+  "include": ""
+ },
+ {
+  "path": "/r6/health/",
+  "name": "r6_health",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "health",
+  "real_view": "smass_workflow.views.health",
+  "include": ""
+ },
+ {
+  "path": "/r6/definitions/",
+  "name": "r6_definition_list",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "definition_list",
+  "real_view": "smass_workflow.views.definition_list",
+  "include": ""
+ },
+ {
+  "path": "/r6/definitions/create/",
+  "name": "r6_definition_create",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "definition_create",
+  "real_view": "smass_workflow.views.definition_create",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/",
+  "name": "r6_instance_list",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "instance_list",
+  "real_view": "smass_workflow.views.instance_list",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/create/",
+  "name": "r6_instance_create",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "instance_create",
+  "real_view": "smass_workflow.views.instance_create",
+  "include": ""
+ },
+ {
+  "path": "/r6/instances/<int:pk>/action/",
+  "name": "r6_instance_action",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "instance_action",
+  "real_view": "smass_workflow.views.instance_action",
+  "include": ""
+ },
+ {
+  "path": "/r6/tasks/",
+  "name": "r6_task_list",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "task_list",
+  "real_view": "smass_workflow.views.task_list",
+  "include": ""
+ },
+ {
+  "path": "/r6/notifications/",
+  "name": "r6_notification_list",
+  "namespace": "",
+  "view_module": "smass_workflow.views",
+  "view_qualname": "notification_list",
+  "real_view": "smass_workflow.views.notification_list",
+  "include": ""
+ },
+ {
+  "path": "/r7/login/",
+  "name": "r7_login",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "login_view",
+  "real_view": "r21_account.views.login_view",
+  "include": ""
+ },
+ {
+  "path": "/r7/logout/",
+  "name": "r7_logout",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "logout_view",
+  "real_view": "r21_account.views.logout_view",
+  "include": ""
+ },
+ {
+  "path": "/r7/health/",
+  "name": "r7_health",
+  "namespace": "",
+  "view_module": "smass_analytics.views",
+  "view_qualname": "health",
+  "real_view": "smass_analytics.views.health",
+  "include": ""
+ },
+ {
+  "path": "/r7/dashboard/",
+  "name": "r7_dashboard",
+  "namespace": "",
+  "view_module": "smass_analytics.views",
+  "view_qualname": "dashboard",
+  "real_view": "smass_analytics.views.dashboard",
+  "include": ""
+ },
+ {
+  "path": "/r7/metrics/",
+  "name": "r7_metric_list",
+  "namespace": "",
+  "view_module": "smass_analytics.views",
+  "view_qualname": "metric_list",
+  "real_view": "smass_analytics.views.metric_list",
+  "include": ""
+ },
+ {
+  "path": "/r7/reports/<str:code>/run/",
+  "name": "r7_report_run",
+  "namespace": "",
+  "view_module": "smass_analytics.views",
+  "view_qualname": "report_run",
+  "real_view": "smass_analytics.views.report_run",
+  "include": ""
+ },
+ {
+  "path": "/r7/reports/<str:code>/export/",
+  "name": "r7_report_export",
+  "namespace": "",
+  "view_module": "smass_analytics.views",
+  "view_qualname": "report_export",
+  "real_view": "smass_analytics.views.report_export",
+  "include": ""
+ },
+ {
+  "path": "/r8/login/",
+  "name": "r8_login",
+  "namespace": "",
+  "view_module": "r21_account.views",
+  "view_qualname": "login_view",
+  "real_view": "r21_account.views.login_view",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/openapi.json",
+  "name": "api_openapi",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "openapi",
+  "real_view": "smass_api.views.openapi",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/units/",
+  "name": "api_units",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "units",
+  "real_view": "smass_api.views.units",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/students/",
+  "name": "api_students",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "students",
+  "real_view": "smass_api.views.students",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/sections/",
+  "name": "api_sections",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "sections",
+  "real_view": "smass_api.views.sections",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/workflow/instances/",
+  "name": "api_instances",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "instances",
+  "real_view": "smass_api.views.instances",
+  "include": ""
+ },
+ {
+  "path": "/api/v1/sync/",
+  "name": "api_sync",
+  "namespace": "",
+  "view_module": "smass_api.views",
+  "view_qualname": "sync",
+  "real_view": "smass_api.views.sync",
+  "include": ""
+ },
+ {
+  "path": "/r9/health/",
+  "name": "r9_health",
+  "namespace": "",
+  "view_module": "smass_operations.views",
+  "view_qualname": "health",
+  "real_view": "smass_operations.views.health",
+  "include": ""
+ },
+ {
+  "path": "/r9/ready/",
+  "name": "r9_ready",
+  "namespace": "",
+  "view_module": "smass_operations.views",
+  "view_qualname": "ready",
+  "real_view": "smass_operations.views.ready",
+  "include": ""
+ },
+ {
+  "path": "/r9/metrics/",
+  "name": "r9_metrics",
+  "namespace": "",
+  "view_module": "smass_operations.views",
+  "view_qualname": "metrics",
+  "real_view": "smass_operations.views.metrics",
+  "include": ""
+ },
+ {
+  "path": "/r9/alerts/",
+  "name": "r9_alerts",
+  "namespace": "",
+  "view_module": "smass_operations.views",
+  "view_qualname": "alerts",
+  "real_view": "smass_operations.views.alerts",
+  "include": ""
+ },
+ {
+  "path": "/r11/plan/",
+  "name": "r11_plan",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "plan_page",
+  "real_view": "smass_scheduling.views.plan_page",
+  "include": ""
+ },
+ {
+  "path": "/r11/plan/<int:run_id>/solve/",
+  "name": "r11_plan_solve",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "plan_solve",
+  "real_view": "smass_scheduling.views.plan_solve",
+  "include": ""
+ },
+ {
+  "path": "/r11/plan/<int:run_id>/publish/",
+  "name": "r11_plan_publish",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "plan_publish",
+  "real_view": "smass_scheduling.views.plan_publish",
+  "include": ""
+ },
+ {
+  "path": "/r11/plan/<int:run_id>/conflicts/",
+  "name": "r11_plan_conflicts",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "plan_conflicts",
+  "real_view": "smass_scheduling.views.plan_conflicts",
+  "include": ""
+ },
+ {
+  "path": "/r11/timetable/student/",
+  "name": "r11_student_timetable",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "student_timetable",
+  "real_view": "smass_scheduling.views.student_timetable",
+  "include": ""
+ },
+ {
+  "path": "/r11/timetable/teacher/",
+  "name": "r11_teacher_timetable",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "teacher_timetable",
+  "real_view": "smass_scheduling.views.teacher_timetable",
+  "include": ""
+ },
+ {
+  "path": "/r11/timetable/room/<int:room_id>/",
+  "name": "r11_room_timetable",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "room_timetable",
+  "real_view": "smass_scheduling.views.room_timetable",
+  "include": ""
+ },
+ {
+  "path": "/r11/timetable/mine.json",
+  "name": "r11_my_timetable_json",
+  "namespace": "",
+  "view_module": "smass_scheduling.views",
+  "view_qualname": "my_timetable_json",
+  "real_view": "smass_scheduling.views.my_timetable_json",
+  "include": ""
+ },
+ {
+  "path": "/r12/placement/",
+  "name": "placement_list",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "placement_list",
+  "real_view": "smass_enrollment.views.placement_list",
+  "include": ""
+ },
+ {
+  "path": "/r12/placement/preview/<int:rule_id>/",
+  "name": "placement_preview",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "placement_preview",
+  "real_view": "smass_enrollment.views.placement_preview",
+  "include": ""
+ },
+ {
+  "path": "/r12/placement/<int:pk>/",
+  "name": "placement_detail",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "placement_detail",
+  "real_view": "smass_enrollment.views.placement_detail",
+  "include": ""
+ },
+ {
+  "path": "/r12/placement/<int:pk>/apply/",
+  "name": "placement_apply",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "placement_apply",
+  "real_view": "smass_enrollment.views.placement_apply",
+  "include": ""
+ },
+ {
+  "path": "/r12/placement/<int:pk>/rollback/",
+  "name": "placement_rollback",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "placement_rollback",
+  "real_view": "smass_enrollment.views.placement_rollback",
+  "include": ""
+ },
+ {
+  "path": "/r12/transfers/",
+  "name": "transfers",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "transfer_list",
+  "real_view": "smass_enrollment.views.transfer_list",
+  "include": ""
+ },
+ {
+  "path": "/r12/transfers/submit/",
+  "name": "transfer_submit",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "transfer_submit",
+  "real_view": "smass_enrollment.views.transfer_submit",
+  "include": ""
+ },
+ {
+  "path": "/r12/transfers/<int:pk>/<str:action>/",
+  "name": "transfer_action",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "transfer_action",
+  "real_view": "smass_enrollment.views.transfer_action",
+  "include": ""
+ },
+ {
+  "path": "/r12/status/",
+  "name": "status",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "status_list",
+  "real_view": "smass_enrollment.views.status_list",
+  "include": ""
+ },
+ {
+  "path": "/r12/status/submit/",
+  "name": "status_submit",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "status_submit",
+  "real_view": "smass_enrollment.views.status_submit",
+  "include": ""
+ },
+ {
+  "path": "/r12/status/<int:pk>/<str:action>/",
+  "name": "status_action",
+  "namespace": "r12",
+  "view_module": "smass_enrollment.views",
+  "view_qualname": "status_action",
+  "real_view": "smass_enrollment.views.status_action",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/",
+  "name": "sessions",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_list",
+  "real_view": "smass_attendance.views.session_list",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/create/",
+  "name": "session_create",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_create",
+  "real_view": "smass_attendance.views.session_create",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/<int:pk>/",
+  "name": "session_detail",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_detail",
+  "real_view": "smass_attendance.views.session_detail",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/<int:pk>/sign/",
+  "name": "session_sign",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_sign",
+  "real_view": "smass_attendance.views.session_sign",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/<int:pk>/close/",
+  "name": "session_close",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_close",
+  "real_view": "smass_attendance.views.session_close",
+  "include": ""
+ },
+ {
+  "path": "/r13/sessions/<int:pk>/mark/",
+  "name": "session_mark",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "session_mark",
+  "real_view": "smass_attendance.views.session_mark",
+  "include": ""
+ },
+ {
+  "path": "/r13/leaves/",
+  "name": "leaves",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "leave_list",
+  "real_view": "smass_attendance.views.leave_list",
+  "include": ""
+ },
+ {
+  "path": "/r13/leaves/submit/",
+  "name": "leave_submit",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "leave_submit",
+  "real_view": "smass_attendance.views.leave_submit",
+  "include": ""
+ },
+ {
+  "path": "/r13/leaves/<int:pk>/<str:action>/",
+  "name": "leave_action",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "leave_action",
+  "real_view": "smass_attendance.views.leave_action",
+  "include": ""
+ },
+ {
+  "path": "/r13/makeups/",
+  "name": "makeups",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "makeup_list",
+  "real_view": "smass_attendance.views.makeup_list",
+  "include": ""
+ },
+ {
+  "path": "/r13/makeups/submit/",
+  "name": "makeup_submit",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "makeup_submit",
+  "real_view": "smass_attendance.views.makeup_submit",
+  "include": ""
+ },
+ {
+  "path": "/r13/makeups/<int:pk>/<str:action>/",
+  "name": "makeup_action",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "makeup_action",
+  "real_view": "smass_attendance.views.makeup_action",
+  "include": ""
+ },
+ {
+  "path": "/r13/stats/",
+  "name": "stats",
+  "namespace": "r13",
+  "view_module": "smass_attendance.views",
+  "view_qualname": "stats_view",
+  "real_view": "smass_attendance.views.stats_view",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/",
+  "name": "activities",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_list",
+  "real_view": "smass_activities.views.activity_list",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/create/",
+  "name": "activity_create",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_create",
+  "real_view": "smass_activities.views.activity_create",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/<int:pk>/",
+  "name": "activity_detail",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_detail",
+  "real_view": "smass_activities.views.activity_detail",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/<int:pk>/publish/",
+  "name": "activity_publish",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_publish",
+  "real_view": "smass_activities.views.activity_publish",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/<int:pk>/close/",
+  "name": "activity_close",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_close",
+  "real_view": "smass_activities.views.activity_close",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/<int:pk>/generate-credits/",
+  "name": "activity_generate_credits",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_generate_credits",
+  "real_view": "smass_activities.views.activity_generate_credits",
+  "include": ""
+ },
+ {
+  "path": "/r14/activities/<int:pk>/register/",
+  "name": "activity_register",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_register",
+  "real_view": "smass_activities.views.activity_register",
+  "include": ""
+ },
+ {
+  "path": "/r14/registrations/<int:pk>/cancel/",
+  "name": "registration_cancel",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "registration_cancel",
+  "real_view": "smass_activities.views.registration_cancel",
+  "include": ""
+ },
+ {
+  "path": "/r14/registrations/<int:pk>/checkin/",
+  "name": "activity_check_in",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "activity_check_in",
+  "real_view": "smass_activities.views.activity_check_in",
+  "include": ""
+ },
+ {
+  "path": "/r14/credits/",
+  "name": "credits",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "credit_list",
+  "real_view": "smass_activities.views.credit_list",
+  "include": ""
+ },
+ {
+  "path": "/r14/credits/<int:pk>/<str:action>/",
+  "name": "credit_action",
+  "namespace": "r14",
+  "view_module": "smass_activities.views",
+  "view_qualname": "credit_action",
+  "real_view": "smass_activities.views.credit_action",
+  "include": ""
+ },
+ {
+  "path": "/r15/clubs/",
+  "name": "clubs",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "club_list",
+  "real_view": "smass_clubs.views.club_list",
+  "include": ""
+ },
+ {
+  "path": "/r15/clubs/create/",
+  "name": "club_create",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "club_create",
+  "real_view": "smass_clubs.views.club_create",
+  "include": ""
+ },
+ {
+  "path": "/r15/clubs/<int:pk>/",
+  "name": "club_detail",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "club_detail",
+  "real_view": "smass_clubs.views.club_detail",
+  "include": ""
+ },
+ {
+  "path": "/r15/clubs/<int:pk>/apply/",
+  "name": "club_apply",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "club_apply",
+  "real_view": "smass_clubs.views.club_apply",
+  "include": ""
+ },
+ {
+  "path": "/r15/clubs/<int:pk>/appoint/",
+  "name": "post_appoint",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "post_appoint",
+  "real_view": "smass_clubs.views.post_appoint",
+  "include": ""
+ },
+ {
+  "path": "/r15/memberships/<int:pk>/<str:action>/",
+  "name": "membership_action",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "membership_action",
+  "real_view": "smass_clubs.views.membership_action",
+  "include": ""
+ },
+ {
+  "path": "/r15/posts/",
+  "name": "posts",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "post_list",
+  "real_view": "smass_clubs.views.post_list",
+  "include": ""
+ },
+ {
+  "path": "/r15/posts/<int:pk>/end/",
+  "name": "post_end",
+  "namespace": "r15",
+  "view_module": "smass_clubs.views",
+  "view_qualname": "post_end",
+  "real_view": "smass_clubs.views.post_end",
+  "include": ""
+ },
+ {
+  "path": "/r16/rooms/",
+  "name": "rooms",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "room_list",
+  "real_view": "smass_facilities.views.room_list",
+  "include": ""
+ },
+ {
+  "path": "/r16/rooms/<int:pk>/",
+  "name": "room_detail",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "room_detail",
+  "real_view": "smass_facilities.views.room_detail",
+  "include": ""
+ },
+ {
+  "path": "/r16/rooms/<int:pk>/book/",
+  "name": "create_booking",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "create_booking",
+  "real_view": "smass_facilities.views.create_booking",
+  "include": ""
+ },
+ {
+  "path": "/r16/calendar/",
+  "name": "calendar",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "shared_calendar",
+  "real_view": "smass_facilities.views.shared_calendar",
+  "include": ""
+ },
+ {
+  "path": "/r16/bookings/",
+  "name": "bookings",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "my_bookings",
+  "real_view": "smass_facilities.views.my_bookings",
+  "include": ""
+ },
+ {
+  "path": "/r16/bookings/<int:pk>/cancel/",
+  "name": "cancel_booking",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "cancel_booking",
+  "real_view": "smass_facilities.views.cancel_booking",
+  "include": ""
+ },
+ {
+  "path": "/r16/bookings/<int:pk>/checkin/",
+  "name": "check_in",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "check_in",
+  "real_view": "smass_facilities.views.check_in",
+  "include": ""
+ },
+ {
+  "path": "/r16/bookings/<int:pk>/release/",
+  "name": "release",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "release",
+  "real_view": "smass_facilities.views.release",
+  "include": ""
+ },
+ {
+  "path": "/r16/approvals/",
+  "name": "approvals",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "approvals",
+  "real_view": "smass_facilities.views.approvals",
+  "include": ""
+ },
+ {
+  "path": "/r16/approvals/<int:pk>/approve/",
+  "name": "approve",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "approve",
+  "real_view": "smass_facilities.views.approve",
+  "include": ""
+ },
+ {
+  "path": "/r16/approvals/<int:pk>/reject/",
+  "name": "reject",
+  "namespace": "r16",
+  "view_module": "smass_facilities.views",
+  "view_qualname": "reject",
+  "real_view": "smass_facilities.views.reject",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/",
+  "name": "forum",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "forum_index",
+  "real_view": "smass_forum.views.forum_index",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/board/<int:pk>/",
+  "name": "board",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "board_detail",
+  "real_view": "smass_forum.views.board_detail",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/board/<int:pk>/post/",
+  "name": "post_create",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "post_create",
+  "real_view": "smass_forum.views.post_create",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/post/<int:pk>/",
+  "name": "post",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "post_detail",
+  "real_view": "smass_forum.views.post_detail",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/post/<int:pk>/comment/",
+  "name": "comment_create",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "comment_create",
+  "real_view": "smass_forum.views.comment_create",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/post/<int:pk>/action/",
+  "name": "content_action",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "content_action",
+  "real_view": "smass_forum.views.content_action",
+  "include": ""
+ },
+ {
+  "path": "/r17/forum/report/",
+  "name": "content_report",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "content_report",
+  "real_view": "smass_forum.views.content_report",
+  "include": ""
+ },
+ {
+  "path": "/r17/reports/",
+  "name": "reports",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "report_list",
+  "real_view": "smass_forum.views.report_list",
+  "include": ""
+ },
+ {
+  "path": "/r17/reports/<int:pk>/resolve/",
+  "name": "report_resolve",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "report_resolve",
+  "real_view": "smass_forum.views.report_resolve",
+  "include": ""
+ },
+ {
+  "path": "/r17/announcements/",
+  "name": "announcements",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "announcement_list",
+  "real_view": "smass_forum.views.announcement_list",
+  "include": ""
+ },
+ {
+  "path": "/r17/announcements/create/",
+  "name": "announcement_create",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "announcement_create",
+  "real_view": "smass_forum.views.announcement_create",
+  "include": ""
+ },
+ {
+  "path": "/r17/announcements/<int:pk>/publish/",
+  "name": "announcement_publish",
+  "namespace": "r17",
+  "view_module": "smass_forum.views",
+  "view_qualname": "announcement_publish",
+  "real_view": "smass_forum.views.announcement_publish",
+  "include": ""
+ },
+ {
+  "path": "/r18/bills/",
+  "name": "bills",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "bill_list",
+  "real_view": "smass_finance.views.bill_list",
+  "include": ""
+ },
+ {
+  "path": "/r18/bills/create/",
+  "name": "bill_create",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "bill_create",
+  "real_view": "smass_finance.views.bill_create",
+  "include": ""
+ },
+ {
+  "path": "/r18/bills/<int:pk>/",
+  "name": "bill_detail",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "bill_detail",
+  "real_view": "smass_finance.views.bill_detail",
+  "include": ""
+ },
+ {
+  "path": "/r18/bills/<int:pk>/pay/",
+  "name": "bill_pay",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "bill_pay",
+  "real_view": "smass_finance.views.bill_pay",
+  "include": ""
+ },
+ {
+  "path": "/r18/bills/<int:pk>/refund/",
+  "name": "refund_request",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "refund_request",
+  "real_view": "smass_finance.views.refund_request",
+  "include": ""
+ },
+ {
+  "path": "/r18/fee-items/create/",
+  "name": "fee_item_create",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "fee_item_create",
+  "real_view": "smass_finance.views.fee_item_create",
+  "include": ""
+ },
+ {
+  "path": "/r18/refunds/",
+  "name": "refunds",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "refund_list",
+  "real_view": "smass_finance.views.refund_list",
+  "include": ""
+ },
+ {
+  "path": "/r18/refunds/<int:pk>/<str:action>/",
+  "name": "refund_action",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "refund_action",
+  "real_view": "smass_finance.views.refund_action",
+  "include": ""
+ },
+ {
+  "path": "/r18/ledger/",
+  "name": "ledger",
+  "namespace": "r18",
+  "view_module": "smass_finance.views",
+  "view_qualname": "ledger_list",
+  "real_view": "smass_finance.views.ledger_list",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/",
+  "name": "orgs",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "org_list",
+  "real_view": "smass_party.views.org_list",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/create/",
+  "name": "org_create",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "org_create",
+  "real_view": "smass_party.views.org_create",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/<int:pk>/",
+  "name": "org_detail",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "org_detail",
+  "real_view": "smass_party.views.org_detail",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/<int:pk>/members/add/",
+  "name": "member_add",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "member_add",
+  "real_view": "smass_party.views.member_add",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/<int:pk>/activities/add/",
+  "name": "activity_create",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "activity_create",
+  "real_view": "smass_party.views.activity_create",
+  "include": ""
+ },
+ {
+  "path": "/r19/activities/<int:pk>/complete/",
+  "name": "activity_complete",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "activity_complete",
+  "real_view": "smass_party.views.activity_complete",
+  "include": ""
+ },
+ {
+  "path": "/r19/orgs/<int:pk>/documents/add/",
+  "name": "document_create",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "document_create",
+  "real_view": "smass_party.views.document_create",
+  "include": ""
+ },
+ {
+  "path": "/r19/documents/<int:pk>/",
+  "name": "document_detail",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "document_detail",
+  "real_view": "smass_party.views.document_detail",
+  "include": ""
+ },
+ {
+  "path": "/r19/documents/<int:pk>/request/",
+  "name": "document_request",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "document_request",
+  "real_view": "smass_party.views.document_request",
+  "include": ""
+ },
+ {
+  "path": "/r19/access/",
+  "name": "access",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "access_list",
+  "real_view": "smass_party.views.access_list",
+  "include": ""
+ },
+ {
+  "path": "/r19/access/<int:pk>/<str:action>/",
+  "name": "access_action",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "access_action",
+  "real_view": "smass_party.views.access_action",
+  "include": ""
+ },
+ {
+  "path": "/r19/audit/",
+  "name": "audit",
+  "namespace": "r19",
+  "view_module": "smass_party.views",
+  "view_qualname": "audit_list",
+  "real_view": "smass_party.views.audit_list",
+  "include": ""
+ },
+ {
+  "path": "/r20/",
+  "name": "home",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "portal_home",
+  "real_view": "smass_portal.views.portal_home",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/",
+  "name": "admin",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "portal_admin",
+  "real_view": "smass_portal.views.portal_admin",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/bootstrap/",
+  "name": "admin_bootstrap",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "admin_bootstrap",
+  "real_view": "smass_portal.views.admin_bootstrap",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/section/",
+  "name": "section_create",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "section_create",
+  "real_view": "smass_portal.views.section_create",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/link/",
+  "name": "link_create",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "link_create",
+  "real_view": "smass_portal.views.link_create",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/notice/",
+  "name": "notice_create",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "notice_create",
+  "real_view": "smass_portal.views.notice_create",
+  "include": ""
+ },
+ {
+  "path": "/r20/admin/notice/<int:pk>/publish/",
+  "name": "notice_publish",
+  "namespace": "r20",
+  "view_module": "smass_portal.views",
+  "view_qualname": "notice_publish",
+  "real_view": "smass_portal.views.notice_publish",
+  "include": ""
+ }
+]

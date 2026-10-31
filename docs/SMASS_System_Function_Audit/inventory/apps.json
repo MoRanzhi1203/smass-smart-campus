@@ -1,0 +1,184 @@
+[
+ {
+  "label": "admin",
+  "name": "django.contrib.admin",
+  "verbose_name": "管理",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\admin",
+  "builtin": true
+ },
+ {
+  "label": "auth",
+  "name": "django.contrib.auth",
+  "verbose_name": "认证和授权",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\auth",
+  "builtin": true
+ },
+ {
+  "label": "contenttypes",
+  "name": "django.contrib.contenttypes",
+  "verbose_name": "内容类型",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\contenttypes",
+  "builtin": true
+ },
+ {
+  "label": "sessions",
+  "name": "django.contrib.sessions",
+  "verbose_name": "会话",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\sessions",
+  "builtin": true
+ },
+ {
+  "label": "messages",
+  "name": "django.contrib.messages",
+  "verbose_name": "消息",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\messages",
+  "builtin": true
+ },
+ {
+  "label": "staticfiles",
+  "name": "django.contrib.staticfiles",
+  "verbose_name": "静态文件",
+  "path": "C:\\Users\\MSIPC\\.conda\\envs\\smass\\Lib\\site-packages\\django\\contrib\\staticfiles",
+  "builtin": true
+ },
+ {
+  "label": "app01",
+  "name": "app01",
+  "verbose_name": "App01",
+  "path": "app01",
+  "builtin": false
+ },
+ {
+  "label": "r21_account",
+  "name": "r21_account",
+  "verbose_name": "R2.1 统一账号与 RBAC（原型）",
+  "path": "r21_account",
+  "builtin": false
+ },
+ {
+  "label": "r22_account",
+  "name": "r22_account",
+  "verbose_name": "R2.2 身份兼容层（隔离）",
+  "path": "r22_account",
+  "builtin": false
+ },
+ {
+  "label": "smass_organization",
+  "name": "smass_organization",
+  "verbose_name": "SMASS R4 组织机构与学生档案",
+  "path": "smass_organization",
+  "builtin": false
+ },
+ {
+  "label": "smass_academic",
+  "name": "smass_academic",
+  "verbose_name": "SMASS R5 教学管理",
+  "path": "smass_academic",
+  "builtin": false
+ },
+ {
+  "label": "smass_workflow",
+  "name": "smass_workflow",
+  "verbose_name": "SMASS R6 审批工作流",
+  "path": "smass_workflow",
+  "builtin": false
+ },
+ {
+  "label": "smass_analytics",
+  "name": "smass_analytics",
+  "verbose_name": "SMASS R7 指标分析",
+  "path": "smass_analytics",
+  "builtin": false
+ },
+ {
+  "label": "smass_api",
+  "name": "smass_api",
+  "verbose_name": "SMASS R8 开放 API",
+  "path": "smass_api",
+  "builtin": false
+ },
+ {
+  "label": "smass_operations",
+  "name": "smass_operations",
+  "verbose_name": "SMASS R9 运维",
+  "path": "smass_operations",
+  "builtin": false
+ },
+ {
+  "label": "smass_scheduling",
+  "name": "smass_scheduling",
+  "verbose_name": "排课与课表",
+  "path": "smass_scheduling",
+  "builtin": false
+ },
+ {
+  "label": "smass_enrollment",
+  "name": "smass_enrollment",
+  "verbose_name": "学籍管理与分班",
+  "path": "smass_enrollment",
+  "builtin": false
+ },
+ {
+  "label": "smass_attendance",
+  "name": "smass_attendance",
+  "verbose_name": "考勤与请销假",
+  "path": "smass_attendance",
+  "builtin": false
+ },
+ {
+  "label": "smass_activities",
+  "name": "smass_activities",
+  "verbose_name": "第二课堂与活动",
+  "path": "smass_activities",
+  "builtin": false
+ },
+ {
+  "label": "smass_clubs",
+  "name": "smass_clubs",
+  "verbose_name": "团委学生会与社团",
+  "path": "smass_clubs",
+  "builtin": false
+ },
+ {
+  "label": "smass_facilities",
+  "name": "smass_facilities",
+  "verbose_name": "校园场地与设备",
+  "path": "smass_facilities",
+  "builtin": false
+ },
+ {
+  "label": "smass_forum",
+  "name": "smass_forum",
+  "verbose_name": "论坛与公告",
+  "path": "smass_forum",
+  "builtin": false
+ },
+ {
+  "label": "smass_finance",
+  "name": "smass_finance",
+  "verbose_name": "学费与财务",
+  "path": "smass_finance",
+  "builtin": false
+ },
+ {
+  "label": "smass_party",
+  "name": "smass_party",
+  "verbose_name": "党建与专项组织",
+  "path": "smass_party",
+  "builtin": false
+ },
+ {
+  "label": "smass_portal",
+  "name": "smass_portal",
+  "verbose_name": "统一门户",
+  "path": "smass_portal",
+  "builtin": false
+ },
+ {
+  "label": "smass_workspace",
+  "name": "smass_workspace",
+  "verbose_name": "SMASS 产品工作台",
+  "path": "smass_workspace",
+  "builtin": false
+ }
+]
