@@ -12,35 +12,89 @@
   </div>
   <div class="ws-page-actions">
     <a class="ws-btn" href="{% url 'workspace:admin_sections' %}">查看教学班数据</a>
-    <a class="ws-btn is-primary" href="/r4/import/">导入向导（专业工具）</a>
   </div>
 </div>
 
-<section class="ws-card">
-  <div class="ws-card-head"><h2>可用数据集</h2><span class="ws-hint">{{ datasets|length }} 个</span></div>
-  {% if datasets %}
-    <div class="ws-table-wrap">
-      <table class="ws-table">
-        <thead><tr><th>数据集</th><th>名称</th><th>版本</th><th class="is-num">字段数</th></tr></thead>
-        <tbody>
-          {% for dataset in datasets %}
-            <tr>
-              <td class="is-strong">{{ dataset.code }}</td>
-              <td>{{ dataset.title }}</td>
-              <td class="ws-code">{{ dataset.version }}</td>
-              <td class="is-num">{{ dataset.fields }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="ws-empty">
-      <div class="ws-empty-icon"><svg><use href="#ws-i-file"></use></svg></div>
-      <b>暂无可用数据集</b>
-      <p>数据交换适配器未注册。</p>
-    </div>
-  {% endif %}
-  <div class="ws-card-foot">导入流程：下载模板 → 填写 → 预检（零写入）→ 提交（重新校验）。有错误的行默认整体拒绝。</div>
-</section>
+<div class="ws-grid ws-grid-main">
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>可用数据集</h2><span class="ws-hint">{{ datasets|length }} 个</span></div>
+      {% if datasets %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>数据集</th><th>名称</th><th>版本</th><th class="is-num">字段数</th></tr></thead>
+            <tbody>
+              {% for dataset in datasets %}
+                <tr>
+                  <td class="is-strong">{{ dataset.code }}</td>
+                  <td>{{ dataset.title }}</td>
+                  <td class="ws-code">{{ dataset.version }}</td>
+                  <td class="is-num">{{ dataset.fields }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty">
+          <div class="ws-empty-icon"><svg><use href="#ws-i-file"></use></svg></div>
+          <b>暂无可用数据集</b>
+          <p>数据交换适配器未注册。</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>导入历史</h2><span class="ws-hint">最近 {{ import_jobs|length }} 批</span></div>
+      {% if import_jobs %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>时间</th><th>类型</th><th class="is-num">总行</th><th class="is-num">成功</th><th class="is-num">失败</th><th>状态</th><th>操作者</th></tr></thead>
+            <tbody>
+              {% for job in import_jobs %}
+                <tr>
+                  <td class="is-muted">{{ job.created_at|date:"m-d H:i" }}</td>
+                  <td>{{ job.kind }}</td>
+                  <td class="is-num">{{ job.total_rows }}</td>
+                  <td class="is-num">{{ job.success_rows }}</td>
+                  <td class="is-num">{% if job.error_rows %}<span class="ws-badge is-danger">{{ job.error_rows }}</span>{% else %}0{% endif %}</td>
+                  <td><span class="ws-badge {% if job.status == 'committed' %}is-success{% elif job.status == 'failed' %}is-danger{% else %}is-warning{% endif %}">{{ job.get_status_display }}</span></td>
+                  <td class="is-muted">{{ job.created_by|default:"—" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>还没有导入批次</b><p>在右侧上传 CSV 开始预检。</p></div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="ws-stack">
+    {% if is_super %}
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>上传并预检</h2><span class="ws-hint">CSV · UTF-8 · ≤8MB</span></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_data_import_preview' %}" enctype="multipart/form-data" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="import-file">CSV 文件</label>
+            <input class="ws-input" type="file" id="import-file" name="file" accept=".csv" required>
+          </div>
+          <button class="ws-btn is-primary" type="submit">上传并预检</button>
+        </form>
+        <p class="ws-sub" style="margin-top:10px">必需列：student_no、name、unit_code、status。预检不写入业务数据。</p>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>受控导出</h2></div>
+      <div class="ws-card-body">
+        <p class="ws-sub" style="margin:0">导出按字段级权限裁剪并做公式注入中和；当前版本请使用数据交换专业工具执行导出，产品端导出入口将在下一批开放。</p>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

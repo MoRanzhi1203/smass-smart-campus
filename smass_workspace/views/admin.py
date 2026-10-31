@@ -1219,6 +1219,76 @@ def data_exchange(request):
         request, **svc.data_exchange(request.user)))
 
 
+def _import_tmp_dir():
+    from pathlib import Path
+
+    from django.conf import settings
+
+    path = Path(settings.BASE_DIR) / 'private_uploads' / 'import_tmp'
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def data_import_preview(request):
+    from smass_organization import services as org_services
+
+    upload = request.FILES.get('file')
+    if upload is None:
+        messages.error(request, '请选择要上传的 CSV 文件')
+        return redirect('workspace:admin_data_exchange')
+    if upload.size > 8 * 1024 * 1024:
+        messages.error(request, '文件超过 8MB 限制')
+        return redirect('workspace:admin_data_exchange')
+    if not (upload.name or '').lower().endswith('.csv'):
+        messages.error(request, '当前仅支持 CSV 模板')
+        return redirect('workspace:admin_data_exchange')
+    try:
+        text = upload.read().decode('utf-8-sig')
+    except UnicodeDecodeError:
+        messages.error(request, '文件需为 UTF-8 编码')
+        return redirect('workspace:admin_data_exchange')
+
+    job, preview = org_services.import_preview(
+        text, actor=request.user.login_name)
+    from uuid import uuid4
+
+    token = uuid4().hex
+    (_import_tmp_dir() / '{}.csv'.format(token)).write_text(
+        text, encoding='utf-8')
+    request.session['import_token'] = token
+    from smass_organization.models import DataImportRowError
+
+    errors = list(DataImportRowError.objects.filter(job=job).order_by('row_number')[:100])
+    return render(request, 'workspace/admin/data_import_preview.html', _ctx(
+        request, job=job, preview=preview[:60], preview_total=len(preview),
+        errors=errors, token=token))
+
+
+@require_POST
+@admin_only
+@perms.require_system_admin
+def data_import_commit(request):
+    from smass_organization import services as org_services
+
+    token = request.session.get('import_token') or ''
+    path = _import_tmp_dir() / '{}.csv'.format(token) if token else None
+    if path is None or not path.exists():
+        messages.error(request, '预检文件已过期，请重新上传')
+        return redirect('workspace:admin_data_exchange')
+    text = path.read_text(encoding='utf-8')
+    job, stats = org_services.import_commit(
+        text, actor=request.user.login_name)
+    path.unlink(missing_ok=True)
+    request.session.pop('import_token', None)
+    messages.success(request, '导入完成：新增 {}，更新 {}，失败 {}'.format(
+        stats.get('created', 0), stats.get('updated', 0),
+        stats.get('failed', 0)))
+    return redirect('workspace:admin_data_exchange')
+
+
 @require_GET
 @admin_only
 def monitoring(request):

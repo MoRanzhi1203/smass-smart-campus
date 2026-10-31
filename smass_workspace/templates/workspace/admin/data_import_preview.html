@@ -1,0 +1,92 @@
+{% extends "workspace/base.html" %}
+{% block title %}导入预检{% endblock %}
+{% block topbar_title %}导入预检{% endblock %}
+{% block topbar_sub %}零写入校验结果{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:admin_data_exchange' %}">数据导入导出</a><span class="sep">/</span><span>预检</span></div>
+    <h1>导入预检</h1>
+    <p class="ws-sub">批次 {{ job.batch_id }} · 共 {{ job.total_rows }} 行 · 可导入 {{ job.success_rows }} 行 · 错误 {{ job.error_rows }} 行</p>
+  </div>
+</div>
+
+{% if errors %}
+<div class="ws-alert is-error" style="margin-bottom:16px">
+  <span>存在 {{ errors|length }} 条错误{% if job.status == 'failed' %}（批次不可提交）{% else %}，仅可导入校验通过的行{% endif %}。</span>
+</div>
+{% endif %}
+
+<div class="ws-grid ws-grid-main">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>数据预览</h2><span class="ws-hint">前 {{ preview|length }} 行</span></div>
+    {% if preview %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>行号</th><th>学号</th><th>姓名</th><th>组织</th><th>状态</th><th>校验</th></tr></thead>
+          <tbody>
+            {% for row in preview %}
+              <tr>
+                <td class="is-num">{{ row.row }}</td>
+                <td class="is-strong">{{ row.student_no|default:"—" }}</td>
+                <td>{{ row.name|default:"—" }}</td>
+                <td class="is-muted">{{ row.unit|default:"—" }}</td>
+                <td>{{ row.status|default:"—" }}</td>
+                <td>
+                  {% if row.ok %}
+                    <span class="ws-badge is-success">通过{% if row.existing %}（覆盖）{% endif %}</span>
+                  {% else %}
+                    <span class="ws-badge is-danger">{{ row.errors }} 处错误</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="ws-empty is-compact"><b>没有可预览数据</b><p>请检查文件表头与编码。</p></div>
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>错误明细</h2><span class="ws-hint">{{ errors|length }} 条</span></div>
+      {% if errors %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>行</th><th>列</th><th>错误码</th><th>说明</th></tr></thead>
+            <tbody>
+              {% for item in errors %}
+                <tr>
+                  <td class="is-num">{{ item.row_number }}</td>
+                  <td>{{ item.column }}</td>
+                  <td class="ws-code">{{ item.error_code }}</td>
+                  <td class="is-muted">{{ item.message }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ws-empty is-compact"><b>没有错误</b><p>所有行通过校验，可提交导入。</p></div>
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>提交</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:admin_data_import_commit' %}" data-once>
+          {% csrf_token %}
+          <input type="hidden" name="token" value="{{ token }}">
+          <button class="ws-btn is-primary" type="submit"
+                  {% if job.status == 'failed' %}disabled{% endif %}>确认提交（重新校验）</button>
+        </form>
+        <p class="ws-sub" style="margin-top:10px">提交会再次解析校验并生成新批次；单行失败不阻断其他行。</p>
+        <a class="ws-btn is-sm" href="{% url 'workspace:admin_data_exchange' %}" style="margin-top:8px">返回</a>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

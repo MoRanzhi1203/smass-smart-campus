@@ -1162,6 +1162,50 @@ class AdminWorkflowTests(WorkspaceFixture):
             code='T-FLOW-X').exists())
 
 
+class AdminDataImportTests(WorkspaceFixture):
+    """E07：CSV 预检与提交。"""
+
+    def _upload(self, content, name='students.csv'):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        return SimpleUploadedFile(
+            name, content.encode('utf-8'), content_type='text/csv')
+
+    def test_preview_and_commit(self):
+        from smass_organization.models import StudentRecord
+
+        self.login(self.admin)
+        content = ('student_no,name,unit_code,status\n'
+                   'T2024100,导入学生,T-CLS,enrolled\n')
+        response = self.client.post(
+            '/admin/data-exchange/preview/',
+            {'file': self._upload(content)}, follow=True)
+        self.assertContains(response, '导入预检')
+        self.assertContains(response, 'T2024100')
+
+        response = self.client.post(
+            '/admin/data-exchange/commit/', {}, follow=True)
+        self.assertContains(response, '导入完成')
+        self.assertTrue(StudentRecord.objects.filter(
+            student_no='T2024100').exists())
+
+    def test_missing_column_shows_error(self):
+        self.login(self.admin)
+        content = 'name,status\n张三,enrolled\n'
+        response = self.client.post(
+            '/admin/data-exchange/preview/',
+            {'file': self._upload(content, 'bad.csv')}, follow=True)
+        self.assertContains(response, '缺少必需列')
+
+    def test_college_admin_cannot_preview(self):
+        content = 'student_no,name,unit_code,status\nT2024101,X,T-CLS,enrolled\n'
+        self.login(self.college_admin)
+        response = self.client.post(
+            '/admin/data-exchange/preview/',
+            {'file': self._upload(content)})
+        self.assertEqual(response.status_code, 403)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

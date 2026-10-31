@@ -388,7 +388,14 @@ def data_exchange(account):
             })
     except Exception:  # noqa: BLE001 - 适配器异常时降级为空清单
         datasets = []
-    return {'datasets': datasets}
+    jobs = []
+    try:
+        from smass_organization.models import DataImportJob
+
+        jobs = list(DataImportJob.objects.order_by('-created_at')[:30])
+    except Exception:  # noqa: BLE001
+        jobs = []
+    return {'datasets': datasets, 'import_jobs': jobs}
 
 
 # ---------------------------------------------------------------------------
