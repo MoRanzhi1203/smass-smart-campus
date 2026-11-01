@@ -16,8 +16,9 @@ from smass_simulation.generator import batch as batch_mod
 from smass_simulation.generator import config as sim_config
 from smass_simulation.generator import org as org_mod
 from smass_simulation.generator import people as people_mod
+from smass_simulation.generator import staff as staff_mod
 
-ALL_STAGES = ['org', 'students']
+ALL_STAGES = ['org', 'students', 'staff']
 
 
 class Command(BaseCommand):
@@ -82,6 +83,9 @@ class Command(BaseCommand):
                     progress=lambda count: self.stdout.write(
                         '  students created: {}'.format(count)))
                 result['students'] = student_result
+            if 'staff' in stages:
+                result['staff'] = staff_mod.generate_staff(
+                    config, ctx, dry_run=options['dry_run'])
             ctx.flush()
         except Exception as exc:  # noqa: BLE001
             if not options['dry_run']:

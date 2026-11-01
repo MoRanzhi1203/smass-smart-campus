@@ -71,7 +71,39 @@ python manage.py seed_campus --profile medium --limit 500
 | 对象索引 | org 9 + record + account 均登记（`SimulationObject`） |
 | 测试 | `smass_simulation` 3 例 + `smass_dormitory` 10 例，全绿 |
 
-## 7. 已知限制（后续阶段）
+## 7. P3 岗位反推（staff 阶段）
+
+公式（可在常量中调整）：
+
+```
+教学班 = 班数 × 8（每班每学期 8 门课）
+总周学时 = 教学班 × 3
+教师数 = ceil(总周学时 / 12)（教师最大周授课 12 学时）= 班数 × 2
+辅导员数 = ceil(班数 / 8)
+班主任 = 每班 1 名（从教师池选派，可带多班）
+学院管理 = 每学院 3 人（管理员 / 教学经办 / 学生事务），统一最小权限 college_admin
+```
+
+生成内容：`Account`（`sim_tea_T######` / `sim_adm_XX_role`）+ `TeacherProfile` +
+`AccountRole(teacher)` + `OrganizationMembership`（college 的 teacher、班级的
+counselor / head_teacher）。
+
+| 实测（medium） | 结果 |
+|---|---|
+| 教师 | 432（工号 T000001–T000432） |
+| 辅导员 | 27 人，覆盖 216 班（每人 8 班） |
+| 班主任 | 216 条（每班 1 人） |
+| 学院管理 | 18（6 学院 × 3） |
+| `system_admin` 授予 | **0**（最小权限） |
+| 耗时 | 约 1.2 s |
+| 幂等 | 重跑 `created=0`、关系数不变 |
+
+> 幂等实现：教师/管理员按 `login_name` 判重；辅导员/班主任关系先删除
+> `SIM-CLS-*` 班级上的同类关系再重建（MySQL 无部分唯一索引）。
+
+---
+
+## 8. 已知限制（后续阶段）
 
 - 学生状态目前按年级分布（在读/休学/毕业），尚未接入选课、考勤、请假等业务状态；
 - 教师/辅导员/班主任/学院管理员尚未生成（P3）；
