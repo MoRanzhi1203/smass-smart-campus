@@ -21,6 +21,7 @@ from smass_simulation.generator import teaching as teaching_mod
 from smass_simulation.generator import dorms as dorms_mod
 from smass_simulation.generator import campus_life as campus_mod
 from smass_simulation.generator import verify as verify_mod
+from smass_simulation.generator import cleanup as cleanup_mod
 
 ALL_STAGES = ['org', 'students', 'staff', 'teaching', 'dorms', 'campus']
 
@@ -39,6 +40,10 @@ class Command(BaseCommand):
         parser.add_argument('--batch-code', default='')
         parser.add_argument('--verify', action='store_true',
                             help='只运行完整性校验与分布报告')
+        parser.add_argument('--cleanup', action='store_true',
+                            help='清理仿真数据（默认 dry-run）')
+        parser.add_argument('--confirm', action='store_true',
+                            help='与 --cleanup 配合，确认执行删除')
         parser.add_argument('--report', default='',
                             help='把校验结果写入 JSON 文件')
         parser.add_argument('--colleges', type=int, default=None)
@@ -48,6 +53,12 @@ class Command(BaseCommand):
         parser.add_argument('--students-per', type=int, default=None)
 
     def handle(self, *args, **options):
+        if options['cleanup']:
+            result = cleanup_mod.cleanup(confirm=options['confirm'])
+            self.stdout.write(json.dumps(result, ensure_ascii=False,
+                                         indent=2, default=str))
+            return
+
         if options['verify']:
             report = verify_mod.run_verify()
             if options['report']:

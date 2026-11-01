@@ -28,7 +28,8 @@ def section_students(sections):
     return list(
         Enrollment.objects.filter(section_id__in=ids)
         .exclude(status='dropped')
-        .select_related('account', 'section', 'section__course')
+        .select_related('account', 'account__student_profile', 'section',
+                        'section__course')
         .order_by('section__course__title', 'account__display_name'))
 
 
