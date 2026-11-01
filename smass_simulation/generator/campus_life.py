@@ -75,7 +75,7 @@ def generate_campus_life(config, ctx, *, dry_run=False):
     activities = _activities(students, teachers, rng)
     finance = _finance(students, rng)
     notices = _notifications(students, rng)
-    ctx.stage_done('campus_life', dict(plan))
+    ctx.stage_done('campus', dict(plan))
     return dict(plan, attendance_sessions_created=attendance[0],
                 attendance_records_created=attendance[1],
                 leaves_created=leaves, clubs_created=clubs[0],
