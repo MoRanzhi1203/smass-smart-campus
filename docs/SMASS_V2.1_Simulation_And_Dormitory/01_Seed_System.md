@@ -181,7 +181,35 @@ counselor / head_teacher）。
 
 ---
 
-## 11. 已知限制（后续阶段）
+## 11. P7 完整性校验（`--verify`）
+
+```powershell
+python manage.py seed_campus --verify `
+  --report .local/evidence/v21/verify_medium.json `
+  --settings=smass.settings_simulation
+```
+
+15 项跨模型检查：`student_triplet`（学籍/档案/账号一致）、`class_parent_is_major`、
+`section_has_teacher`、`enrollment_within_capacity`、`schedule_no_conflicts`、
+`class_exactly_one_head_teacher`、`counselor_within_8_classes`、
+`dorm_active_unique`、`bed_occupied_matches_assignments`、`room_within_capacity`、
+`activity_within_capacity`、`club_has_active_leader`、
+`bill_paid_matches_payments`、`notification_recipient_exists`、
+`leave_status_valid`。
+
+| 实测（medium） | 结果 |
+|---|---|
+| 通过率 | **15 / 15 = 100%** |
+| 分布 | 学院学生数、班级数、学籍状态、宿舍占用、账单状态、活动状态、考勤状态、教师/社团/通知数 |
+| 宿舍 | 13 栋 / 1560 间 / 6240 床 / 5508 占用（88.3%） |
+| 学籍状态 | 在读 6164 / 毕业 179 / 休学 137 |
+| 财务 | 已缴 3902 / 未缴 2578（已缴 = 成功缴费合计） |
+
+报告同时写入 JSON（失败样本最多 5 条），便于复核与回归。
+
+---
+
+## 12. 已知限制（后续阶段）
 
 - 学生状态目前按年级分布（在读/休学/毕业），尚未接入选课、考勤、请假等业务状态；
 - 教师/辅导员/班主任/学院管理员尚未生成（P3）；

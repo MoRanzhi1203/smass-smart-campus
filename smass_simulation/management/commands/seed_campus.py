@@ -20,6 +20,7 @@ from smass_simulation.generator import staff as staff_mod
 from smass_simulation.generator import teaching as teaching_mod
 from smass_simulation.generator import dorms as dorms_mod
 from smass_simulation.generator import campus_life as campus_mod
+from smass_simulation.generator import verify as verify_mod
 
 ALL_STAGES = ['org', 'students', 'staff', 'teaching', 'dorms', 'campus']
 
@@ -36,6 +37,10 @@ class Command(BaseCommand):
         parser.add_argument('--limit', type=int, default=0,
                             help='限制学生总数（调试用）')
         parser.add_argument('--batch-code', default='')
+        parser.add_argument('--verify', action='store_true',
+                            help='只运行完整性校验与分布报告')
+        parser.add_argument('--report', default='',
+                            help='把校验结果写入 JSON 文件')
         parser.add_argument('--colleges', type=int, default=None)
         parser.add_argument('--majors', type=int, default=None)
         parser.add_argument('--grades', type=int, default=None)
@@ -43,6 +48,17 @@ class Command(BaseCommand):
         parser.add_argument('--students-per', type=int, default=None)
 
     def handle(self, *args, **options):
+        if options['verify']:
+            report = verify_mod.run_verify()
+            if options['report']:
+                import pathlib
+                pathlib.Path(options['report']).write_text(
+                    json.dumps(report, ensure_ascii=False, indent=2,
+                               default=str), encoding='utf-8')
+            self.stdout.write(json.dumps(report, ensure_ascii=False,
+                                         indent=2, default=str))
+            return
+
         overrides = {
             'colleges': options['colleges'], 'majors': options['majors'],
             'grades': options['grades'],
