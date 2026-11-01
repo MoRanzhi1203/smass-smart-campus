@@ -128,6 +128,31 @@
     {% endif %}
   </section>
 
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>批量分床 / 住宿导入</h2><span class="ws-hint">班级一键分配 · CSV 导入</span></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_dorm_batch_assign' %}" style="margin-bottom:12px" data-once>
+        {% csrf_token %}
+        <div class="ws-form-grid">
+          <div class="ws-field"><label for="ba-class">行政班编码</label><input class="ws-input" id="ba-class" name="class_code" maxlength="64" required placeholder="如 SIM-CLS-0101-2025-01"></div>
+          <div class="ws-field"><label for="ba-building">楼栋</label>
+            <select class="ws-select" id="ba-building" name="building" required>
+              {% for building in building_options %}<option value="{{ building.pk }}">{{ building.building.name }}</option>{% endfor %}
+            </select></div>
+        </div>
+        <div class="ws-form-actions"><button class="ws-btn" type="submit">为该班未住宿学生分床</button></div>
+      </form>
+      <form method="post" action="{% url 'workspace:admin_dorm_import' %}" enctype="multipart/form-data" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:10px">
+          <label for="im-file">住宿 CSV（学号,房间号,床位号）</label>
+          <input class="ws-input" type="file" id="im-file" name="file" accept=".csv" required>
+        </div>
+        <button class="ws-btn is-primary" type="submit">导入分配</button>
+      </form>
+    </div>
+  </section>
+
   <div class="ws-stack">
     <section class="ws-card">
       <div class="ws-card-head"><h2>待审批调宿 / 退宿</h2><span class="ws-hint">{{ pending_changes|length }} / {{ pending_checkouts|length }}</span></div>

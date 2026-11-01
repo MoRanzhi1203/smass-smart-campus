@@ -1922,6 +1922,67 @@ class DormitoryUiTests(WorkspaceFixture):
         self.assertIn('T-DORM-101', body)
 
 
+    def test_batch_assign_class(self):
+        from smass_dormitory.models import Bed, DormAssignment, DormRoom
+        from smass_facilities.models import Building, Room
+        from smass_organization.models import StudentRecord
+
+        account = Account.objects.create_user(
+            't_dorm_batch', self.password, display_name='批量学生',
+            person_type='student')
+        record = StudentRecord.objects.create(
+            student_no='T-DORM-B1', name='批量学生', account=account,
+            unit=self.record.unit, status='enrolled')
+        room = Room.objects.create(
+            code='T-DORM-201', name='批量寝室', building=Building.objects.first(),
+            floor='2', capacity=4)
+        dorm_room = DormRoom.objects.create(
+            room=room, building=self.dorm_building, capacity=4)
+        Bed.objects.create(room=dorm_room, number=1)
+        self.login(self.admin)
+        self.client.post('/admin/dormitory/batch-assign/', {
+            'class_code': self.record.unit.code,
+            'building': self.dorm_building.pk}, follow=True)
+        self.assertTrue(DormAssignment.objects.filter(
+            student=record, active_slot=1).exists())
+
+    def test_import_assignments_csv(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from smass_dormitory.models import Bed, DormAssignment, DormRoom
+        from smass_facilities.models import Building, Room
+        from smass_organization.models import StudentRecord
+
+        account = Account.objects.create_user(
+            't_dorm_imp', self.password, display_name='导入学生',
+            person_type='student')
+        record = StudentRecord.objects.create(
+            student_no='T-DORM-I1', name='导入学生', account=account,
+            status='enrolled')
+        room = Room.objects.create(
+            code='T-DORM-301', name='导入寝室', building=Building.objects.first(),
+            floor='3', capacity=4)
+        dorm_room = DormRoom.objects.create(
+            room=room, building=self.dorm_building, capacity=4)
+        Bed.objects.create(room=dorm_room, number=1)
+        content = 'student_no,room_code,bed_number\nT-DORM-I1,T-DORM-301,1\n'
+        upload = SimpleUploadedFile(
+            'dorm.csv', content.encode('utf-8'), content_type='text/csv')
+        self.login(self.admin)
+        self.client.post('/admin/dormitory/import/', {'file': upload},
+                         follow=True)
+        self.assertTrue(DormAssignment.objects.filter(
+            student=record, active_slot=1).exists())
+
+    def test_room_status_rejects_occupied(self):
+        self.login(self.admin)
+        self.client.post(
+            '/admin/dormitory/rooms/{}/status/'.format(self.dorm_room.pk),
+            {'status': 'disabled'}, follow=True)
+        self.dorm_room.refresh_from_db()
+        self.assertEqual(self.dorm_room.status, 'open')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

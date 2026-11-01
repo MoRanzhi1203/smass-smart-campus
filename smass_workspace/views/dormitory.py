@@ -212,3 +212,79 @@ def export(request):
     return export_svc.csv_response(
         ['学号', '姓名', '楼栋', '房间', '床位', '入住日期'], rows,
         'dorm-assignments')
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+@perms.require_system_admin
+def building_status(request, pk):
+    from smass_dormitory.models import DormBuilding
+
+    building = DormBuilding.objects.filter(pk=pk).first()
+    try:
+        dorm_svc.set_building_status(
+            building, request.POST.get('status') or '', request.user)
+        messages.success(request, '楼栋状态已更新')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+@perms.require_system_admin
+def room_status(request, pk):
+    from smass_dormitory.models import DormRoom
+
+    room = DormRoom.objects.filter(pk=pk).first()
+    try:
+        dorm_svc.set_room_status(
+            room, request.POST.get('status') or '', request.user)
+        messages.success(request, '寝室状态已更新')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '操作失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+def batch_assign(request):
+    from smass_dormitory.models import DormBuilding
+
+    building = DormBuilding.objects.filter(
+        pk=request.POST.get('building') or 0).first()
+    try:
+        result = dorm_svc.batch_assign(
+            request.POST.get('class_code'), building, request.user)
+        messages.success(request, '批量分床完成：{} 人（候选 {}，空床 {}）'.format(
+            result['created'], result['candidates'], result['free_beds']))
+        if result['errors']:
+            messages.warning(request, '部分失败：{}'.format(
+                '；'.join(result['errors'][:3])))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '批量分床失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+@perms.require_system_admin
+def import_assignments(request):
+    upload = request.FILES.get('file')
+    if upload is None:
+        messages.error(request, '请选择 CSV 文件')
+        return redirect('workspace:admin_dormitory')
+    try:
+        text = upload.read().decode('utf-8-sig')
+    except UnicodeDecodeError:
+        messages.error(request, '文件需为 UTF-8 编码')
+        return redirect('workspace:admin_dormitory')
+    try:
+        result = dorm_svc.import_assignments(text, request.user)
+        messages.success(request, '导入完成：{} / {} 行'.format(
+            result['created'], result['total']))
+        if result['errors']:
+            messages.warning(request, '部分失败：{}'.format(
+                '；'.join(result['errors'][:3])))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '导入失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')

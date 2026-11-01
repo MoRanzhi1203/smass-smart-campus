@@ -330,3 +330,91 @@ def export_rows():
             item.checkin_at.strftime('%Y-%m-%d') if item.checkin_at else '',
         ])
     return rows
+
+# ---------------------------------------------------------------------------
+# V2.1 管理端：状态、批量分床、住宿导入
+# ---------------------------------------------------------------------------
+def set_room_status(room, status, actor=None):
+    valid = dict(DormRoom.STATUS_CHOICES)
+    if status not in valid:
+        raise dorm_services.DormError('非法寝室状态', code='BAD_STATUS')
+    if status != DormRoom.STATUS_OPEN and room.beds.filter(
+            assignments__active_slot=1).exists():
+        raise dorm_services.DormError('寝室内仍有在住学生，不能停用',
+                                      code='ROOM_OCCUPIED')
+    room.status = status
+    room.save(update_fields=['status'])
+    return room
+
+
+def set_building_status(building, status, actor=None):
+    valid = dict(DormBuilding.STATUS_CHOICES)
+    if status not in valid:
+        raise dorm_services.DormError('非法楼栋状态', code='BAD_STATUS')
+    if status != DormBuilding.STATUS_OPEN and building.rooms.filter(
+            beds__assignments__active_slot=1).exists():
+        raise dorm_services.DormError('楼栋内仍有在住学生，不能停用',
+                                      code='BUILDING_OCCUPIED')
+    building.status = status
+    building.save(update_fields=['status'])
+    return building
+
+
+def batch_assign(class_code, building, actor):
+    """把某行政班中尚未住宿的学生按空床顺序分配。"""
+    from smass_organization.models import StudentRecord
+
+    class_code = (class_code or '').strip()
+    if not class_code:
+        raise dorm_services.DormError('请选择班级', code='NO_CLASS')
+    students = list(
+        StudentRecord.objects.filter(unit__code=class_code)
+        .exclude(dorm_assignments__active_slot=1)
+        .order_by('student_no'))
+    free = list(dorm_services.available_beds(building=building))
+    created = 0
+    errors = []
+    for student, bed in zip(students, free):
+        try:
+            dorm_services.allocate(student, bed, actor, note='批量分床')
+            created += 1
+        except dorm_services.DormError as exc:
+            errors.append('{}: {}'.format(student.student_no, exc))
+    return {'created': created, 'candidates': len(students),
+            'free_beds': len(free), 'errors': errors[:10]}
+
+
+def import_assignments(text, actor):
+    """CSV 导入：``学号,房间号,床位号``（首行可为表头）。"""
+    from smass_dormitory.models import Bed
+    from smass_organization.models import StudentRecord
+
+    lines = [line.strip() for line in (text or '').splitlines() if line.strip()]
+    if not lines:
+        raise dorm_services.DormError('文件为空', code='EMPTY_FILE')
+    if lines[0].lower().startswith('student'):
+        lines = lines[1:]
+    created = 0
+    errors = []
+    for index, line in enumerate(lines, start=2):
+        parts = [item.strip() for item in line.split(',')]
+        if len(parts) < 3:
+            errors.append('第{}行：列数不足'.format(index))
+            continue
+        student_no, room_code, bed_number = parts[0], parts[1], parts[2]
+        record = StudentRecord.objects.filter(student_no=student_no).first()
+        if record is None:
+            errors.append('第{}行：学号不存在 {}'.format(index, student_no))
+            continue
+        bed = (Bed.objects.filter(room__room__code=room_code,
+                                  number=bed_number).first())
+        if bed is None:
+            errors.append('第{}行：床位不存在 {}-{}'.format(
+                index, room_code, bed_number))
+            continue
+        try:
+            dorm_services.allocate(record, bed, actor, note='CSV 导入')
+            created += 1
+        except dorm_services.DormError as exc:
+            errors.append('第{}行：{}'.format(index, exc))
+    return {'created': created, 'total': len(lines), 'errors': errors[:20]}
