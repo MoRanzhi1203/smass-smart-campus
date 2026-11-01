@@ -1877,6 +1877,51 @@ class DormitoryUiTests(WorkspaceFixture):
         self.assertContains(response, '宿舍管理')
 
 
+    def test_admin_creates_building_and_room(self):
+        from smass_dormitory.models import Bed, DormBuilding
+
+        before = DormBuilding.objects.count()
+        self.login(self.admin)
+        self.client.post('/admin/dormitory/buildings/create/', {
+            'zone': self.zone.pk, 'code': 'T-DORM-NEW', 'name': '测试新楼',
+            'floors': 1, 'rooms_per_floor': 3, 'gender': 'mixed'},
+            follow=True)
+        self.assertEqual(DormBuilding.objects.count(), before + 1)
+        self.assertTrue(Bed.objects.filter(
+            room__room__code__startswith='T-DORM-NEW-').exists())
+
+    def test_admin_assigns_bed(self):
+        from smass_dormitory.models import Bed, DormAssignment, DormRoom
+        from smass_facilities.models import Building, Room
+        from smass_organization.models import StudentRecord
+
+        account = Account.objects.create_user(
+            't_dorm_new', self.password, display_name='待分配学生',
+            person_type='student')
+        other = StudentRecord.objects.create(
+            student_no='T-DORM-STU', name='待分配学生', account=account,
+            status='enrolled')
+        room = Room.objects.create(
+            code='T-DORM-102', name='空寝室', building=Building.objects.first(),
+            floor='1', capacity=4)
+        dorm_room = DormRoom.objects.create(
+            room=room, building=self.dorm_building, capacity=4)
+        free = Bed.objects.create(room=dorm_room, number=1)
+        self.login(self.admin)
+        self.client.post('/admin/dormitory/assign/', {
+            'student_no': other.student_no, 'bed': free.pk}, follow=True)
+        self.assertTrue(DormAssignment.objects.filter(
+            student=other, active_slot=1).exists())
+
+    def test_export_assignments_csv(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/dormitory/export/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('text/csv', response['Content-Type'])
+        body = response.content.decode('utf-8-sig')
+        self.assertIn('T-DORM-101', body)
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

@@ -2,6 +2,7 @@
 from django.urls import path
 
 from .views import admin as views
+from .views import dormitory as dorm_views
 
 urlpatterns = [
     path('', views.home, name='admin_home'),
@@ -94,6 +95,12 @@ urlpatterns = [
          name='admin_refund_action'),
     path('data-quality/', views.data_quality, name='admin_data_quality'),
     path('dormitory/', views.dormitory_admin, name='admin_dormitory'),
+    path('dormitory/buildings/create/', dorm_views.building_create,
+         name='admin_dorm_building_create'),
+    path('dormitory/rooms/create/', dorm_views.room_create,
+         name='admin_dorm_room_create'),
+    path('dormitory/assign/', dorm_views.assign, name='admin_dorm_assign'),
+    path('dormitory/export/', dorm_views.export, name='admin_dorm_export'),
     path('data-exchange/',
          views.data_exchange, name='admin_data_exchange'),
     path('data-exchange/preview/', views.data_import_preview,

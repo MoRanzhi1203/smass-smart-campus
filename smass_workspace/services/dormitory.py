@@ -17,6 +17,7 @@ from smass_dormitory.models import (
     DormManagerScope,
     DormRepair,
     DormRoom,
+    DormZone,
 )
 
 
@@ -188,7 +189,23 @@ def admin_overview():
             .select_related('room__room', 'building__building')[:20]),
         'scopes': list(DormManagerScope.objects.select_related(
             'account', 'building__building').order_by('building__building__code')),
+        'zone_options': list(DormZone.objects.order_by('code')),
+        'building_options': list(DormBuilding.objects.select_related(
+            'building').order_by('building__code')),
+        'free_beds': list(dorm_services.available_beds()[:50]),
+        'room_rows': _room_rows(limit=40),
     }
+
+
+def _room_rows(limit=40):
+    from django.db.models import Count, Q
+
+    return list(
+        DormRoom.objects.select_related('room', 'building__building')
+        .annotate(occupied=Count(
+            'beds__assignments',
+            filter=Q(beds__assignments__active_slot=1), distinct=True))
+        .order_by('room__code')[:limit])
 
 
 def rooms_in(building, keyword=''):
@@ -227,3 +244,89 @@ def available_beds_for(record):
     if assignment is not None:
         queryset = queryset.exclude(room=assignment.bed.room)
     return list(queryset[:20])
+
+# ---------------------------------------------------------------------------
+# V2.1 管理端：资源创建、分床、导出
+# ---------------------------------------------------------------------------
+def create_building(zone, code, name, *, floors=6, rooms_per_floor=20,
+                    gender='mixed'):
+    from smass_facilities.models import Building, Room
+
+    code = (code or '').strip().upper()
+    if not code or not name:
+        raise dorm_services.DormError('楼栋编码与名称必填', code='EMPTY_FIELD')
+    if Building.objects.filter(code=code).exists():
+        raise dorm_services.DormError('楼栋编码已存在', code='CODE_EXISTS')
+    building = Building.objects.create(
+        code=code, name=name, campus=getattr(zone, 'campus', ''))
+    dorm_building = DormBuilding.objects.create(
+        building=building, zone=zone, floors=floors,
+        gender_policy=gender)
+    rooms = 0
+    for floor in range(1, max(1, floors) + 1):
+        for order in range(1, max(1, rooms_per_floor) + 1):
+            room_code = '{}-{}{:02d}'.format(code, floor, order)
+            if Room.objects.filter(code=room_code).exists():
+                continue
+            room = Room.objects.create(
+                code=room_code, name='寝室{}'.format(room_code.split('-')[-1]),
+                building=building, floor=str(floor), capacity=4)
+            dorm_room = DormRoom.objects.create(
+                room=room, building=dorm_building, capacity=4)
+            for number in (1, 2, 3, 4):
+                Bed.objects.create(room=dorm_room, number=number)
+            rooms += 1
+    return {'building': dorm_building, 'rooms': rooms}
+
+
+def create_room(dorm_building, room_code, *, capacity=4):
+    from smass_facilities.models import Room
+
+    room_code = (room_code or '').strip().upper()
+    if not room_code:
+        raise dorm_services.DormError('房间号必填', code='EMPTY_FIELD')
+    if Room.objects.filter(code=room_code).exists():
+        raise dorm_services.DormError('房间号已存在', code='CODE_EXISTS')
+    room = Room.objects.create(
+        code=room_code, name='寝室{}'.format(room_code.split('-')[-1]),
+        building=dorm_building.building, capacity=capacity)
+    dorm_room = DormRoom.objects.create(
+        room=room, building=dorm_building, capacity=capacity)
+    for number in range(1, capacity + 1):
+        Bed.objects.create(room=dorm_room, number=number)
+    return dorm_room
+
+
+def assign_bed(student_no, bed_id, actor):
+    from smass_facilities.models import Building  # noqa: F401 - 保持导入形状
+    from smass_organization.models import StudentRecord
+
+    student_no = (student_no or '').strip()
+    record = StudentRecord.objects.filter(student_no=student_no).first()
+    if record is None:
+        raise dorm_services.DormError('学号不存在', code='NO_RECORD')
+    bed = Bed.objects.filter(pk=bed_id or 0).first()
+    if bed is None:
+        raise dorm_services.DormError('床位不存在', code='NO_BED')
+    if not dorm_services.can_manage_building(actor, bed.room.building):
+        raise dorm_services.DormError('该楼栋不在你的管理范围', code='NO_SCOPE')
+    return dorm_services.allocate(record, bed, actor, note='管理端分配')
+
+
+def export_rows():
+    rows = []
+    assignments = (DormAssignment.objects.filter(active_slot=1)
+                   .select_related('student', 'student__account', 'bed',
+                                   'bed__room', 'bed__room__room',
+                                   'bed__room__building__building')
+                   .order_by('bed__room__building__building__code',
+                             'bed__room__room__code', 'bed__number'))
+    for item in assignments:
+        room = item.bed.room
+        rows.append([
+            item.student.student_no, item.student.name,
+            room.building.building.name, room.room.code,
+            item.bed.number,
+            item.checkin_at.strftime('%Y-%m-%d') if item.checkin_at else '',
+        ])
+    return rows

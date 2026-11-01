@@ -149,3 +149,66 @@ def inspection_action(request, pk):
     except Exception as exc:  # noqa: BLE001
         messages.error(request, '操作失败：{}'.format(exc))
     return redirect('workspace:dormitory_home')
+
+# ---------------------------------------------------------------------------
+# 管理端：资源创建、分床、导出
+# ---------------------------------------------------------------------------
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+@perms.require_system_admin
+def building_create(request):
+    from smass_dormitory.models import DormZone
+
+    zone = DormZone.objects.filter(pk=request.POST.get('zone') or 0).first()
+    try:
+        result = dorm_svc.create_building(
+            zone, request.POST.get('code'), request.POST.get('name'),
+            floors=int(request.POST.get('floors') or 6),
+            rooms_per_floor=int(request.POST.get('rooms_per_floor') or 20),
+            gender=request.POST.get('gender') or 'mixed')
+        messages.success(request, '楼栋已创建，房间 {} 间'.format(result['rooms']))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+@perms.require_system_admin
+def room_create(request):
+    from smass_dormitory.models import DormBuilding
+
+    building = DormBuilding.objects.filter(
+        pk=request.POST.get('building') or 0).first()
+    try:
+        dorm_svc.create_room(
+            building, request.POST.get('room_code'),
+            capacity=int(request.POST.get('capacity') or 4))
+        messages.success(request, '寝室与床位已创建')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '创建失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_POST
+@perms.require_kind(perms.KIND_ADMIN)
+def assign(request):
+    try:
+        dorm_svc.assign_bed(
+            request.POST.get('student_no'), request.POST.get('bed'),
+            request.user)
+        messages.success(request, '已分配床位')
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '分配失败：{}'.format(exc))
+    return redirect('workspace:admin_dormitory')
+
+
+@require_GET
+@perms.require_kind(perms.KIND_ADMIN)
+def export(request):
+    from ..services import export as export_svc
+
+    rows = dorm_svc.export_rows()
+    return export_svc.csv_response(
+        ['学号', '姓名', '楼栋', '房间', '床位', '入住日期'], rows,
+        'dorm-assignments')

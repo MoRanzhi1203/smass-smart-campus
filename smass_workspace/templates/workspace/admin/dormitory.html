@@ -13,8 +13,63 @@
   </div>
   <div class="ws-page-actions">
     <a class="ws-btn" href="{% url 'workspace:dormitory_home' %}">宿舍工作台</a>
+    <a class="ws-btn" href="{% url 'workspace:admin_dorm_export' %}">导出住宿 CSV</a>
   </div>
 </div>
+
+{% if is_super %}
+<div class="ws-grid ws-grid-3" style="margin-bottom:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>新建楼栋</h2><span class="ws-hint">按楼层自动生成寝室与床位</span></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_dorm_building_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:8px"><label for="bd-zone">宿舍区</label>
+          <select class="ws-select" id="bd-zone" name="zone" required>
+            {% for zone in zone_options %}<option value="{{ zone.pk }}">{{ zone.name }}</option>{% endfor %}
+          </select></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="bd-code">楼栋编码</label><input class="ws-input" id="bd-code" name="code" maxlength="32" required placeholder="如 SIM-DORM-B14"></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="bd-name">楼栋名称</label><input class="ws-input" id="bd-name" name="name" maxlength="100" required></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="bd-floors">楼层数</label><input class="ws-input" id="bd-floors" name="floors" type="number" min="1" max="20" value="6"></div>
+        <div class="ws-field" style="margin-bottom:10px"><label for="bd-rooms">每层房间数</label><input class="ws-input" id="bd-rooms" name="rooms_per_floor" type="number" min="1" max="60" value="20"></div>
+        <button class="ws-btn is-primary" type="submit">创建楼栋</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>新建寝室</h2><span class="ws-hint">4 人间</span></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_dorm_room_create' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:8px"><label for="rm-building">楼栋</label>
+          <select class="ws-select" id="rm-building" name="building" required>
+            {% for building in building_options %}<option value="{{ building.pk }}">{{ building.building.name }}</option>{% endfor %}
+          </select></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="rm-code">房间号</label><input class="ws-input" id="rm-code" name="room_code" maxlength="32" required placeholder="如 SIM-DORM-B01-701"></div>
+        <div class="ws-field" style="margin-bottom:10px"><label for="rm-capacity">容量</label><input class="ws-input" id="rm-capacity" name="capacity" type="number" min="1" max="8" value="4"></div>
+        <button class="ws-btn is-primary" type="submit">创建寝室</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>分配床位</h2><span class="ws-hint">学号 + 空闲床位</span></div>
+    <div class="ws-card-body">
+      <form method="post" action="{% url 'workspace:admin_dorm_assign' %}" data-once>
+        {% csrf_token %}
+        <div class="ws-field" style="margin-bottom:8px"><label for="as-student">学号</label><input class="ws-input" id="as-student" name="student_no" maxlength="20" required placeholder="如 S202300001"></div>
+        <div class="ws-field" style="margin-bottom:10px"><label for="as-bed">床位</label>
+          <select class="ws-select" id="as-bed" name="bed" required>
+            {% for bed in free_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.code }} · {{ bed.number }} 号床</option>{% endfor %}
+          </select></div>
+        <button class="ws-btn is-primary" type="submit" {% if not free_beds %}disabled{% endif %}>分配</button>
+        {% if not free_beds %}<p class="ws-sub" style="margin-top:6px">当前没有空闲床位。</p>{% endif %}
+      </form>
+    </div>
+  </section>
+</div>
+{% endif %}
 
 <div class="ws-grid ws-grid-4">
   <div class="ws-stat is-accent"><div class="ws-stat-label">楼栋 / 寝室</div><div class="ws-stat-value">{{ stats.buildings }}<small>/{{ stats.rooms }}</small></div></div>
@@ -45,6 +100,31 @@
       </div>
     {% else %}
       {% include "workspace/_empty_state.html" with compact=True icon="building" title="还没有宿舍楼" desc="先由仿真或管理端创建宿舍资源。" %}
+    {% endif %}
+  </section>
+
+  <section class="ws-card" style="margin-bottom:16px">
+    <div class="ws-card-head"><h2>寝室与床位</h2><span class="ws-hint">前 40 间</span></div>
+    {% if room_rows %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>房间</th><th>楼栋</th><th class="is-num">容量</th><th class="is-num">入住</th><th class="is-num">空床</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for room in room_rows %}
+              <tr>
+                <td class="is-strong">{{ room.room.code }}</td>
+                <td class="is-muted">{{ room.building.building.name }}</td>
+                <td class="is-num">{{ room.capacity }}</td>
+                <td class="is-num">{{ room.occupied }}</td>
+                <td class="is-num">{{ room.capacity|add:"-"|add:room.occupied }}</td>
+                <td><span class="ws-badge {{ room.status|badge_class }}">{{ room.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {% include "workspace/_empty_state.html" with compact=True icon="door" title="还没有寝室" desc="新建楼栋或寝室后会显示在这里。" %}
     {% endif %}
   </section>
 
