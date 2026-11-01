@@ -14,8 +14,8 @@
 
 {% if dorm.state == 'assigned' %}
 <div class="ws-grid ws-grid-4">
-  <div class="ws-stat is-accent"><div class="ws-stat-label">宿舍楼</div><div class="ws-stat-value" style="font-size:18px">{{ dorm.room.building.building.name }}</div><div class="ws-stat-foot">{{ dorm.room.building.building.code }}</div></div>
-  <div class="ws-stat"><div class="ws-stat-label">楼层</div><div class="ws-stat-value">{{ dorm.room.room.floor }}</div><div class="ws-stat-foot">房间 {{ dorm.room.room.code }}</div></div>
+  <div class="ws-stat is-accent"><div class="ws-stat-label">宿舍楼</div><div class="ws-stat-value" style="font-size:18px">{{ dorm.room.building.building.name }}</div><div class="ws-stat-foot">{{ dorm.room.building.zone.name }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">楼层</div><div class="ws-stat-value">{{ dorm.room.room.floor }}</div><div class="ws-stat-foot">房间 {{ dorm.room.room.name }}</div></div>
   <div class="ws-stat"><div class="ws-stat-label">床位</div><div class="ws-stat-value">{{ dorm.bed.number }}</div><div class="ws-stat-foot">{{ dorm.room.get_capacity_display }}</div></div>
   <div class="ws-stat"><div class="ws-stat-label">入住时间</div><div class="ws-stat-value" style="font-size:15px">{{ dorm.assignment.checkin_at|date:"Y-m-d"|default:"—" }}</div><div class="ws-stat-foot">在住</div></div>
 </div>

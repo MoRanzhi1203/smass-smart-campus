@@ -31,7 +31,7 @@
         <tbody>
           {% for room in rooms %}
             <tr>
-              <td class="is-strong">{{ room.room.code }}</td>
+              <td class="is-strong">{{ room.room.name }}</td>
               <td class="is-num">{{ room.room.floor }}</td>
               <td>{{ room.get_capacity_display }}</td>
               <td class="is-num">{{ room.capacity }}</td>

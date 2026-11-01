@@ -32,7 +32,7 @@
         <tbody>
           {% for item in per_building %}
             <tr>
-              <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.building.code }}</span></td>
+              <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.zone.name }}</span></td>
               <td class="is-muted">{{ item.zone.name }}</td>
               <td class="is-num">{{ item.floors }}</td>
               <td class="is-num">{{ item.room_count }}</td>

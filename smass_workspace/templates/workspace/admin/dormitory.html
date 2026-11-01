@@ -88,7 +88,7 @@
           <tbody>
             {% for item in zones %}
               <tr>
-                <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.building.code }}</span></td>
+                <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.zone.name }}</span></td>
                 <td class="is-muted">{{ item.zone.name }}</td>
                 <td>{{ item.get_gender_policy_display }}</td>
                 <td class="is-num">{{ item.floors }}</td>
@@ -112,7 +112,7 @@
           <tbody>
             {% for room in room_rows %}
               <tr>
-                <td class="is-strong">{{ room.room.code }}</td>
+                <td class="is-strong">{{ room.room.name }}</td>
                 <td class="is-muted">{{ room.building.building.name }}</td>
                 <td class="is-num">{{ room.capacity }}</td>
                 <td class="is-num">{{ room.occupied }}</td>
