@@ -54,7 +54,7 @@ class TeachingError(Exception):
 
 def ensure_term():
     year, _ = AcademicYear.objects.update_or_create(
-        code='SIM-2025', defaults={
+        code='2025', defaults={
             'start_date': date(2025, 9, 1), 'end_date': date(2026, 8, 31),
             'is_active': True})
     term, _ = AcademicTerm.objects.update_or_create(
@@ -188,7 +188,7 @@ def generate_teaching(config, ctx, *, dry_run=False):
 
     run, _ = ScheduleRun.objects.update_or_create(
         term=term,
-        defaults={'status': RUN_SOLVED, 'algorithm': 'simulation-greedy'})
+        defaults={'status': RUN_SOLVED, 'algorithm': 'greedy'})
     ScheduleEntry.objects.filter(run=run).delete()
     LessonRequirement.objects.filter(run=run).delete()
 

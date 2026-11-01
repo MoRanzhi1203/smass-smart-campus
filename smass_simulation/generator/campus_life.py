@@ -247,7 +247,7 @@ def _finance(students, rng):
                                  'status': 'active'})
         items.append(item)
     existing = set(Bill.objects.filter(
-        bill_no__startswith='SIM-BILL-').values_list('bill_no', flat=True))
+        bill_no__startswith='BILL-').values_list('bill_no', flat=True))
     new_bills = []
     for student in students:
         bill_no = 'SIM-BILL-{}'.format(student.student_no)
@@ -260,7 +260,7 @@ def _finance(students, rng):
     Bill.objects.bulk_create(new_bills, ignore_conflicts=True,
                              batch_size=BATCH_SIZE)
     bills = list(Bill.objects.filter(
-        bill_no__startswith='SIM-BILL-').select_related('record'))
+        bill_no__startswith='BILL-').select_related('record'))
     bill_items = []
     for bill in bills:
         for item in items:
@@ -269,7 +269,7 @@ def _finance(students, rng):
     BillItem.objects.bulk_create(bill_items, ignore_conflicts=True,
                                  batch_size=BATCH_SIZE)
     paid_existing = set(Payment.objects.filter(
-        reference__startswith='SIM-PAY-').values_list('reference', flat=True))
+        reference__startswith='PAY-').values_list('reference', flat=True))
     payments = []
     for index, bill in enumerate(bills):
         if rng.randint(1, 100) > BILL_PAID_RATIO * 100:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""P8 仿真库页面性能采样：查询数、耗时、状态码。
+"""V2.2 统一校园库页面性能采样：查询数、耗时、状态码。
 
-    python scripts/perf_simulation.py --json out.json
+    python scripts/perf_simulation.py --json out.json [--settings smass.settings_campus]
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smass.settings_simulation')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smass.settings_campus')
 
 PAGES = [
     ('admin', 'sim_adm_01_admin', '/admin/records/', '学籍列表'),

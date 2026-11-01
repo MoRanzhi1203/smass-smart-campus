@@ -62,7 +62,7 @@ def cleanup(*, confirm=False):
             student__student_no__startswith=STUDENT_PREFIX).count(),
         'dorm_beds': Bed.objects.filter(
             room__room__code__startswith='SIM-DORM-').count(),
-        'bills': Bill.objects.filter(bill_no__startswith='SIM-BILL-').count(),
+        'bills': Bill.objects.filter(bill_no__startswith='BILL-').count(),
         'clubs': Club.objects.filter(code__startswith='SIM-CLUB-').count(),
         'activities': Activity.objects.filter(
             created_by='simulation').count(),
@@ -113,12 +113,12 @@ def cleanup(*, confirm=False):
             building__code__startswith='SIM-DORM-'))
         drop('dorm_zones', DormZone.objects.filter(code__startswith='SIM-ZONE'))
         drop('bill_items', BillItem.objects.filter(
-            bill__bill_no__startswith='SIM-BILL-'))
+            bill__bill_no__startswith='BILL-'))
         drop('payments', Payment.objects.filter(
-            bill__bill_no__startswith='SIM-BILL-'))
+            bill__bill_no__startswith='BILL-'))
         drop('refunds', RefundRequest.objects.filter(
-            bill__bill_no__startswith='SIM-BILL-'))
-        drop('bills', Bill.objects.filter(bill_no__startswith='SIM-BILL-'))
+            bill__bill_no__startswith='BILL-'))
+        drop('bills', Bill.objects.filter(bill_no__startswith='BILL-'))
         drop('fee_items', FeeItem.objects.filter(code__startswith='SIM-FEE-'))
         drop('activity_registrations', ActivityRegistration.objects.filter(
             activity__created_by='simulation'))
@@ -139,7 +139,7 @@ def cleanup(*, confirm=False):
         drop('requirements', LessonRequirement.objects.filter(
             section__code__startswith='SEC-'))
         drop('runs', ScheduleRun.objects.filter(
-            term__year__code='SIM-2025'))
+            term__year__code='2025'))
         drop('sections', TeachingSection.objects.filter(
             code__startswith='SEC-'))
         drop('cohorts', Cohort.objects.filter(code__startswith='COH-'))

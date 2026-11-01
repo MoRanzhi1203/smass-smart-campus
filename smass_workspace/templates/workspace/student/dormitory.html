@@ -67,7 +67,7 @@
           <div class="ws-field" style="margin-bottom:8px">
             <label for="change-bed">目标床位</label>
             <select class="ws-select" id="change-bed" name="bed" required>
-              {% for bed in available_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.code }} · {{ bed.number }} 号床</option>{% endfor %}
+              {% for bed in available_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.name }} · {{ bed.number }} 号床</option>{% endfor %}
             </select>
           </div>
           <div class="ws-field" style="margin-bottom:10px">

@@ -146,7 +146,7 @@ def run_verify():
           bad_leader[:5])
 
     bills = list(Bill.objects.filter(
-        bill_no__startswith='SIM-BILL-').annotate(
+        bill_no__startswith='BILL-').annotate(
         pay_sum=Sum('payments__amount',
                     filter=Q(payments__status='success'))))
     mismatch = [bill.bill_no for bill in bills
@@ -204,7 +204,7 @@ def _distribution():
     }
     dorm['occupancy'] = (round(dorm['occupied'] * 100.0 / dorm['beds'], 1)
                          if dorm['beds'] else 0)
-    finance = list(Bill.objects.filter(bill_no__startswith='SIM-BILL-')
+    finance = list(Bill.objects.filter(bill_no__startswith='BILL-')
                    .values('status').annotate(total=Count('id')).order_by())
     activities = list(Activity.objects.values('status').annotate(
         total=Count('id')).order_by())

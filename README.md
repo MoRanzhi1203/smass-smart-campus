@@ -32,10 +32,11 @@ cd E:\PythonWeb\smass\.local\clean-dev
 | `/admin/` | 管理控制台（超管全局 / 学院管理员受限） |
 | `/notifications/`、`/profile/` | 三端共用的通知中心与个人中心 |
 
-> **数据库权威**：产品与测试只使用 `smass_product_dev`（测试库
-> `test_smass_product_dev`）。历史库 `smass` 已 **LOGICALLY_RETIRED**
-> （产品运行零依赖、无活动连接），等待物理删除授权；
-> 新环境不要把它写进 `DB_NAME`。
+> **数据库权威（V2.2）**：唯一长期业务库为 **`smass_campus`**（测试库
+> `test_smass_campus`），由 `smass.settings_campus` 连接，`manage.py` 默认即此配置。
+> `smass_product_dev` / `smass_simulation` / `smass_unified_verify` 已 **LOGICALLY_RETIRED**
+> （不再承担业务运行、无活动连接），等待物理删除授权；新环境不要把它们写进 `DB_NAME`。
+> 历史库 `smass` 早已删除，严禁重建。
 
 - 三端页面清单与操作手册：[`docs/SMASS_Product_Workspaces.md`](docs/SMASS_Product_Workspaces.md)
 - 旧库退役与新版数据库正式化：[`docs/SMASS_Database_Unification/11_Legacy_Decommission.md`](docs/SMASS_Database_Unification/11_Legacy_Decommission.md)

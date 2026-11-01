@@ -1845,7 +1845,7 @@ class DormitoryUiTests(WorkspaceFixture):
         self.login(self.student)
         response = self.client.get('/student/dormitory/')
         self.assertContains(response, '我的寝室')
-        self.assertContains(response, 'T-DORM-101')
+        self.assertContains(response, '测试寝室')
 
     def test_student_repair_creates_ticket(self):
         from smass_dormitory.models import DormRepair
@@ -1868,7 +1868,7 @@ class DormitoryUiTests(WorkspaceFixture):
         self.assertContains(response, '宿舍工作台')
         rooms = self.client.get('/dormitory/rooms/')
         self.assertEqual(rooms.status_code, 200)
-        self.assertContains(rooms, 'T-DORM-101')
+        self.assertContains(rooms, '测试寝室')
 
     def test_admin_dormitory_page(self):
         self.login(self.admin)

@@ -28,7 +28,7 @@
           <select class="ws-select" id="bd-zone" name="zone" required>
             {% for zone in zone_options %}<option value="{{ zone.pk }}">{{ zone.name }}</option>{% endfor %}
           </select></div>
-        <div class="ws-field" style="margin-bottom:8px"><label for="bd-code">楼栋编码</label><input class="ws-input" id="bd-code" name="code" maxlength="32" required placeholder="如 SIM-DORM-B14"></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="bd-code">楼栋编码</label><input class="ws-input" id="bd-code" name="code" maxlength="32" required placeholder="如 D14"></div>
         <div class="ws-field" style="margin-bottom:8px"><label for="bd-name">楼栋名称</label><input class="ws-input" id="bd-name" name="name" maxlength="100" required></div>
         <div class="ws-field" style="margin-bottom:8px"><label for="bd-floors">楼层数</label><input class="ws-input" id="bd-floors" name="floors" type="number" min="1" max="20" value="6"></div>
         <div class="ws-field" style="margin-bottom:10px"><label for="bd-rooms">每层房间数</label><input class="ws-input" id="bd-rooms" name="rooms_per_floor" type="number" min="1" max="60" value="20"></div>
@@ -46,7 +46,7 @@
           <select class="ws-select" id="rm-building" name="building" required>
             {% for building in building_options %}<option value="{{ building.pk }}">{{ building.building.name }}</option>{% endfor %}
           </select></div>
-        <div class="ws-field" style="margin-bottom:8px"><label for="rm-code">房间号</label><input class="ws-input" id="rm-code" name="room_code" maxlength="32" required placeholder="如 SIM-DORM-B01-701"></div>
+        <div class="ws-field" style="margin-bottom:8px"><label for="rm-code">房间号</label><input class="ws-input" id="rm-code" name="room_code" maxlength="32" required placeholder="如 D01-701"></div>
         <div class="ws-field" style="margin-bottom:10px"><label for="rm-capacity">容量</label><input class="ws-input" id="rm-capacity" name="capacity" type="number" min="1" max="8" value="4"></div>
         <button class="ws-btn is-primary" type="submit">创建寝室</button>
       </form>
@@ -61,7 +61,7 @@
         <div class="ws-field" style="margin-bottom:8px"><label for="as-student">学号</label><input class="ws-input" id="as-student" name="student_no" maxlength="20" required placeholder="如 S202300001"></div>
         <div class="ws-field" style="margin-bottom:10px"><label for="as-bed">床位</label>
           <select class="ws-select" id="as-bed" name="bed" required>
-            {% for bed in free_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.code }} · {{ bed.number }} 号床</option>{% endfor %}
+            {% for bed in free_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.name }} · {{ bed.number }} 号床</option>{% endfor %}
           </select></div>
         <button class="ws-btn is-primary" type="submit" {% if not free_beds %}disabled{% endif %}>分配</button>
         {% if not free_beds %}<p class="ws-sub" style="margin-top:6px">当前没有空闲床位。</p>{% endif %}
@@ -134,7 +134,7 @@
       <form method="post" action="{% url 'workspace:admin_dorm_batch_assign' %}" style="margin-bottom:12px" data-once>
         {% csrf_token %}
         <div class="ws-form-grid">
-          <div class="ws-field"><label for="ba-class">行政班编码</label><input class="ws-input" id="ba-class" name="class_code" maxlength="64" required placeholder="如 SIM-CLS-0101-2025-01"></div>
+          <div class="ws-field"><label for="ba-class">行政班编码</label><input class="ws-input" id="ba-class" name="class_code" maxlength="64" required placeholder="如 CLS-0101-2025-01"></div>
           <div class="ws-field"><label for="ba-building">楼栋</label>
             <select class="ws-select" id="ba-building" name="building" required>
               {% for building in building_options %}<option value="{{ building.pk }}">{{ building.building.name }}</option>{% endfor %}
@@ -210,10 +210,10 @@
         <thead><tr><th>来源</th><th>位置</th><th>内容</th><th>状态</th></tr></thead>
         <tbody>
           {% for item in repairs %}
-            <tr><td>报修</td><td>{{ item.room.room.code }}</td><td class="is-muted">{{ item.description|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
+            <tr><td>报修</td><td>{{ item.room.room.name }}</td><td class="is-muted">{{ item.description|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
           {% endfor %}
           {% for item in inspections %}
-            <tr><td>巡查</td><td>{{ item.building.building.name }} {{ item.room.room.code|default:"" }}</td><td class="is-muted">{{ item.issue|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
+            <tr><td>巡查</td><td>{{ item.building.building.name }} {{ item.room.room.name|default:"" }}</td><td class="is-muted">{{ item.issue|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
           {% endfor %}
         </tbody>
       </table>
