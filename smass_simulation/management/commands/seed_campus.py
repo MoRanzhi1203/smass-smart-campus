@@ -18,8 +18,9 @@ from smass_simulation.generator import org as org_mod
 from smass_simulation.generator import people as people_mod
 from smass_simulation.generator import staff as staff_mod
 from smass_simulation.generator import teaching as teaching_mod
+from smass_simulation.generator import dorms as dorms_mod
 
-ALL_STAGES = ['org', 'students', 'staff', 'teaching']
+ALL_STAGES = ['org', 'students', 'staff', 'teaching', 'dorms']
 
 
 class Command(BaseCommand):
@@ -89,6 +90,9 @@ class Command(BaseCommand):
                     config, ctx, dry_run=options['dry_run'])
             if 'teaching' in stages:
                 result['teaching'] = teaching_mod.generate_teaching(
+                    config, ctx, dry_run=options['dry_run'])
+            if 'dorms' in stages:
+                result['dorms'] = dorms_mod.generate_dorms(
                     config, ctx, dry_run=options['dry_run'])
             ctx.flush()
         except Exception as exc:  # noqa: BLE001
