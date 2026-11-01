@@ -192,8 +192,8 @@ def admin_overview():
         'zone_options': list(DormZone.objects.order_by('code')),
         'building_options': list(DormBuilding.objects.select_related(
             'building').order_by('building__code')),
-        'free_beds': list(dorm_services.available_beds()[:50]),
-        'room_rows': _room_rows(limit=40),
+        'free_beds': list(dorm_services.available_beds()[:20]),
+        'room_rows': _room_rows(limit=20),
     }
 
 
