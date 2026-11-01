@@ -1,0 +1,50 @@
+{% extends "workspace/base.html" %}
+{% load badges %}
+{% block title %}房间浏览{% endblock %}
+{% block topbar_title %}房间浏览{% endblock %}
+{% block topbar_sub %}楼栋与寝室{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-breadcrumb"><a href="{% url 'workspace:dormitory_home' %}">宿舍工作台</a><span class="sep">/</span><span>房间</span></div>
+    <h1>房间浏览</h1>
+    <p class="ws-sub">按楼栋筛选、按房间号搜索；入住人数与空床实时计算。</p>
+  </div>
+</div>
+
+<section class="ws-card">
+  <div class="ws-card-head">
+    <h2>{{ building.building.name }}</h2>
+    <form method="get" class="ws-inline-form">
+      <select class="ws-select" name="building" aria-label="选择楼栋" onchange="this.form.submit()">
+        {% for item in buildings %}<option value="{{ item.pk }}" {% if item.pk == building.pk %}selected{% endif %}>{{ item.building.name }}</option>{% endfor %}
+      </select>
+      <input class="ws-input" type="search" name="q" value="{{ keyword }}" placeholder="房间号" aria-label="搜索房间号" style="width:140px">
+      <button class="ws-btn is-sm" type="submit">筛选</button>
+    </form>
+  </div>
+  {% if rooms %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>房间</th><th>楼层</th><th>类型</th><th class="is-num">容量</th><th class="is-num">入住</th><th class="is-num">空床</th><th>状态</th></tr></thead>
+        <tbody>
+          {% for room in rooms %}
+            <tr>
+              <td class="is-strong">{{ room.room.code }}</td>
+              <td class="is-num">{{ room.room.floor }}</td>
+              <td>{{ room.get_capacity_display }}</td>
+              <td class="is-num">{{ room.capacity }}</td>
+              <td class="is-num">{{ room.occupied }}</td>
+              <td class="is-num">{{ room.capacity|add:"-"|add:room.occupied }}</td>
+              <td><span class="ws-badge {{ room.status|badge_class }}">{{ room.get_status_display }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "workspace/_empty_state.html" with compact=True icon="door" title="没有匹配房间" desc="换个楼层或房间号再试。" %}
+  {% endif %}
+</section>
+{% endblock %}

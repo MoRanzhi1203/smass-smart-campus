@@ -1330,6 +1330,15 @@ def data_export(request, kind):
 
 @require_GET
 @admin_only
+def dormitory_admin(request):
+    from ..services import dormitory as dorm_svc
+
+    return render(request, 'workspace/admin/dormitory.html', _ctx(
+        request, **dorm_svc.admin_overview()))
+
+
+@require_GET
+@admin_only
 @perms.require_system_admin
 def data_quality(request):
     from ..services import quality

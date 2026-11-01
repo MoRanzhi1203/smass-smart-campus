@@ -1808,6 +1808,75 @@ class TeacherExportAndStatsTests(WorkspaceFixture):
         self.assertContains(response, '班级考勤统计')
 
 
+class DormitoryUiTests(WorkspaceFixture):
+    """V2.1 宿舍三端页面与申请。"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from smass_dormitory.models import (
+            Bed, DormAssignment, DormBuilding, DormManagerScope, DormRoom,
+            DormZone)
+        from smass_facilities.models import Building, Room
+        from r21_account.models import Account, AccountRole
+
+        base = Building.objects.first()
+        cls.zone = DormZone.objects.create(
+            code='T-ZONE', name='测试宿舍区', campus='主校区')
+        cls.dorm_building = DormBuilding.objects.create(
+            building=base, zone=cls.zone, floors=6)
+        room = Room.objects.create(
+            code='T-DORM-101', name='测试寝室', building=base, floor='1',
+            capacity=4)
+        cls.dorm_room = DormRoom.objects.create(
+            room=room, building=cls.dorm_building, capacity=4)
+        cls.bed = Bed.objects.create(room=cls.dorm_room, number=1)
+        DormAssignment.objects.create(
+            student=cls.record, bed=cls.bed, status='active', active_slot=1,
+            checkin_at=timezone.now())
+        Bed.objects.filter(pk=cls.bed.pk).update(status='occupied')
+        cls.dorm_mgr = Account.objects.create_user(
+            't_dorm_mgr', cls.password, display_name='楼管', person_type='admin')
+        AccountRole.objects.create(account=cls.dorm_mgr, role='college_admin')
+        DormManagerScope.objects.create(
+            account=cls.dorm_mgr, building=cls.dorm_building, role='manager')
+
+    def test_student_dormitory_shows_bed(self):
+        self.login(self.student)
+        response = self.client.get('/student/dormitory/')
+        self.assertContains(response, '我的寝室')
+        self.assertContains(response, 'T-DORM-101')
+
+    def test_student_repair_creates_ticket(self):
+        from smass_dormitory.models import DormRepair
+
+        self.login(self.student)
+        self.client.post('/student/dormitory/repair/', {
+            'description': '水龙头漏水'}, follow=True)
+        self.assertTrue(DormRepair.objects.filter(
+            student=self.record, description='水龙头漏水').exists())
+
+    def test_manager_without_scope_forbidden(self):
+        self.login(self.teacher)
+        response = self.client.get('/dormitory/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_manager_dashboard_with_scope(self):
+        self.login(self.dorm_mgr)
+        response = self.client.get('/dormitory/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '宿舍工作台')
+        rooms = self.client.get('/dormitory/rooms/')
+        self.assertEqual(rooms.status_code, 200)
+        self.assertContains(rooms, 'T-DORM-101')
+
+    def test_admin_dormitory_page(self):
+        self.login(self.admin)
+        response = self.client.get('/admin/dormitory/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '宿舍管理')
+
+
 class AdminConsoleTests(WorkspaceFixture):
     PAGES = [
         '/admin/', '/admin/users/', '/admin/roles/', '/admin/organizations/',

@@ -795,13 +795,50 @@ def organizations(request):
 @require_GET
 @student_only
 def dormitory(request):
+    from ..services import dormitory as dorm_svc
+
     record_obj = svc.student_record(request.user)
+    data = dorm_svc.student_dormitory(record_obj)
     return render(request, 'workspace/student/dormitory.html', _ctx(
         request,
         dormitory=svc.dormitory_of(record_obj),
         record=record_obj,
         chain=svc.record_chain(record_obj),
+        dorm=data,
+        available_beds=dorm_svc.available_beds_for(record_obj)
+        if data['state'] == 'assigned' else [],
     ))
+
+
+@require_POST
+@student_only
+def dorm_request(request, action):
+    from ..services import dormitory as dorm_svc
+    from smass_dormitory import services as dorm_services
+    from smass_dormitory.models import Bed
+
+    record_obj = svc.student_record(request.user)
+    try:
+        if action == 'repair':
+            dorm_svc.request_repair(
+                record_obj, request.POST.get('description'), request.user)
+            messages.success(request, '报修已提交，宿管会尽快处理')
+        elif action == 'change':
+            bed = Bed.objects.filter(pk=request.POST.get('bed') or 0).first()
+            dorm_svc.request_change(
+                record_obj, bed, request.POST.get('reason'), request.user)
+            messages.success(request, '调宿申请已提交，等待宿管审批')
+        elif action == 'checkout':
+            dorm_svc.request_checkout(
+                record_obj, request.POST.get('reason'), request.user)
+            messages.success(request, '退宿申请已提交，等待宿管审批')
+        else:
+            messages.error(request, '未知申请类型')
+    except dorm_services.DormError as exc:
+        messages.error(request, str(exc))
+    except Exception as exc:  # noqa: BLE001
+        messages.error(request, '提交失败：{}'.format(exc))
+    return redirect('workspace:student_dormitory')
 
 
 @require_GET

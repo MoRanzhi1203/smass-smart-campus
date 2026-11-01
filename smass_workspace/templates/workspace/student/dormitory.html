@@ -1,56 +1,126 @@
 {% extends "workspace/base.html" %}
 {% block title %}我的寝室{% endblock %}
 {% block topbar_title %}我的寝室{% endblock %}
-{% block topbar_sub %}住宿信息{% endblock %}
+{% block topbar_sub %}住宿信息与申请{% endblock %}
 
 {% block content %}
 <div class="ws-page-head">
   <div>
-    <div class="ws-eyebrow">日常事务</div>
+    <div class="ws-eyebrow">校园生活</div>
     <h1>我的寝室</h1>
-    <p class="ws-sub">住宿信息由学生事务部门登记；如需调整请联系辅导员。</p>
+    <p class="ws-sub">住宿信息来自宿舍管理系统；报修、调宿、退宿在此提交并由宿管审批。</p>
   </div>
 </div>
 
-{% if dormitory %}
-<div class="ws-grid ws-grid-main">
+{% if dorm.state == 'assigned' %}
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">宿舍楼</div><div class="ws-stat-value" style="font-size:18px">{{ dorm.room.building.building.name }}</div><div class="ws-stat-foot">{{ dorm.room.building.building.code }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">楼层</div><div class="ws-stat-value">{{ dorm.room.room.floor }}</div><div class="ws-stat-foot">房间 {{ dorm.room.room.code }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">床位</div><div class="ws-stat-value">{{ dorm.bed.number }}</div><div class="ws-stat-foot">{{ dorm.room.get_capacity_display }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">入住时间</div><div class="ws-stat-value" style="font-size:15px">{{ dorm.assignment.checkin_at|date:"Y-m-d"|default:"—" }}</div><div class="ws-stat-foot">在住</div></div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
   <section class="ws-card">
-    <div class="ws-card-head"><h2>住宿信息</h2>
-      <span class="ws-badge is-success">在住</span>
-    </div>
-    <div class="ws-card-body">
-      <div class="ws-meta">
-        <div><span class="is-label">楼栋</span><b>{{ dormitory.building|default:"—" }}</b></div>
-        <div><span class="is-label">寝室号</span><b>{{ dormitory.room|default:"—" }}</b></div>
-        <div><span class="is-label">床位</span><b>{{ dormitory.bed|default:"—" }}</b></div>
-        <div><span class="is-label">数据来源</span><b>{{ dormitory.source }}</b></div>
+    <div class="ws-card-head"><h2>室友</h2><span class="ws-hint">{{ dorm.roommates|length }} 人</span></div>
+    {% if dorm.roommates %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>姓名</th><th>学号</th><th>床位</th><th>学院</th></tr></thead>
+          <tbody>
+            {% for item in dorm.roommates %}
+              <tr>
+                <td class="is-strong">{{ item.student.name }}</td>
+                <td class="is-muted">{{ item.student.student_no }}</td>
+                <td class="is-num">{{ item.bed.number }}</td>
+                <td class="is-muted">{{ item.student.unit.parent.parent.name|default:"—" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-    </div>
-    <div class="ws-card-foot">学生宿舍实行门禁与用电管理，请遵守宿舍管理规定。</div>
+    {% else %}
+      {% include "workspace/_empty_state.html" with compact=True icon="users" title="暂无室友" desc="当前寝室只有你一名在住学生。" %}
+    {% endif %}
   </section>
 
-  <section class="ws-card">
-    <div class="ws-card-head"><h2>室友</h2></div>
-    <div class="ws-card-body">
-      {% if dormitory.roommates %}
-        <div class="ws-tag-list">
-          {% for mate in dormitory.roommates %}<span class="ws-chip">{{ mate }}</span>{% endfor %}
-        </div>
-      {% else %}
-        <div class="ws-empty is-compact">
-          <div class="ws-empty-icon"><svg><use href="#ws-i-users"></use></svg></div>
-          <b>暂无室友信息</b>
-          <p>寝室成员数据由学生事务部门维护。</p>
-        </div>
-      {% endif %}
-    </div>
-  </section>
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>报修</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:student_dorm_repair' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="repair-desc">问题描述</label>
+            <input class="ws-input" id="repair-desc" name="description" maxlength="500" required placeholder="如：水龙头漏水">
+          </div>
+          <button class="ws-btn is-primary" type="submit">提交报修</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>调宿 / 退宿</h2></div>
+      <div class="ws-card-body">
+        <form method="post" action="{% url 'workspace:student_dorm_change' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:8px">
+            <label for="change-bed">目标床位</label>
+            <select class="ws-select" id="change-bed" name="bed" required>
+              {% for bed in available_beds %}<option value="{{ bed.pk }}">{{ bed.room.building.building.name }} · {{ bed.room.room.code }} · {{ bed.number }} 号床</option>{% endfor %}
+            </select>
+          </div>
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="change-reason">调宿理由</label>
+            <input class="ws-input" id="change-reason" name="reason" maxlength="500" required>
+          </div>
+          <button class="ws-btn" type="submit" {% if not available_beds %}disabled{% endif %}>提交调宿申请</button>
+          {% if not available_beds %}<p class="ws-sub" style="margin-top:6px">当前没有可选空床。</p>{% endif %}
+        </form>
+        <hr style="margin:14px 0;border:none;border-top:1px solid var(--ws-border)">
+        <form method="post" action="{% url 'workspace:student_dorm_checkout' %}" data-once>
+          {% csrf_token %}
+          <div class="ws-field" style="margin-bottom:10px">
+            <label for="checkout-reason">退宿原因</label>
+            <input class="ws-input" id="checkout-reason" name="reason" maxlength="500" required placeholder="如：毕业退宿 / 走读">
+          </div>
+          <button class="ws-btn is-danger" type="submit">提交退宿申请</button>
+        </form>
+      </div>
+    </section>
+  </div>
 </div>
 {% else %}
-  <div class="ws-empty" style="background:#fff;border:1px solid var(--ws-border);border-radius:var(--ws-radius)">
-    <div class="ws-empty-icon"><svg><use href="#ws-i-building"></use></svg></div>
-    <b>暂无住宿信息</b>
-    <p>{% if record %}你的学籍档案中未登记寝室，可能为走读学生。{% else %}请先完成学籍档案绑定。{% endif %}</p>
+<section class="ws-card">
+  {% if dorm.state == 'commute' %}
+    {% include "workspace/_empty_state.html" with icon="door" title="走读生" desc="你在学籍信息中登记为走读，未分配寝室；如需住宿请向宿管提交调宿或住宿申请。" %}
+  {% elif dorm.state == 'unassigned' %}
+    {% include "workspace/_empty_state.html" with icon="door" title="尚未分配床位" desc="宿管完成床位分配后会显示楼栋、寝室与室友信息。" %}
+  {% else %}
+    {% include "workspace/_empty_state.html" with icon="file" title="暂无学籍档案" desc="请先完善学籍信息，之后才能分配住宿。" %}
+  {% endif %}
+</section>
+{% endif %}
+
+{% if dorm.changes or dorm.checkouts or dorm.repairs %}
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>我的申请</h2><span class="ws-hint">最近 10 条</span></div>
+  <div class="ws-table-wrap">
+    <table class="ws-table">
+      <thead><tr><th>类型</th><th>内容</th><th>状态</th><th>时间</th></tr></thead>
+      <tbody>
+        {% for item in dorm.changes %}
+          <tr><td>调宿</td><td>{{ item.reason|truncatechars:30 }}</td><td><span class="ws-badge {% if item.status == 'completed' %}is-success{% elif item.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span></td><td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td></tr>
+        {% endfor %}
+        {% for item in dorm.checkouts %}
+          <tr><td>退宿</td><td>{{ item.reason|truncatechars:30 }}</td><td><span class="ws-badge {% if item.status == 'completed' %}is-success{% elif item.status == 'rejected' %}is-danger{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span></td><td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td></tr>
+        {% endfor %}
+        {% for item in dorm.repairs %}
+          <tr><td>报修</td><td>{{ item.description|truncatechars:30 }}</td><td><span class="ws-badge {% if item.status == 'done' or item.status == 'closed' %}is-success{% else %}is-warning{% endif %}">{{ item.get_status_display }}</span></td><td class="is-muted">{{ item.created_at|date:"m-d H:i" }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</section>
 {% endif %}
 {% endblock %}

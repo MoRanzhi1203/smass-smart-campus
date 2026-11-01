@@ -41,6 +41,10 @@ PAGES = {
         ('/admin/workflows/', 'workflows'),
         ('/admin/finance/', 'finance'),
         ('/admin/data-exchange/', 'data-exchange'),
+        ('/admin/data-quality/', 'data-quality'),
+        ('/admin/dormitory/', 'dormitory'),
+        ('/dormitory/', 'dormitory-workbench'),
+        ('/dormitory/rooms/', 'dormitory-rooms'),
         ('/admin/users/', 'users'),
     ],
 }

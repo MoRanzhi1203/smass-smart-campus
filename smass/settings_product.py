@@ -30,6 +30,8 @@ DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_product_dev'
 INSTALLED_APPS = list(INSTALLED_APPS) + [
     'smass_workspace.apps.SmassWorkspaceConfig',
     'smass_mfa.apps.SmassMfaConfig',
+    # V2.1 宿舍业务域（宿舍区/楼栋/寝室/床位/住宿/调宿/退宿/报修/巡查/宿管范围）
+    'smass_dormitory.apps.SmassDormitoryConfig',
 ]
 
 # MFA：默认关闭；设置 SMASS_MFA_ENABLED=1 后对系统管理员强制绑定与二次验证

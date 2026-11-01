@@ -120,6 +120,7 @@ ADMIN_SECTIONS = (
     )),
     NavSection('数据治理', (
         NavItem('数据质量', 'workspace:admin_data_quality', icon='shield'),
+        NavItem('宿舍管理', 'workspace:admin_dormitory', icon='building'),
         NavItem('数据导入导出', 'workspace:admin_data_exchange', icon='file'),
     )),
     NavSection('运维与安全', (

@@ -1,0 +1,132 @@
+{% extends "workspace/base.html" %}
+{% load badges %}
+{% block title %}宿舍工作台{% endblock %}
+{% block topbar_title %}宿舍工作台{% endblock %}
+{% block topbar_sub %}楼栋、入住与待办{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">宿舍管理</div>
+    <h1>宿舍工作台</h1>
+    <p class="ws-sub">仅显示你被授权的楼栋；审批与报修处理按楼栋范围校验。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:dormitory_rooms' %}">房间浏览</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">负责楼栋</div><div class="ws-stat-value">{{ stats.buildings }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">床位 / 入住</div><div class="ws-stat-value">{{ stats.beds }}<small>/{{ stats.occupied }}</small></div><div class="ws-stat-foot">空床 {{ stats.free }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">今日入/退</div><div class="ws-stat-value">{{ stats.checkins_today }}<small>/{{ stats.checkouts_today }}</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">待办</div><div class="ws-stat-value">{{ pending_changes|length }}<small>/{{ repairs|length }}</small></div><div class="ws-stat-foot">调宿 / 报修</div></div>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>楼栋入住</h2><span class="ws-hint">{{ per_building|length }} 栋</span></div>
+  {% if per_building %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>楼栋</th><th>宿舍区</th><th>楼层</th><th class="is-num">寝室</th><th class="is-num">床位</th><th class="is-num">入住</th><th>入住率</th></tr></thead>
+        <tbody>
+          {% for item in per_building %}
+            <tr>
+              <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.building.code }}</span></td>
+              <td class="is-muted">{{ item.zone.name }}</td>
+              <td class="is-num">{{ item.floors }}</td>
+              <td class="is-num">{{ item.room_count }}</td>
+              <td class="is-num">{{ item.bed_count }}</td>
+              <td class="is-num">{{ item.occupied }}</td>
+              <td>{% if item.bed_count %}{% widthratio item.occupied item.bed_count 100 %}%{% else %}—{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "workspace/_empty_state.html" with compact=True icon="building" title="没有授权楼栋" desc="请联系系统管理员分配宿舍楼范围。" %}
+  {% endif %}
+</section>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>待审批调宿</h2><span class="ws-hint">{{ pending_changes|length }} 条</span></div>
+    {% if pending_changes %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>学生</th><th>原床位</th><th>目标床位</th><th>理由</th><th>操作</th></tr></thead>
+          <tbody>
+            {% for item in pending_changes %}
+              <tr>
+                <td>{{ item.student.name }}<br><span class="is-muted">{{ item.student.student_no }}</span></td>
+                <td class="is-muted">{% if item.from_bed %}{{ item.from_bed.room.room.code }}-{{ item.from_bed.number }}{% else %}—{% endif %}</td>
+                <td>{% if item.to_bed %}{{ item.to_bed.room.room.code }}-{{ item.to_bed.number }}{% else %}—{% endif %}</td>
+                <td class="is-muted">{{ item.reason|truncatechars:20 }}</td>
+                <td>
+                  <div style="display:flex;gap:4px;flex-wrap:wrap">
+                    <form method="post" action="{% url 'workspace:dormitory_change_action' item.pk 'approve' %}" data-once>
+                      {% csrf_token %}<button class="ws-btn is-sm is-primary" type="submit">批准</button>
+                    </form>
+                    <form method="post" action="{% url 'workspace:dormitory_change_action' item.pk 'reject' %}" style="display:flex;gap:4px" data-once>
+                      {% csrf_token %}
+                      <input class="ws-input" name="reason" placeholder="驳回理由" required maxlength="255" style="width:100px;height:28px;font-size:12px" aria-label="调宿驳回理由">
+                      <button class="ws-btn is-sm is-danger" type="submit">驳回</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {% include "workspace/_empty_state.html" with compact=True icon="check" title="没有待审批调宿" desc="学生提交调宿后会出现在这里。" %}
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待处理报修</h2><span class="ws-hint">{{ repairs|length }} 条</span></div>
+      {% if repairs %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>寝室</th><th>问题</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              {% for item in repairs %}
+                <tr>
+                  <td>{{ item.room.room.code }}</td>
+                  <td class="is-muted">{{ item.description|truncatechars:16 }}</td>
+                  <td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td>
+                  <td>
+                    <form method="post" action="{% url 'workspace:dormitory_repair_action' item.pk %}" data-once>
+                      {% csrf_token %}
+                      <button class="ws-btn is-sm" type="submit">推进</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        {% include "workspace/_empty_state.html" with compact=True icon="check" title="没有待处理报修" desc="学生提交报修后会出现在这里。" %}
+      {% endif %}
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待复查巡查</h2><span class="ws-hint">{{ inspections|length }} 条</span></div>
+      {% if inspections %}
+        {% for item in inspections %}
+          <div class="ws-list-item">
+            <div class="ws-list-main"><b>{{ item.building.building.name }} {{ item.room.room.code|default:"" }}</b><p class="ws-sub">{{ item.issue|truncatechars:24 }}</p></div>
+            <form method="post" action="{% url 'workspace:dormitory_inspection_action' item.pk %}" data-once>{% csrf_token %}<button class="ws-btn is-sm" type="submit">推进</button></form>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% include "workspace/_empty_state.html" with compact=True icon="check" title="没有待复查问题" desc="巡查发现的问题会出现在这里。" %}
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

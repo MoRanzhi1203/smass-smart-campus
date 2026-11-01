@@ -93,6 +93,7 @@ urlpatterns = [
     path('finance/refunds/<int:pk>/<str:action>/', views.refund_action,
          name='admin_refund_action'),
     path('data-quality/', views.data_quality, name='admin_data_quality'),
+    path('dormitory/', views.dormitory_admin, name='admin_dormitory'),
     path('data-exchange/',
          views.data_exchange, name='admin_data_exchange'),
     path('data-exchange/preview/', views.data_import_preview,

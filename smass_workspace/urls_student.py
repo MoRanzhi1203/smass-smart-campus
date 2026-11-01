@@ -52,5 +52,11 @@ urlpatterns = [
          name='student_club_leave'),
     path('organizations/', views.organizations, name='student_organizations'),
     path('dormitory/', views.dormitory, name='student_dormitory'),
+    path('dormitory/repair/', views.dorm_request,
+         {'action': 'repair'}, name='student_dorm_repair'),
+    path('dormitory/change/', views.dorm_request,
+         {'action': 'change'}, name='student_dorm_change'),
+    path('dormitory/checkout/', views.dorm_request,
+         {'action': 'checkout'}, name='student_dorm_checkout'),
     path('notices/', views.notices, name='student_notices'),
 ]

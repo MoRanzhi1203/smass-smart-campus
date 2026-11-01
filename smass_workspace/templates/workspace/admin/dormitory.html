@@ -1,0 +1,120 @@
+{% extends "workspace/base.html" %}
+{% load badges %}
+{% block title %}宿舍管理{% endblock %}
+{% block topbar_title %}宿舍管理{% endblock %}
+{% block topbar_sub %}资源、审批与授权{% endblock %}
+
+{% block content %}
+<div class="ws-page-head">
+  <div>
+    <div class="ws-eyebrow">宿舍业务</div>
+    <h1>宿舍管理</h1>
+    <p class="ws-sub">楼栋/房间/床位总览、调宿退宿审批、报修巡查与宿管授权。</p>
+  </div>
+  <div class="ws-page-actions">
+    <a class="ws-btn" href="{% url 'workspace:dormitory_home' %}">宿舍工作台</a>
+  </div>
+</div>
+
+<div class="ws-grid ws-grid-4">
+  <div class="ws-stat is-accent"><div class="ws-stat-label">楼栋 / 寝室</div><div class="ws-stat-value">{{ stats.buildings }}<small>/{{ stats.rooms }}</small></div></div>
+  <div class="ws-stat"><div class="ws-stat-label">床位 / 入住</div><div class="ws-stat-value">{{ stats.beds }}<small>/{{ stats.occupied }}</small></div><div class="ws-stat-foot">空床 {{ stats.free }}</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">住宿学生</div><div class="ws-stat-value">{{ stats.students }}</div><div class="ws-stat-foot">占用率 {{ occupancy }}%</div></div>
+  <div class="ws-stat"><div class="ws-stat-label">待办</div><div class="ws-stat-value">{{ stats.pending_changes }}<small>/{{ stats.open_repairs }}</small></div><div class="ws-stat-foot">调宿 / 报修</div></div>
+</div>
+
+<div class="ws-grid ws-grid-main" style="margin-top:16px">
+  <section class="ws-card">
+    <div class="ws-card-head"><h2>楼栋资源</h2><span class="ws-hint">{{ zones|length }} 栋</span></div>
+    {% if zones %}
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead><tr><th>楼栋</th><th>宿舍区</th><th>住宿区适配</th><th>楼层</th><th>状态</th></tr></thead>
+          <tbody>
+            {% for item in zones %}
+              <tr>
+                <td class="is-strong">{{ item.building.name }}<br><span class="is-muted">{{ item.building.code }}</span></td>
+                <td class="is-muted">{{ item.zone.name }}</td>
+                <td>{{ item.get_gender_policy_display }}</td>
+                <td class="is-num">{{ item.floors }}</td>
+                <td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {% include "workspace/_empty_state.html" with compact=True icon="building" title="还没有宿舍楼" desc="先由仿真或管理端创建宿舍资源。" %}
+    {% endif %}
+  </section>
+
+  <div class="ws-stack">
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>待审批调宿 / 退宿</h2><span class="ws-hint">{{ pending_changes|length }} / {{ pending_checkouts|length }}</span></div>
+      <div class="ws-card-body">
+        {% if pending_changes %}
+          {% for item in pending_changes %}
+            <div class="ws-list-item">
+              <div class="ws-list-main"><b>{{ item.student.name }}</b><p class="ws-sub">调宿：{{ item.reason|truncatechars:20 }}</p></div>
+              <span class="ws-badge is-warning">待审批</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="ws-sub" style="margin:0">暂无待审批调宿。</p>
+        {% endif %}
+        {% if pending_checkouts %}
+          {% for item in pending_checkouts %}
+            <div class="ws-list-item">
+              <div class="ws-list-main"><b>{{ item.student.name }}</b><p class="ws-sub">退宿：{{ item.reason|truncatechars:20 }}</p></div>
+              <span class="ws-badge is-warning">待审批</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="ws-card">
+      <div class="ws-card-head"><h2>宿管授权</h2><span class="ws-hint">{{ scopes|length }} 条</span></div>
+      {% if scopes %}
+        <div class="ws-table-wrap">
+          <table class="ws-table">
+            <thead><tr><th>账号</th><th>楼栋</th><th>岗位</th></tr></thead>
+            <tbody>
+              {% for item in scopes %}
+                <tr>
+                  <td>{{ item.account.login_name }}</td>
+                  <td class="is-muted">{{ item.building.building.name }}</td>
+                  <td><span class="ws-badge is-info">{{ item.get_role_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        {% include "workspace/_empty_state.html" with compact=True icon="shield" title="还没有宿管授权" desc="为宿管账号分配楼栋范围后可进入宿舍工作台。" %}
+      {% endif %}
+    </section>
+  </div>
+</div>
+
+<section class="ws-card" style="margin-top:16px">
+  <div class="ws-card-head"><h2>待处理报修与巡查</h2><span class="ws-hint">{{ repairs|length }} / {{ inspections|length }}</span></div>
+  {% if repairs or inspections %}
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead><tr><th>来源</th><th>位置</th><th>内容</th><th>状态</th></tr></thead>
+        <tbody>
+          {% for item in repairs %}
+            <tr><td>报修</td><td>{{ item.room.room.code }}</td><td class="is-muted">{{ item.description|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
+          {% endfor %}
+          {% for item in inspections %}
+            <tr><td>巡查</td><td>{{ item.building.building.name }} {{ item.room.room.code|default:"" }}</td><td class="is-muted">{{ item.issue|truncatechars:24 }}</td><td><span class="ws-badge {{ item.status|badge_class }}">{{ item.get_status_display }}</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "workspace/_empty_state.html" with compact=True icon="check" title="没有待处理事项" desc="报修与巡查问题会出现在这里。" %}
+  {% endif %}
+</section>
+{% endblock %}
