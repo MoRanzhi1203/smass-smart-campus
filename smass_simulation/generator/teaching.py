@@ -64,9 +64,12 @@ def ensure_term():
     return term
 
 
-def ensure_rooms():
+def ensure_rooms(target_rooms=None):
+    import math as _math
+    rooms_needed = target_rooms or (BUILDINGS * ROOMS_PER_BUILDING)
+    building_count = max(1, int(_math.ceil(rooms_needed / ROOMS_PER_BUILDING)))
     rooms = []
-    for building_index in range(BUILDINGS):
+    for building_index in range(building_count):
         building, _ = Building.objects.update_or_create(
             code='SIM-TEACH-{}'.format(building_index + 1),
             defaults={'name': '仿真教学楼{}'.format(building_index + 1),
@@ -136,7 +139,8 @@ def generate_teaching(config, ctx, *, dry_run=False):
                 'dry_run': True}
 
     term = ensure_term()
-    _building, rooms = ensure_rooms()
+    needed_rooms = max(120, int(len(classes) * 1.2))
+    _building, rooms = ensure_rooms(needed_rooms)
     courses = ensure_courses(majors)
     teachers_by_college = defaultdict(list)
     for teacher in teachers:

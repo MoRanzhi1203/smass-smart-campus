@@ -40,6 +40,8 @@ class Command(BaseCommand):
         parser.add_argument('--batch-code', default='')
         parser.add_argument('--verify', action='store_true',
                             help='只运行完整性校验与分布报告')
+        parser.add_argument('--resume', action='store_true',
+                            help='跳过批次中已完成阶段（断点续跑）')
         parser.add_argument('--cleanup', action='store_true',
                             help='清理仿真数据（默认 dry-run）')
         parser.add_argument('--confirm', action='store_true',
@@ -77,15 +79,26 @@ class Command(BaseCommand):
             'students_per_class': options['students_per'],
         }
         config = sim_config.resolve(options['profile'], overrides)
-        batch_code = options['batch_code'] or '{}-{}-{}'.format(
-            config['profile'], options['seed'],
-            options['stage'].replace(',', '+'))
+        batch_code = options['batch_code'] or '{}-{}'.format(
+            config['profile'], options['seed'])
         stages = [item.strip() for item in options['stage'].split(',')
                   if item.strip()]
         unknown = [item for item in stages if item not in ALL_STAGES]
         if unknown:
             raise CommandError('未知阶段：{}'.format(','.join(unknown)))
 
+        if options['resume']:
+            existing = SimulationBatch.objects.filter(
+                code=batch_code).first()
+            if existing is not None and existing.stage_done:
+                done = existing.stage_done or {}
+                stages = [item for item in stages if not done.get(item)]
+                if not stages:
+                    self.stdout.write(json.dumps({
+                        'batch': batch_code, 'resume': True,
+                        'stages': [], 'note': '所有阶段已完成'},
+                        ensure_ascii=False))
+                    return
         os.environ['SIM_SEED'] = str(options['seed'])
         started = time.time()
         batch = batch_mod.get_batch(

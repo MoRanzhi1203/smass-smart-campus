@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smass.settings_simulation')
 
 PAGES = [
-    ('admin', 'sim_adm_01_admin', '/admin/records/', '学籍列表（6480）'),
+    ('admin', 'sim_adm_01_admin', '/admin/records/', '学籍列表'),
     ('admin', 'sim_adm_01_admin', '/admin/users/', '账号列表'),
     ('admin', 'sim_adm_01_admin', '/admin/dormitory/', '宿舍管理'),
     ('admin', 'sim_adm_01_admin', '/admin/scheduling/', '排课管理'),
