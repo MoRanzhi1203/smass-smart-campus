@@ -39,7 +39,7 @@ class SimulationBatch(models.Model):
 class SimulationObject(models.Model):
     batch = models.ForeignKey(SimulationBatch, verbose_name='批次',
                               on_delete=models.CASCADE,
-                              related_name='objects')
+                              related_name='sim_objects')
     model_label = models.CharField('模型', max_length=64)
     object_pk = models.CharField('对象主键', max_length=64)
     created_at = models.DateTimeField('创建时间', auto_now_add=True)
