@@ -250,7 +250,7 @@ def _finance(students, rng):
         bill_no__startswith='BILL-').values_list('bill_no', flat=True))
     new_bills = []
     for student in students:
-        bill_no = 'SIM-BILL-{}'.format(student.student_no)
+        bill_no = 'BILL-{}'.format(student.student_no)
         if bill_no in existing:
             continue
         new_bills.append(Bill(
@@ -274,7 +274,7 @@ def _finance(students, rng):
     for index, bill in enumerate(bills):
         if rng.randint(1, 100) > BILL_PAID_RATIO * 100:
             continue
-        reference = 'SIM-PAY-{}'.format(bill.record.student_no)
+        reference = 'PAY-{}'.format(bill.record.student_no)
         if reference in paid_existing:
             continue
         payments.append(Payment(
