@@ -18,10 +18,11 @@ if SIM_DB_NAME == 'smass':
 DATABASES['default']['NAME'] = SIM_DB_NAME
 DATABASES['default'].setdefault('TEST', {})['NAME'] = 'test_smass_simulation'
 
-INSTALLED_APPS = list(INSTALLED_APPS) + [
-    'smass_simulation.apps.SmassSimulationConfig',
-    'smass_dormitory.apps.SmassDormitoryConfig',
-]
+INSTALLED_APPS = list(INSTALLED_APPS)
+for _app in ('smass_simulation.apps.SmassSimulationConfig',
+             'smass_dormitory.apps.SmassDormitoryConfig'):
+    if _app not in INSTALLED_APPS:
+        INSTALLED_APPS.append(_app)
 
 # 仿真库不启用 MFA，避免批量走查被二次验证拦截
 MFA_ENABLED = False
